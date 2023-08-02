@@ -1,0 +1,6 @@
+[submodule ".config/st"]
+	path = .config/st
+	url = ../st.git
+[submodule ".config/dwm"]
+	path = .config/dwm
+	url = ../dwm.git
