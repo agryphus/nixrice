@@ -1,0 +1,11 @@
+super + d
+    dmenu_run
+super + D
+    passmenu
+super + Return
+    st 
+super + grave
+    dmenuunicode
+super + w
+    thorium-browser
+

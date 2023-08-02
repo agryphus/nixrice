@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+# This was created because the x backend of zathura did not want to listen
+# to the $DISPLAY environment variable and refused to open inside of my VcXsrv x
+# server instance.  I could not alias this in my .zshrc either because when zathura
+# is launched from dmenu or from vimtex, it would not follow the alias.
+GDK_BACKEND=x11 /usr/bin/zathura "$@"
+

@@ -1,0 +1,7 @@
+feh --no-fehbg --bg-fill ~/.config/wallpaper
+xset r rate 300 50
+killall picom
+picom -b
+sxhkd &
+dwm
+

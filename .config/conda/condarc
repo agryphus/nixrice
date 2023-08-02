@@ -1,0 +1,6 @@
+envs_dirs:
+  - ${XDG_DATA_HOME}/conda/envs
+pkgs_dirs:
+  - ${XDG_CACHE_HOME}/conda/pkgs
+auto_activate_base: false
+

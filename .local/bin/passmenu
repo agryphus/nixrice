@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# This script exists because I want to use dmenu instead of dmenu-wl, which passmenu
+# defaults to if it sees that your $WAYLAND_DISPLAY variable is set.  I also passed
+# $PINENTRY_USER_DATA which will eventually reach the pinentry-wrapper script and launch
+# a graphical pinentry as opposed to my curses default, since launching pinentry-curses
+# outside of a terminal just breaks everything.
+
+PINENTRY_USER_DATA=qt WAYLAND_DISPLAY= /usr/bin/passmenu
+

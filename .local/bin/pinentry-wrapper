@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# Defaults to Qt, with a choice of curses for selected programs
+# PINENTRY_USER_DATA is a GnuPG defined variable (see man gpg)
+
+case "$PINENTRY_USER_DATA" in
+    qt)
+        exec /usr/bin/pinentry-qt "$@"
+        ;;
+    *)
+        exec /usr/bin/pinentry-curses "$@"
+        ;;
+esac
+
