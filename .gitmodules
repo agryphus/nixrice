@@ -4,3 +4,6 @@
 [submodule ".config/dwm"]
 	path = .config/dwm
 	url = ../dwm.git
+[submodule ".config/nvim"]
+	path = .config/nvim
+	url = ../nvim.git
