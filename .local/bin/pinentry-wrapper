@@ -4,8 +4,8 @@
 # PINENTRY_USER_DATA is a GnuPG defined variable (see man gpg)
 
 case "$PINENTRY_USER_DATA" in
-    qt)
-        exec /usr/bin/pinentry-qt "$@"
+    dmenu)
+        exec /usr/bin/pinentry-dmenu "$@"
         ;;
     *)
         exec /usr/bin/pinentry-curses "$@"
