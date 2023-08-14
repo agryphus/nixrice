@@ -2,6 +2,10 @@
 
 source /opt/miniconda3/etc/profile.d/conda.sh
 
+export BROWSER='firefox'
+export EDITOR='nvim'
+export TERMINAL='st'
+
 # Spring cleaning
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -11,17 +15,20 @@ export NPM_CONFIG_USERCONFIG="$XDG_CONFIG_HOME/npm/config"
 export EMACS_INIT_FILE="$XDG_CONFIG_HOME/emacs"
 export INPUTRC="$XDG_CONFIG_HOME/readline/inputrc"
 export GIT_CONFIG="$XDG_CONFIG_HOME/git/config"
+export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"
+export XSERVERRC="$XDG_CONFIG_HOME/X11/xserverrc"
 export PASSWORD_STORE_DIR="$XDG_DATA_HOME/password-store"
 export CARGO_HOME="$XDG_DATA_HOME/cargo"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 export NPM_CONFIG_PREFIX="$XDG_CACHE_HOME/npm"
 export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
-export VIMINFO="$XDG_STATE_HOME/vim/viminfo"
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
+export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
 
-export BROWSER='thorium-browser'
-export EDITOR='nvim'
+# Defines a vimrc
+export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.lua" | so $MYVIMRC'
+
 
 export SUDO_PROMPT="
                   ⢀⡔⣻⠁ ⢀⣀⣀⡀        

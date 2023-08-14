@@ -1,16 +1,20 @@
+# The rice repo
+alias config='git --git-dir $HOME/repos/archrice/ --work-tree=$HOME'
+
+# Useful defaults
 alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
 alias python='python3'
+alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
+
+# Some wsl stuff
 alias clip=/mnt/c/Windows/System32/clip.exe
-alias startx="export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0.0 && \
+alias vcxsrv='/mnt/c/Program\ Files/VcXsrv/vcxsrv.exe :0 -clipboard -wgl -keyhook'
+alias wsl_startx="export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0.0 && \
         export LD_LIBRARY_PATH=/usr/lib/wsl/lib && \
         export LIBGL_ALWAYS_SOFTWARE=1 && \
         . ~/.config/X11/xinitrc"
-alias vcxsrv='/mnt/c/Program\ Files/VcXsrv/vcxsrv.exe :0 -clipboard -wgl -keyhook'
-alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
-
-alias config='git --git-dir $HOME/repos/archrice/ --work-tree=$HOME'
 
 # Print out all colors
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$"\n"}; done'
