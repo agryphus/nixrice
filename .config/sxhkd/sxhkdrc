@@ -3,9 +3,13 @@ super + d
 super + D
     passmenu
 super + Return
-    st 
+    $TERMINAL
 super + grave
     dmenuunicode
 super + w
-    thorium-browser
+    $BROWSER
+super + Print
+    dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim -s ~/name
+super + shift + Print
+    dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim ~/name
 
