@@ -1,6 +1,6 @@
 xrandr --setprovideroutputsource modesetting NVIDIA-0
 xrandr --auto
-feh --bg-scale --no-fehbg ~/.config/wallpaper.jpg
+feh --bg-scale --no-fehbg ~/.config/wallpaper
 xset r rate 300 50
 picom -b
 sxhkd &

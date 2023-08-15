@@ -169,5 +169,6 @@ ZSH_HIGHLIGHT_STYLES[process-substitution]=none
 ZSH_HIGHLIGHT_STYLES[path_pathseparator]=
 ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]=
 
+source ~/.config/zsh/.zshpersonalrc
 source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 
