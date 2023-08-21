@@ -1,0 +1,5 @@
+#!/bin/sh
+# Alias for dmenu_run
+
+blueman-manager
+

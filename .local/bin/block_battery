@@ -1,0 +1,18 @@
+#!/bin/sh
+
+battery=$(cat /sys/class/power_supply/BAT0/capacity)
+
+if   [ $battery -gt 80 ]; then
+    symbol=
+elif [ $battery -gt 60 ]; then
+    symbol=
+elif [ $battery -gt 40 ]; then
+    symbol=
+elif [ $battery -gt 20 ]; then
+    symbol=
+else
+    symbol=
+fi
+
+echo "${symbol} ${battery}%"
+
