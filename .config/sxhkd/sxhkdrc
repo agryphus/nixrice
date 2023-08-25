@@ -1,28 +1,47 @@
+#!/bin/sh
+# Using super as the main modifier key, so remember to check if a key conflicts with a DWM keybinding.
+
+# Reload sxhkdrc configuration
+super + shift + r
+    pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
+
+# Running dmenu scripts
 super + d
     dmenu_run
 super + D
     passmenu
-super + Return
-    $TERMINAL
+super + S
+    sinkmenu
 super + grave
     dmenuunicode
+super + m
+    layoutmenu
+
+# Spawn programs
+super + Return
+    $TERMINAL
 super + w
     $BROWSER
+
+# Implementing basic control hotkeys
+super + Control_L
+    fcitx-remote -t
+super + l
+    xsecurelock
 super + Print
     dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim -s ~/name
 super + shift + Print
     dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim ~/name
 super + minus
-    wpctl set-volume @DEFAULT_AUDIO_SINK@  5%-; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-; kill -44 $(pidof dwmblocks)
 super + shift + minus
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 15%-; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)
 super + equal
-    wpctl set-volume @DEFAULT_AUDIO_SINK@  5%+; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+; kill -44 $(pidof dwmblocks)
 super + shift + equal
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 15%+; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; kill -44 $(pidof dwmblocks)
 XF86MonBrightnessUp
     change-brightness up
 XF86MonBrightnessDown
     change-brightness down
-
 
