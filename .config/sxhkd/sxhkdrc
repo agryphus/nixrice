@@ -24,8 +24,6 @@ super + w
     $BROWSER
 
 # Implementing basic control hotkeys
-super + Control_L
-    fcitx-remote -t
 super + l
     xsecurelock
 super + Print
