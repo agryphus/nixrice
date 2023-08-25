@@ -1,12 +1,12 @@
 # The rice repo
 alias config='git --git-dir $HOME/repos/archrice/ --work-tree=$HOME'
 
-# Useful defaults
 alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
 alias python='python3'
 alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
+alias javafx='java --module-path /usr/lib/jvm/default/lib/ --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.media,javafx.swing,javafx.web'
 
 # Some wsl stuff
 alias clip=/mnt/c/Windows/System32/clip.exe

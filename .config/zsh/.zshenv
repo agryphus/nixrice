@@ -6,6 +6,12 @@ export BROWSER='firefox'
 export EDITOR='nvim'
 export TERMINAL='st'
 
+# Configuring input method
+export GTK_IM_MODULE='fcitx'
+export QT_IM_MODULE='fcitx'
+export SDL_IM_MODULE='fcitx'
+export XMODIFIERS='@im=fcitx'
+
 # Spring cleaning
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_DATA_HOME="$HOME/.local/share"
@@ -26,9 +32,9 @@ export TEXMFVAR=$XDG_CACHE_HOME/texlive/texmf-var
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
 
-# Defines a vimrc
 export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.lua" | so $MYVIMRC'
-
+export JAVA_HOME="/usr/lib/jvm/default/"
+export XSECURELOCK_PASSWORD_PROMPT='kaomoji'
 
 export SUDO_PROMPT="
                   ⢀⡔⣻⠁ ⢀⣀⣀⡀        

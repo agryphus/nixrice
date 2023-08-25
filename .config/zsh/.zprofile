@@ -19,6 +19,7 @@ if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
 fi
 eval $(gpg-agent --daemon)
 
-export PATH=$PATH:~/.local/share/cargo/bin/
+export PATH="$PATH:~/.local/share/cargo/bin/"
+export PATH="$PATH:$JAVA_HOME/bin/"
 
 export PATH=~/.local/bin:$PATH # Highest precedence to local bin
