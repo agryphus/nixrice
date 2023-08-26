@@ -31,13 +31,13 @@ super + Print
 super + shift + Print
     dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim ~/name
 super + minus
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
 super + shift + minus
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
 super + equal
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
 super + shift + equal
-    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; kill -44 $(pidof dwmblocks)
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
 XF86MonBrightnessUp
     change-brightness up
 XF86MonBrightnessDown
