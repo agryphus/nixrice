@@ -7,7 +7,7 @@ static const Block blocks[] = {
                                 30,                 0},
     {" ",      "free -h | awk '/^Mem/ { print $3\"/\"$2 }' | sed s/i//g",  
                                 30,                 0},
-    {" ",      "date '+%b %d (%a)  %I:%M%p'",                               
+    {" ",      "date '+%a %b %d  %H:%M'",                               
                                 5,                  0},
     {"",        "block_battery",   
                                 10,                 0},
