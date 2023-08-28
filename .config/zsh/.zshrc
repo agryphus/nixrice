@@ -1,3 +1,7 @@
+#!/bin/zsh
+
+## ALIASES ##
+
 # The rice repo
 alias config='git --git-dir $HOME/repos/archrice/ --work-tree=$HOME'
 
@@ -5,6 +9,7 @@ alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
 alias python='python3'
+alias xournal='xournalpp'
 alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
 alias javafx='java --module-path /usr/lib/jvm/default/lib/ --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.media,javafx.swing,javafx.web'
 
@@ -26,6 +31,25 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
+
+## KEYBINDS ##
+
+# Use lf to switch directories and bind it to ctrl-o
+lfcd () {
+    tmp="$(mktemp)"
+    # `command` is needed in case `lfcd` is aliased to `lf`
+    command lf -last-dir-path="$tmp" "$@"
+    if [ -f "$tmp" ]; then
+        dir="$(cat "$tmp")"
+        rm -f "$tmp"
+        if [ -d "$dir" ]; then
+            if [ "$dir" != "$(pwd)" ]; then
+                cd "$dir"
+            fi
+        fi
+    fi
+}
+bindkey -s '^o' 'lfcd\n'
 
 # Enable completion features
 autoload -Uz compinit
@@ -54,11 +78,11 @@ C_CONDA="%F{009}"
 C_DIR="%F{yellow}"
 C_RESET="%F{reset}"
 RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})'
-err="$?"
-curr_time="%*"
-dir='%(4~|.../%3~|%~)' # 3 deep, or truncation
 
 function precmd {
+    err="$?"
+    curr_time="%*"
+    dir='%(4~|.../%3~|%~)' # 3 deep, or truncation
     PROMPT="${C_PROMPT}[$USERNAME@$(sed 1q /etc/hostname)${C_DIR}:${dir}${C_PROMPT}]"
     extra="$(parse_conda)$(parse_git)"
     if [ ! -z "$extra" ]; then
