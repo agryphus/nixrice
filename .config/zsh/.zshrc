@@ -12,6 +12,7 @@ alias python='python3'
 alias xournal='xournalpp'
 alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
 alias javafx='java --module-path /usr/lib/jvm/default/lib/ --add-modules javafx.base,javafx.controls,javafx.graphics,javafx.media,javafx.swing,javafx.web'
+alias sxiv='nsxiv'
 
 # Some wsl stuff
 alias clip=/mnt/c/Windows/System32/clip.exe
