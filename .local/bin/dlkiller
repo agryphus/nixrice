@@ -1,0 +1,13 @@
+#!/usr/bin/sh
+# For the programs that create a ~/Downloads folder on startup (ie: spotify, zoom)
+# Look in the program settings to redirect the Downloads folder before trying this solution
+# Usage: 'dlkiller $my-program'
+# Must have $SHELL variable set to your preferred shell
+
+$1 &
+
+sleep 4
+if [ -d ~/Downloads ] && [ -z "$(ls -A ~/Downloads)" ]; then
+    rm -r ~/Downloads
+fi
+
