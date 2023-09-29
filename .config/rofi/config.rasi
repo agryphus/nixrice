@@ -1,0 +1,15 @@
+configuration {
+  font: "FiraCodeNerdFont 12";
+  kb-cancel: "Super+q,Escape,Control+c";
+  timeout {
+      action: "kb-cancel";
+      delay:  0;
+  }
+  filebrowser {
+      directories-first: true;
+      sorting-method:    "name";
+  }
+}
+
+@theme "gruvbox-dark-transparent"
+
