@@ -7,6 +7,9 @@ case "$PINENTRY_USER_DATA" in
     dmenu)
         exec /usr/bin/pinentry-dmenu "$@"
         ;;
+    rofi)
+        exec /usr/bin/pinentry-rofi "$@"
+        ;;
     *)
         exec /usr/bin/pinentry-curses "$@"
         ;;

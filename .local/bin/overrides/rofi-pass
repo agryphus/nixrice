@@ -1,0 +1,4 @@
+#!/usr/bin/sh
+
+PINENTRY_USER_DATA=rofi /usr/bin/rofi-pass
+
