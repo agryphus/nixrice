@@ -17,6 +17,7 @@ alias blueman='blueman-manager'
 alias spotify='spotify-launcher'
 alias spotify-launcher='dlkiller spotify-launcher'
 alias zoom='dlkiller zoom'
+alias tor='torbrowser-launcher'
 
 # Some wsl stuff
 alias clip=/mnt/c/Windows/System32/clip.exe
@@ -166,7 +167,7 @@ function parse_git() {
 
 function parse_conda() {
     env=$CONDA_DEFAULT_ENV
-    if [ -z "$env" ] || [ "$env" = "base" ]; then
+    if [ -z "$env" ]; then
         echo ""
         return
     fi
