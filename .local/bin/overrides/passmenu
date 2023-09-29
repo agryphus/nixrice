@@ -5,5 +5,5 @@
 # a graphical pinentry as opposed to my curses default, since launching pinentry-curses
 # outside of a terminal just breaks everything.
 
-PINENTRY_USER_DATA=dmenu WAYLAND_DISPLAY= /usr/bin/passmenu
+PINENTRY_USER_DATA=rofi WAYLAND_DISPLAY= /usr/bin/passmenu
 
