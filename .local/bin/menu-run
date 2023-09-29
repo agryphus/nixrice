@@ -1,0 +1,9 @@
+#!/usr/bin/sh
+# Script to have rofi show and run aliases
+
+rofi -run-list-command "alias | awk -F= \"{print \\\$1}\"" \
+     -run-command "/usr/bin/zsh -i -c '{cmd}'" \
+     -rnow -show-icons -matching "prefix" \
+     -display-combi "Start" \
+     -show combi -combi-modes "drun,run" 
+

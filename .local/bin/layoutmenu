@@ -1,3 +1,0 @@
-#!/bin/sh
-autorandr --list | dmenu -i -l 30 | xargs -I "layout" autorandr layout && feh --bg-scale --no-fehbg "$HOME/.config/wallpaper" && xset r rate 300 50
-

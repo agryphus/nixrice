@@ -10,8 +10,10 @@ chosen=$(cut -d ';' -f1 ~/.local/share/chars/* | dmenu -i -l 30 | sed "s/ .*//")
 
 # If you run this command with an argument, it will automatically insert the
 # character. Otherwise, show a message that the emoji has been copied.
-if [ -n "$1" ]; then
+if [ "$1" = "type" ]; then
 	xdotool type "$chosen"
+elif [ "$1" = "output" ]; then
+    echo "$chosen"
 else
 	printf "%s" "$chosen" | xclip -selection clipboard
 	notify-send "'$chosen' copied to clipboard." &
