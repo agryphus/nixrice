@@ -1,0 +1,15 @@
+#!/bin/sh
+# Loading up all javafx modules on Arch
+
+if [ -f /usr/lib/jvm/default/lib/jrt-fs.jar ]; then
+    # Pacman does something silly where it puts the javafx modules and the openjdk modules in the same folder.  
+    # This causes a conflict with jrt-fs where there is a duplicat module that prevents java from running.
+    echo "Delete /usr/lib/jvm/default/lib/jrt-fs.jar before starting"
+    exit 1
+fi
+
+java \
+    --module-path /usr/lib/jvm/default/lib/ \
+    --add-modules javafx.controls \
+    $@
+
