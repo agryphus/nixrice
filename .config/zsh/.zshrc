@@ -3,7 +3,7 @@
 ## ALIASES ##
 
 # The rice repo
-alias config='git --git-dir $HOME/repos/archrice/ --work-tree=$HOME'
+alias config='git --git-dir $HOME/repos/dotfiles/ --work-tree=$HOME'
 
 alias ll='ls -l'
 alias la='ls -A'
@@ -177,7 +177,13 @@ function parse_conda() {
 
 # Config for zsh-syntax-highlighting
 LIGHT_GREY=242
-. ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+if [ ! -z "$(grep nixos /etc/os-release)" ]; then
+    source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+else
+    source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
+fi
+
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 ZSH_HIGHLIGHT_STYLES[arg0]=fg=yello
 ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=cyan,bold
@@ -222,6 +228,4 @@ ZSH_HIGHLIGHT_STYLES[process-substitution]=none
 ZSH_HIGHLIGHT_STYLES[path_pathseparator]=
 ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]=
 
-source ~/.config/zsh/.zshpersonalrc
-source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-
+#source ~/.config/zsh/.zshpersonalrc
