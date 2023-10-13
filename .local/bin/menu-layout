@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 layout=`autorandr | rofi -dmenu -i -p "Select layout" | awk '{print $1}'`
 autorandr $layout
 feh --bg-scale --no-fehbg "$HOME/.config/wallpaper"

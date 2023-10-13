@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/bin/env sh
 # For the programs that create a ~/Downloads folder on startup (ie: spotify, zoom)
 # Look in the program settings to redirect the Downloads folder before trying this solution
 # Usage: 'dlkiller $my-program'

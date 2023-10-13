@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # Simple dmenu script for changing default audio sink
 
 sinks_and_numbers=`wpctl status | 

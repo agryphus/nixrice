@@ -22,6 +22,11 @@ eval $(gpg-agent --daemon)
 export PATH="$PATH:~/.local/share/cargo/bin/"
 export PATH="$PATH:$JAVA_HOME/bin/"
 
+if [ ! -z "$(grep nixos /etc/os-release)" ]; then
+    # NixOS does not explicitly link usr local bin
+    # Yes I know I'm circumventing immutability.
+    export PATH=/usr/local/bin:$PATH
+fi
 export PATH=~/.local/bin/overrides:$PATH # Overriding /usr/bin/*
 export PATH=~/.local/bin:$PATH # Highest precedence to local bin
 

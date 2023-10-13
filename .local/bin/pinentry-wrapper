@@ -5,13 +5,13 @@
 
 case "$PINENTRY_USER_DATA" in
     dmenu)
-        exec /usr/bin/pinentry-dmenu "$@"
+        exec pinentry-dmenu "$@"
         ;;
     rofi)
-        exec /usr/bin/pinentry-rofi "$@"
+        exec pinentry-rofi "$@"
         ;;
     *)
-        exec /usr/bin/pinentry-curses "$@"
+        exec pinentry-curses "$@"
         ;;
 esac
 
