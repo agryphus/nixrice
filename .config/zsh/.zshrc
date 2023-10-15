@@ -18,14 +18,10 @@ alias spotify='spotify-launcher'
 alias spotify-launcher='dlkiller spotify-launcher'
 alias zoom='dlkiller zoom'
 alias tor='torbrowser-launcher'
-
-# Some wsl stuff
-alias clip=/mnt/c/Windows/System32/clip.exe
-alias vcxsrv='/mnt/c/Program\ Files/VcXsrv/vcxsrv.exe :0 -clipboard -wgl -keyhook'
-alias wsl_startx="export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0.0 && \
-        export LD_LIBRARY_PATH=/usr/lib/wsl/lib && \
-        export LIBGL_ALWAYS_SOFTWARE=1 && \
-        . ~/.config/X11/xinitrc"
+if [ ! -z "$(grep nixos /etc/os-release)" ]; then
+    # NixOS specific aliases
+    alias nvim='fhs-run nvim'
+fi
 
 # Print out all colors
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$"\n"}; done'
