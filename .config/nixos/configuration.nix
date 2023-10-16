@@ -50,7 +50,16 @@
 
   i18n = {
     defaultLocale = "en_US.UTF-8";
-    inputMethod.enabled = "fcitx5";
+    inputMethod = {
+      # Have to install fcitx5 through here so that the binary is patched to be able to see the addons.
+      # If also installed through system packages, the binary without addonds will take precedence.
+      enabled = "fcitx5";
+      fcitx5.addons = with pkgs; [
+        fcitx5-configtool
+        fcitx5-rime
+        fcitx5-chinese-addons
+      ];
+    };
   };
   # console = {
   #   font = "Lat2-Terminus16";
@@ -86,12 +95,25 @@
   hardware.pulseaudio.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.vince = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ];
-    packages = with pkgs; [
-    ];
-    shell = pkgs.zsh;
+  users = {
+    mutableUsers = true;
+    users = {
+      vince = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" ];
+        packages = with pkgs; [
+        ];
+        shell = pkgs.zsh;
+
+        # Set so when mutableUsers is set to "false", the user still has a way to login.
+        password = "";
+      };
+      root = {
+        # Disables root login, since nothing can hash to "!".  Requires setting mutableUsers to "false",
+        # rebuilding, and then setting mutableUsers back to "true".
+        hashedPassword = "!";
+      };
+    };
   };
 
   # List packages installed in system profile. To search, run:
@@ -101,8 +123,6 @@
     bat # Fancy `cat` which I use for lf
     devour # Opens new program on top of terminal
     dunst # Notification daemon
-    fcitx5-configtool # GUI config tool for fcitx5
-    fcitx5 # Foreign keyboard switcher
     feh # Image viewer I use for background setting
     git # Imagine not having this
     htop # Process monitor
@@ -119,7 +139,9 @@
     rofi-pass # Rofi frontend for password store
     sxhkd # Hotkey daemon
     syncthing # Syncing files between machines
+    texlive.combined.scheme-full # LaTeX to create documents
     tmux # Terminal multiplexor
+    typst # Cool, minimal LaTeX alternative
     ueberzugpp # Terminal image overlayer
     zathura # Pdf editor
     zsh # Shell
@@ -173,6 +195,8 @@
   ];
 
   fonts.fonts = with pkgs; [
+    source-han-sans
+    source-han-serif
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
 

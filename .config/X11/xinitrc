@@ -32,15 +32,29 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
+#NixOS does not setup the user's D-Bus Daemon, so doing it explicitly here
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    eval $(dbus-launch --exit-with-session --sh-syntax)
+fi
+syustemctl --user import-environment DISPLAY XAUTHORITY
+if command -v dbus-update-activation-environment >/dev/null 2>&1; then
+    dbus-update-activation-environment DISPLAY XAUTHORITY
+fi
+
 # Some x stuff
-xrandr --setprovideroutputsource modesetting NVIDIA-0
+# xrandr --setprovideroutputsource modesetting NVIDIA-0
 xrandr --auto
 xset r rate 300 50
 
-feh --bg-scale --no-fehbg ~/.config/wallpaper
+# Need to source environment before starting fcitx5 so that it can
+# read the *_IM_MODULE and XMODIFIER variables.
+source ~/.config/zsh/.zshenv
+kill $(pidof fcitx5) 2>/dev/null
+fcitx5 -d
+
+feh --bg-fill --no-fehbg ~/.config/wallpaper
 picom -b
-fcitx -d &
 sxhkd &
+dwmblocks &
 exec dwm
-dwmblocks
 
