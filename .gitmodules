@@ -1,9 +1,13 @@
 [submodule ".config/st"]
 	path = .config/st
 	url = ../st.git
+    ignore = all
 [submodule ".config/dwm"]
 	path = .config/dwm
 	url = ../dwm.git
+    ignore = all
 [submodule ".config/nvim"]
 	path = .config/nvim
 	url = ../nvim.git
+    ignore = all
+

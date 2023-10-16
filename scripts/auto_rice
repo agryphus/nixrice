@@ -28,17 +28,7 @@ chmod 700 "$HOME/.local/share/gnupg/"
 
 config submodule init
 config submodule update --force --recursive --init --remote
-
-# Git submodules will, by default, have the branch name be a hash
-# of the current commit.  This bit just goes into each submodule
-# and explicitly checks out master.
-cd $HOME
-submodules="$(grep submodule .gitmodules | awk -F'"' '{print $2}')"
-IFS=$'\n'
-for mod_path in $submodules; do
-    cd "$HOME/$mod_path"
-    git checkout master
-done
+config submodule foreach "git checkout master"
 
 exec zsh
 
