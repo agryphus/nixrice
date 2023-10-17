@@ -1,104 +1,54 @@
-#!/bin/zsh
+#!/usr/bin/env fish
+# Not meant to actually be executable in fish, but it looks like lf config
+# uses fish syntax, so the shebang helps treesitter highlighting properly
 
-# Basic vars
-set shellopts '-eu'
+## LF VARS
+
+set shellopts '-eu' # Treat undefined env vars as errors.  Exit upon error.
 set ifs "\n"
 set scrolloff 10
-set icons
-set period 1
+set icons # Use icons
+set period 1 # Poll directory status every X seconds
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
-set cleaner '~/.config/lf/cleaner'
-set previewer '~/.config/lf/previewer'
+set cleaner '~/.config/lf/cleaner' # Clear preview
+set previewer '~/.config/lf/previewer' # Make preview
 set autoquit true
 
-# Open file in the same window
-cmd open ${{
-    case $(file --mime-type "$(readlink -f $f)" -b) in
-	image/vnd.djvu|application/pdf|application/octet-stream|application/postscript) 
-        setsid -f devour zathura $fx >/dev/null 2>&1 ;;
-    text/*|application/json|inode/x-empty|application/x-subrip) 
-        $EDITOR $fx;;
-	image/x-xcf) 
-        setsid -f devour gimp $f >/dev/null 2>&1 ;;
-	image/svg+xml) 
-        display -- $f ;;
-	image/*) 
-        find . -maxdepth 1 -type f -exec file -i {} \; | 
-        grep -E 'image/.*' | 
-        awk -F: '{ print substr($0, 1, length($0) - length($NF) - 1) }' |
-        rotdir $f |
-		setsid -f devour nsxiv -aio 2>/dev/null | while read -r file; do
-			[ -z "$file" ] && continue
-			lf -remote "send select \"$file\""
-			lf -remote "send toggle"
-		done &
-		;;
-	audio/*|video/x-ms-asf) 
-        mpv --audio-display=no $f ;;
-	video/*) 
-        setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
-	application/pdf|application/vnd.djvu|application/epub*) 
-        setsid -f zathura $fx >/dev/null 2>&1 ;;
-	application/pgp-encrypted) 
-        $EDITOR $fx ;;
-	application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/vnd.oasis.opendocument.text|application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|application/octet-stream|application/vnd.oasis.opendocument.spreadsheet|application/vnd.oasis.opendocument.spreadsheet-template|application/vnd.openxmlformats-officedocument.presentationml.presentation|application/vnd.oasis.opendocument.presentation-template|application/vnd.oasis.opendocument.presentation|application/vnd.ms-powerpoint|application/vnd.oasis.opendocument.graphics|application/vnd.oasis.opendocument.graphics-template|application/vnd.oasis.opendocument.formula|application/vnd.oasis.opendocument.database) 
-        setsid -f devour libreoffice $fx >/dev/null 2>&1 ;;
-    *) 
-        for f in $fx; do setsid -f devour $OPENER $f >/dev/null 2>&1; done;;
-    esac
-}}
+## MAPPINGS
 
-# Open file in a new window
-cmd open_new_window ${{
-    case $(file --mime-type "$(readlink -f $f)" -b) in
-	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet) 
-        localc $fx ;;
-	image/vnd.djvu|application/pdf|application/octet-stream|application/postscript) 
-        setsid -f zathura $fx >/dev/null 2>&1 ;;
-    text/*|application/json|inode/x-empty|application/x-subrip) 
-        $TERMINAL -e $SHELL -c "$EDITOR \"$fx\"" >/dev/null 2>&1 & ;;
-	image/x-xcf) 
-        setsid -f gimp $f >/dev/null 2>&1 ;;
-	image/svg+xml) 
-        display -- $f ;;
-	image/*) 
-        find . -maxdepth 1 -type f -exec file -i {} \; | 
-        grep -E 'image/.*' | 
-        awk -F: '{ print substr($0, 1, length($0) - length($NF) - 1) }' |
-        rotdir $f |
-		setsid -f nsxiv -aio 2>/dev/null | while read -r file; do
-			[ -z "$file" ] && continue
-			lf -remote "send select \"$file\""
-			lf -remote "send toggle"
-		done &
-		;;
-	audio/*|video/x-ms-asf) 
-        mpv --audio-display=no $f ;;
-	video/*) 
-        setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
-	application/pdf|application/vnd.djvu|application/epub*) 
-        setsid -f zathura $fx >/dev/null 2>&1 ;;
-	application/pgp-encrypted) 
-        $EDITOR $fx ;;
-	application/vnd.openxmlformats-officedocument.wordprocessingml.document|application/vnd.oasis.opendocument.text|application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|application/octet-stream|application/vnd.oasis.opendocument.spreadsheet|application/vnd.oasis.opendocument.spreadsheet-template|application/vnd.openxmlformats-officedocument.presentationml.presentation|application/vnd.oasis.opendocument.presentation-template|application/vnd.oasis.opendocument.presentation|application/vnd.ms-powerpoint|application/vnd.oasis.opendocument.graphics|application/vnd.oasis.opendocument.graphics-template|application/vnd.oasis.opendocument.formula|application/vnd.oasis.opendocument.database) 
-        setsid -f libreoffice $fx >/dev/null 2>&1 ;;
-    *) 
-        for f in $fx; do setsid -f $OPENER $f >/dev/null 2>&1; done;;
-    esac
-}}
+# LF control mappings
+map <c-r> reload
+map <c-s> set hidden!
+map <enter> shell
+
+# Opening commands
+map l open
+map L open new_window
+map o $mimeopen --ask "$f"
+
+# CRUD commands
+map D delete
+map N push :mkdir<space>
+map n push :touch<space>
+map u extract
+map Y $printf "%s" "$fx" | xclip -selection clipboard
+
+# Renaming commands
+map A :rename; cmd-end # at the very end
+map a :rename; cmd-right # after extension
+map c push A<c-u> # new rename
+map i :rename # before extension
+map I :rename; cmd-home # at the very beginning
+
+# Fuzzy finding
+map <c-f> $lf -remote "send $id select \"$(fzf)\""
+map F broot_jump
+
+## COMMAND DEFINITIONS
 
 cmd touch %touch $1 && lf -remote "send $id load" && lf -remote "send $id select $1"
 
 cmd mkdir %mkdir $1 && lf -remote "send $id load" && lf -remote "send $id select $1"
-
-cmd extract ${{
-	clear; tput cup $(($(tput lines)/3)); tput bold
-	set -f
-	printf "%s\n\t" "$fx"
-	printf "extract?[y/N]"
-	read ans
-	[ $ans = "y" ] && aunpack $fx
-}}
 
 cmd delete ${{
 	clear; tput cup $(($(tput lines)/3)); tput bold
@@ -109,49 +59,13 @@ cmd delete ${{
 	[ $ans = "y" ] && rm -rf -- $fx
 }}
 
-cmd moveto ${{
+cmd extract ${{
 	clear; tput cup $(($(tput lines)/3)); tput bold
 	set -f
-	clear; echo "Move to where?"
-	dest="$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf | sed 's|~|$HOME|')" &&
-	for x in $fx; do
-		eval mv -iv \"$x\" \"$dest\"
-	done &&
-	notify-send "🚚 File(s) moved." "File(s) moved to $dest."
-}}
-
-cmd copyto ${{
-	clear; tput cup $(($(tput lines)/3)); tput bold
-	set -f
-	clear; echo "Copy to where?"
-	dest="$(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf | sed 's|~|$HOME|')" &&
-	for x in $fx; do
-		eval cp -ivr \"$x\" \"$dest\"
-	done &&
-	notify-send "📋 File(s) copied." "File(s) copies to $dest."
-}}
-
-cmd setbg "$1"
-
-cmd bulkrename ${{
-    tmpfile_old="$(mktemp)"
-    tmpfile_new="$(mktemp)"
-
-    [ -n "$fs" ] && fs=$(basename -a $fs) || fs=$(ls)
-
-    echo "$fs" > "$tmpfile_old"
-    echo "$fs" > "$tmpfile_new"
-    $EDITOR "$tmpfile_new"
-
-    [ "$(wc -l < "$tmpfile_old")" -eq "$(wc -l < "$tmpfile_new")" ] || { rm -f "$tmpfile_old" "$tmpfile_new"; exit 1; }
-
-    paste "$tmpfile_old" "$tmpfile_new" | while IFS="$(printf '\t')" read -r src dst
-    do
-        [ "$src" = "$dst" ] || [ -e "$dst" ] || mv -- "$src" "$dst"
-    done
-
-    rm -f "$tmpfile_old" "$tmpfile_new"
-    lf -remote "send $id unselect"
+	printf "%s\n\t" "$fx"
+	printf "extract?[y/N]"
+	read ans
+	[ $ans = "y" ] && aunpack $fx
 }}
 
 cmd broot_jump ${{
@@ -166,40 +80,69 @@ cmd broot_jump ${{
   lf -remote "send $id $cmd \"$res\""
 }}
 
-# Bindings
-map <c-f> $lf -remote "send $id select \"$(fzf)\""
-map J $lf -remote "send $id cd $(sed -e 's/\s*#.*//' -e '/^$/d' -e 's/^\S*\s*//' ${XDG_CONFIG_HOME:-$HOME/.config}/shell/bm-dirs | fzf)"
-map gh
-map g top
-map D delete
-map E extract
-map C copyto
-map M moveto
-map F broot_jump
-map n push :touch<space>
-map N push :mkdir<space>
-map <c-r> reload
-map <c-s> set hidden!
-map <enter> shell
-map x $$f
-map X !$f
-map o &mimeopen "$f"
-map O $mimeopen --ask "$f"
-map L open_new_window
+cmd open ${{
+    # Set $new_window based on arguments
+    test ! -z $@ && test "$@" = "new_window" && new_window=1
 
-map A :rename; cmd-end # at the very end
-map c push A<c-u> # new rename
-map I :rename; cmd-home # at the very beginning
-map i :rename # before extension
-map a :rename; cmd-right # after extension
-map B bulkrename
-map b $setbg $f
+    case $(file --mime-type "$(readlink -f $f)" -b) in
+    application/json|\
+    application/x-subrip|\
+	application/pgp-encrypted|\
+    inode/x-empty|\
+    text/*)
+        test -v new_window \
+            && ($TERMINAL -e $SHELL -c "$EDITOR \"$fx\"" >/dev/null 2>&1 &) \
+            || ($EDITOR $fx)
+        ;;
+    audio/*|video/x-ms-asf) 
+        mpv --audio-display=no $f ;;
+	video/*) 
+        setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
+    application/epub*|\
+    application/octet-stream|\
+    application/pdf|\
+    application/postscript|\
+    application/vnd.djvu|\
+    image/vnd.djvu)
+        setsid -f $(test ! -v new_window && echo devour) zathura $fx >/dev/null 2>&1
+        ;;
+    image/*) 
+        find . -maxdepth 1 -type f -exec file -i {} \; | 
+        grep -E 'image/.*' | 
+        awk -F: '{ print substr($0, 1, length($0) - length($NF) - 1) }' |
+        rotdir $f |
+		setsid -f $(test ! -v new_window && echo devour) nsxiv -aio 2>/dev/null |
+        while read -r file; do
+			[ -z "$file" ] && continue
+			lf -remote "send select \"$file\""
+			lf -remote "send toggle"
+		done &
+		;;
+    application/octet-stream|\
+    application/vnd.ms-powerpoint|\
+    application/vnd.oasis.opendocument.database|\
+    application/vnd.oasis.opendocument.formula|\
+    application/vnd.oasis.opendocument.graphics|\
+    application/vnd.oasis.opendocument.graphics-template|\
+    application/vnd.oasis.opendocument.presentation|\
+    application/vnd.oasis.opendocument.presentation-template|\
+    application/vnd.oasis.opendocument.spreadsheet|\
+    application/vnd.oasis.opendocument.spreadsheet-template|\
+    application/vnd.oasis.opendocument.text|\
+    application/vnd.openxmlformats-officedocument.presentationml.presentation|\
+    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|\
+    application/vnd.openxmlformats-officedocument.wordprocessingml.document)
+        setsid -f $(test ! -v new_window && echo devour) libreoffice $fx >/dev/null 2>&1
+        ;;
+    *)
+        # test -v new_window \
+        #     && () \
+        #     || ()
+        ;;
+    esac
+}}
 
-map <c-e> down
-map <c-y> up
-map V push :!nvim<space>
-
-map W $setsid -f $TERMINAL >/dev/null 2>&1
-
-map Y $printf "%s" "$fx" | xclip -selection clipboard
+cmd open_new_window ${{
+    new_window=1 && cmd open
+}}
 

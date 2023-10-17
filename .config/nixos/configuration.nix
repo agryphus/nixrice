@@ -119,54 +119,71 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    # General programs that I use
-    bat # Fancy `cat` which I use for lf
+    # General programs that I like and use
     devour # Opens new program on top of terminal
     dunst # Notification daemon
+    dwmblocks # Suckless statusbar for DWM
+    dwm # Suckless tiling window manager
     feh # Image viewer I use for background setting
+    firefox # My browser of choice
     git # Imagine not having this
     htop # Process monitor
     killall # Easy way to kill a process
-    lf # File explorer
+    libreoffice # MSOffice btfo
     neofetch # Aesthetic sysinfo
-    neovim # Editor
-    nsxiv # Image viewer.  Would replace `feh` if it could set backgrounds.
     pass-nodmenu # CLI password store (without dmenu dependency)
     picom # X Compositor
     pinentry-curses # Terminal-based pinentry program
     pinentry-rofi # Rofi frontend for pinentry program
     rofi # Menu prompt program
     rofi-pass # Rofi frontend for password store
+    st # Suckless terminal
     sxhkd # Hotkey daemon
     syncthing # Syncing files between machines
     texlive.combined.scheme-full # LaTeX to create documents
     tmux # Terminal multiplexor
     typst # Cool, minimal LaTeX alternative
-    ueberzugpp # Terminal image overlayer
-    zathura # Pdf editor
+    ungoogled-chromium # If I need a special chrome feature
     zsh # Shell
     zsh-syntax-highlighting # Shell syntax highlighting
 
-    # Suckless utils
-    dwm
-    dwmblocks
-    st
-
-    # Big programs
-    firefox
-    libreoffice
-
-    # Silly programs
-    sl
-    asciiquarium
-    neo-cowsay
-
-    # Dependencies for other programs (neovim packages, x, etc)
-    nodejs
-    ripgrep
+    # Neovim and neovim accessories
+    neovim # Editor
+    ###
+    nodejs # Used by Mason to pull deps
+    ripgrep # Used by telescope
     gcc
     unzip
+
+    # lf and lf accessories
+    # There might be some repeats is here from elsewhere in this file, but I simply want to
+    # enumerate everything my config of lf depends on.  No, I'm not using home-manager (for now)
+    lf # File explorer
+    ###
+    atool # Provides aunpack, to open archives.  Also can list archive contents.
+    bat # A prettified 'cat'
+    broot # A slicker fzf
+    ffmpegthumbnailer # Get thumbnails of videos
+    file # Get information about a specific file
+    fzf # Fuzzy finder.  Might fully replace with broot
+    mediainfo # Get info about media
+    mpv # Audio and video player
+    nsxiv # Image viewer
+    odt2txt # Convert open documents to text
+    perl536Packages.FileMimeInfo # Provides mimeopen, to ask what program to open files in
+    poppler_utils # Provides pdftoppm, to turn pdfs into images
+    ueberzugpp # Terminal image overlayer
+    xclip # Copy file name to clip
+    zathura # PDF viewer
+
+    # X accessories
     xorg.xauth
+    xclip
+
+    # Silly programs
+    sl # Choo choo
+    asciiquarium # Good to throw on an extra monitor
+    neo-cowsay # The cow says moo
 
     # Some nix specific stuff
     nix-index

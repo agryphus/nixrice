@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-ueberzugpp cmd -s $UB_SOCKET -a remove -i PREVIEW
+ueberzug cmd -s $UB_SOCKET -a remove -i PREVIEW
 
