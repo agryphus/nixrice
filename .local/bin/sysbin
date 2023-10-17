@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+# Finds the absolute path of a system binary by checking places in most-likely order.
+# Helpful for when overriding a binary with a script, meaning the script takes higher
+# precedence in the path, but then the script needs to call the actual binary.
+# I understand that this is not the most ~NixOS~ way of doing things.
+
+if   [ -e "/usr/bin/$1" ]; then
+    echo "/usr/bin/$1"
+elif [ -e "/bin/$1" ]; then
+    echo "/bin/$1"
+elif [ -e "/run/current-system/sw/bin/$1" ]; then
+    echo "/run/current-system/sw/bin/$1"
+fi
+
