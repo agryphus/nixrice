@@ -18,17 +18,24 @@ alias config="git --git-dir $location --work-tree=$HOME"
 config config status.showUntrackedFiles no
 
 # Checkout branch, but move collisions to ~/.config-backup
-mkdir -p "$HOME/.config-backup"
-config checkout 2>&1 \
-    | egrep "\s+\." | awk {'print $1'} \
-    | xargs -I {} mv {} "$HOME/.config-backup/"{}
+if [ ! -e "$location/checked" ]; then
+    mkdir -p "$HOME/.config-backup"
+    config checkout 2>&1 \
+        | egrep "\s+\." | awk {'print $1'} \
+        | xargs -I {} mv {} "$HOME/.config-backup/"{}
 
-# Fix unsafe permissions on gnupg directory
-chmod 700 "$HOME/.local/share/gnupg/"
+    # Fix unsafe permissions on gnupg directory
+    chmod 700 "$HOME/.local/share/gnupg/"
+
+    # Empty file, indicating the repo has been checked out once
+    touch "$location/checked"
+fi
 
 config submodule init
 config submodule update --force --recursive --init --remote
 config submodule foreach "git checkout master"
+
+cd $HOME
 
 exec zsh
 
