@@ -1,15 +1,10 @@
-#!/bin/sh
-# Loading up all javafx modules on Arch
-
-if [ -f /usr/lib/jvm/default/lib/jrt-fs.jar ]; then
-    # Pacman does something silly where it puts the javafx modules and the openjdk modules in the same folder.  
-    # This causes a conflict with jrt-fs where there is a duplicat module that prevents java from running.
-    echo "Delete /usr/lib/jvm/default/lib/jrt-fs.jar before starting"
-    exit 1
-fi
+#!/usr/bin/env sh
+# I bascially had to make my own module dir in ~/.local/share/, which is partially jars
+# that I got from official downloads on the internet, and part shared object files from 
+# my specific package manager, since libglass would not work otherwise.
 
 java \
-    --module-path /usr/lib/jvm/default/lib/ \
-    --add-modules javafx.controls \
-    $@
+    --module-path ~/.local/share/jfx-sdk-17.0.9 \
+    --add-modules javafx.base,javafx.controls,javafx.fxml,javafx.graphics,javafx.media,javafx.swing,javafx.web \
+    "$@"
 
