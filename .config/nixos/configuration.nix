@@ -8,15 +8,14 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./personal.nix
     ];
-
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   nix.settings.experimental-features = ["nix-command" "flakes"];
-  nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
     ZDOTDIR = "$HOME/.config/zsh";
@@ -36,10 +35,7 @@
     fi
   '';
 
-  # networking.hostName = "lappy"; # Define your hostname.
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -61,13 +57,21 @@
       ];
     };
   };
+
   # console = {
   #   font = "Lat2-Terminus16";
   #   keyMap = "us";
   #   useXkbConfig = true; # use xkbOptions in tty.
   # };
 
-  # Enable the X11 windowing system.
+  fonts.fonts = with pkgs; [
+    source-han-sans
+    source-han-serif
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+  ];
+
+
+  # X Server
   services.xserver = {
     enable = true;
     autorun = false;
@@ -76,8 +80,11 @@
     layout = "us";
     xkbOptions = "eurosign:e,caps:escape";
 
-    # Enable touchpad support (enabled default in most desktopManager).
-    libinput.enable = true;
+    # Touchpad stuff
+    libinput = {
+      enable = true;
+      touchpad.naturalScrolling = true;
+    };
 
     displayManager = {
       lightdm.enable = false;
@@ -87,32 +94,43 @@
     windowManager.dwm.enable = true;
   };
 
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  # Bluetooth daemon
+  services.blueman.enable = true;
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
 
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  # Audio daemon
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
+
+  # Misc services
+  services.udisks2.enable = true; # USB Mounting
+  # services.printing.enable = true; # CUPS
+
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  programs = {
+    zsh.enable = true;
+    gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
+    };
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users = {
     mutableUsers = true;
-    users = {
-      vince = {
-        isNormalUser = true;
-        extraGroups = [ "wheel" ];
-        packages = with pkgs; [
-        ];
-        shell = pkgs.zsh;
-
-        # Set so when mutableUsers is set to "false", the user still has a way to login.
-        password = "";
-      };
-      root = {
-        # Disables root login, since nothing can hash to "!".  Requires setting mutableUsers to "false",
-        # rebuilding, and then setting mutableUsers back to "true".
-        hashedPassword = "!";
-      };
+    users.root = {
+      # Disables root login, since nothing can hash to "!".  Requires setting mutableUsers to "false",
+      # rebuilding, and then setting mutableUsers back to "true".
+      hashedPassword = "!";
     };
   };
 
@@ -120,6 +138,9 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     # General programs that I like and use
+    arandr # Visually move relative positions of monitors
+    autorandr # Save and load xrandr profiles
+    blueman # Bluetooth manager
     devour # Opens new program on top of terminal
     dunst # Notification daemon
     dwmblocks # Suckless statusbar for DWM
@@ -129,6 +150,7 @@
     git # Imagine not having this
     htop # Process monitor
     killall # Easy way to kill a process
+    libnotify # Send messages to notification daemon
     libreoffice # MSOffice btfo
     neofetch # Aesthetic sysinfo
     pass-nodmenu # CLI password store (without dmenu dependency)
@@ -143,7 +165,9 @@
     texlive.combined.scheme-full # LaTeX to create documents
     tmux # Terminal multiplexor
     typst # Cool, minimal LaTeX alternative
+    udisks # Good way of dealing with USBs and similar media
     ungoogled-chromium # If I need a special chrome feature
+    xsecurelock # Session locker
     zsh # Shell
     zsh-syntax-highlighting # Shell syntax highlighting
 
@@ -205,39 +229,17 @@
     )
   ];
 
-  nixpkgs.overlays = [
-    (final: prev: {
-      dwm = prev.dwm.overrideAttrs (old: {src = /home/vince/.config/dwm;});
-    })
-  ];
-
-  fonts.fonts = with pkgs; [
-    source-han-sans
-    source-han-serif
-    (nerdfonts.override { fonts = [ "FiraCode" ]; })
-  ];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  programs = {
-    zsh.enable = true;
-    gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
-  };
+  #nixpkgs.overlays = [
+  #  (final: prev: {
+  #    dwm = prev.dwm.overrideAttrs (old: {src = /home/vince/.config/dwm;});
+  #  })
+  #];
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
-
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -246,6 +248,5 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.05"; # Did you read the comment?
-
 }
 
