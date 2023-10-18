@@ -76,6 +76,9 @@
     enable = true;
     autorun = false;
 
+    autoRepeatDelay = 300;
+    autoRepeatInterval = 50;
+
     # Configure keymap in X11
     layout = "us";
     xkbOptions = "eurosign:e,caps:escape";
@@ -213,6 +216,8 @@
     nix-index
     home-manager
 
+    # Pop into an environment abiding by the Filesystem Hierarchy Standard to run
+    # applications which do not play nicely with NixOS.
     ( 
     let 
       fhs-run = pkgs.buildFHSUserEnv {
@@ -225,8 +230,36 @@
         '';
       };
     in
-      fhs-run # Shell abiding by the Filesystem Hierarchy Standard
+      fhs-run
     )
+
+    # Defining an environment to run "make" with the proper libraries installed
+    # "make", in the main environment, references the script, which envokes the
+    # environment, and passes the args to gnumake.
+    (
+    let
+      make-shell = pkgs.buildEnv {
+        name = "make-shell";
+        paths = with pkgs; [
+          # Tools
+          gnumake
+          pkg-config
+
+          # Libraries
+          harfbuzz
+          xorg.libX11.dev
+          xorg.libXft
+          xorg.libXinerama
+        ];
+      };
+    in
+      (pkgs.writeScriptBin "make" ''
+        #!/usr/bin/env sh
+        nix-shell -p ${make-shell} --run "make $*"
+      '')
+    )
+
+
   ];
 
   #nixpkgs.overlays = [
