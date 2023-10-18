@@ -1,26 +1,28 @@
+# Some of these icons contain a [⠀] character after the emoji, since in my font, some are
+# one-wide while others are two-wide.  There's probably a better solution to this somewhere
 di	📁
 fi	📃
 tw	🤝
 ow	📂
-ln	⛓
+ln	⛓⠀
 or	❌
 ex	🎯
-*.txt	✍
-*.mom	✍
-*.me	✍
-*.ms	✍
-*.avif	🖼
-*.png	🖼
-*.webp	🖼
-*.ico	🖼
+*.txt	✍⠀
+*.mom	✍⠀
+*.me	✍⠀
+*.ms	✍⠀
+*.avif	🖼⠀
+*.png	🖼⠀
+*.webp	🖼⠀
+*.ico	🖼⠀
 *.jpg	📸
 *.jpe	📸
 *.jpeg	📸
-*.gif	🖼
-*.svg	🗺
-*.tif	🖼
-*.tiff	🖼
-*.xcf	🖌
+*.gif	🖼⠀
+*.svg	🗺⠀
+*.tif	🖼⠀
+*.tiff	🖼⠀
+*.xcf	🖌⠀
 *.html	🌎
 *.xml	📰
 *.gpg	🔒
@@ -63,9 +65,9 @@ ex	🎯
 *.gba	🎮
 *.nes	🎮
 *.gdi	🎮
-*.1	    ℹ
-*.nfo	ℹ
-*.info	ℹ
+*.1	    ℹ⠀
+*.nfo	ℹ⠀
+*.info	ℹ⠀
 *.log	📙
 *.iso	📀
 *.img   📀
@@ -73,5 +75,5 @@ ex	🎯
 *.ged   👪
 *.part  💔
 *.torrent 🔽
-*.jar   ♨
-*.java	♨
+*.jar   ♨⠀
+*.java	♨⠀
