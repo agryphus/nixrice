@@ -14,7 +14,7 @@ setopt hist_verify            # show command with history expansion to user befo
 unsetopt ksharrays # 0-indexing arrays breaks highlighting
 
 # Start gpg agent
-if [ -z "$(pidof gpg-agent)" ];
+if [ -z "$(pidof gpg-agent)" ]; then
     unset SSH_AGENT_PID
     export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
     eval $(gpg-agent --daemon)
