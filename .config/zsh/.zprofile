@@ -14,11 +14,10 @@ setopt hist_verify            # show command with history expansion to user befo
 unsetopt ksharrays # 0-indexing arrays breaks highlighting
 
 # Start gpg agent
-if [ -z "$(pidof gpg-agent)" ]; then
-    unset SSH_AGENT_PID
-    export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
-    eval $(gpg-agent --daemon)
-fi
+unset SSH_AGENT_PID
+export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+killall gpg-agent
+eval $(gpg-agent --daemon)
 
 export PATH="$PATH:~/.local/share/cargo/bin/"
 export PATH="$PATH:$JAVA_HOME/bin/"
