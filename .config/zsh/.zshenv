@@ -2,9 +2,16 @@
 
 # source /opt/miniconda3/etc/profile.d/conda.sh
 
-export BROWSER='firefox'
-export EDITOR='nvim'
-export TERMINAL='st'
+if [ -z "$(printf $PATH | grep :sourced:)" ] && [ "$DISPLAY" = ":10.0" ]; then
+    # zprofile does not get sourced when logging in through an xrdp session (for some reason), even
+    # if I try to manually source it in ~/startwm.sh.  This checks for if this is through xrdp (DISPLAY=:10.0)
+    # and if the :sourced: flag exists in PATH.
+    source ~/.config/zsh/.zprofile
+fi
+
+export BROWSER="$(which firefox)"
+export EDITOR="$(which nvim)"
+export TERMINAL="$(which st)"
 
 # Configuring input method
 export GTK_IM_MODULE='fcitx'
@@ -30,7 +37,6 @@ export GNUPGHOME="$XDG_DATA_HOME/gnupg"
 export SSB_HOME="$XDG_DATA_HOME/zoom"
 export TEXMFVAR="$XDG_CACHE_HOME/texlive/texmf-var"
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
-export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
 
 export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.lua" | so $MYVIMRC'
 export JAVA_HOME="/usr/lib/jvm/default/"
@@ -38,37 +44,6 @@ export XSECURELOCK_PASSWORD_PROMPT='kaomoji'
 
 export WALLPAPER=~/.config/wallpaper
 
-export SUDO_PROMPT="
-                  ⢀⡔⣻⠁ ⢀⣀⣀⡀        
-    ⢀⣾⠳⢶⣦⠤⣀       ⣾⢀⡇⡴⠋⣀⠴⣊⣩⣤⠶⠞⢹⣄   
-    ⢸  ⢠⠈⠙⠢⣙⠲⢤⠤⠤ ⠒⠳⡄⣿⢀⠾⠓⢋⠅⠛⠉⠉⠝ ⠼   
-    ⢸ ⢰⡀⠁  ⠈⠑⠦⡀    ⠈⠺⢿⣂ ⠉⠐⠲⡤⣄⢉⠝⢸   
-    ⢸ ⢀⡹⠆    ⡠⠃       ⠉⠙⠲⣄  ⠙⣷⡄⢸   
-    ⢸⡀⠙⠂⢠  ⡠⠊    ⢠    ⠘⠄  ⠑⢦⣔ ⢡⡸   
-    ⢀⣧ ⢀⡧⣴⠯⡀     ⡎     ⢸⡠⠔⠈⠁⠙⡗⡤⣷⡀  
-    ⡜⠈⠚⠁⣬⠓⠒⢼⠅   ⣠⡇      ⣧   ⡀⢹ ⠸⡄  
-   ⡸   ⠘⢸⢀⠐⢃   ⡰⠋⡇   ⢠  ⡿⣆  ⣧⡈⡇⠆⢻  
-  ⢰⠃  ⢀⡇⠼⠉ ⢸⡤⠤⣶⡖⠒⠺⢄⡀⢀⠎⡆⣸⣥⠬⠧⢴⣿⠉⠁⠸⡀⣇ 
-  ⠇   ⢸   ⣰⠋ ⢸⣿⣿   ⠙⢧⡴⢹⣿⣿   ⠈⣆  ⢧⢹⡄
- ⣸ ⢠  ⢸⡀  ⢻⡀ ⢸⣿⣿    ⡼⣇⢸⣿⣿   ⢀⠏  ⢸ ⠇
- ⠓⠈⢃   ⡇   ⣗⠦⣀⣿⡇ ⣀⠤⠊ ⠈⠺⢿⣃⣀⠤⠔⢸   ⣼⠑⢼
-   ⢸⡀⣀⣾⣷⡀ ⢸⣯⣦⡀   ⢇⣀⣀⠐⠦⣀⠘  ⢀⣰⣿⣄  ⡟  
-    ⠛⠁⣿⣿⣧ ⣿⣿⣿⣿⣦⣀       ⣀⣠⣴⣿⣿⡿⠈⠢⣼⡇  
-      ⠈⠁⠈⠻⠈⢻⡿⠉⣿⠿⠛⡇⠒⠒⢲⠺⢿⣿⣿⠉⠻⡿⠁  ⠈⠁  
-⢀⠤⠒⠦⡀       ⢀⠞⠉⠆  ⠉⠉⠉  ⡝⣍          
-⡎   ⡇      ⡰⠋  ⢸       ⢡⠈⢦         
-⡇  ⠸⠁    ⢀⠜⠁   ⡸       ⠘⡄⠈⢳⡀       
-⡇  ⢠    ⠠⣯⣀   ⡰⡇        ⢣ ⢀⡦⠤⢄⡀    
-⢱⡀ ⠈⠳⢤⣠⠖⠋⠛⠛⢷⣄⢠⣷⠁        ⠘⡾⢳⠃  ⠘⢇   
- ⠙⢦⡀ ⢠⠁     ⠙⣿⣏⣀       ⣀⣴⣧⡃    ⣸   
-   ⠈⠉⢺⣄      ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣗⣤⣀⣠⡾⠃   
-      ⠣⢅⡤⣀⣀⣠⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠉⠉⠉     
-        ⠉⠉⠉⠁ ⠉⣿⣿⣿⣿⣿⡿⠻⣿⣿⣿⣿⠛⠉        
-             ⣸⣿⣿⣿    ⣿⣿⣿⡿          
-            ⣴⣿⣿⣿⣟  ⢠⣿⣿⣿⣿⣧          
-           ⢰⣿⣿⣿⣿⣿  ⢸⣿⣿⣿⣿⣿          
-           ⢸⣿⣿⣿⣿⡏  ⢸⣿⣿⣿⣿⣿⡀         
-          ⢠⣿⣿⣿⣿⣿   ⢺⣿⣿⣿⣿⣿⣿⣷        
-          ⣿⣿⣿⣿⣿⣿    ⠈⠉⠻⣿⣿⣿⠟        
-          ⠘⢿⣿⣿⣿⠏ Dori dori"
+export SUDO_PROMPT="$(cowsay --random $(fortune))
+Sudo password: "
 

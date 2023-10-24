@@ -1,4 +1,5 @@
 # ZSH Configurations
+
 unsetopt autocd            # Change directory just by typing its name (hurts performance)
 setopt interactivecomments # Allow comments in interactive mode
 setopt magicequalsubst     # Enable filename expansion for arguments of the form ‘anything=expression’
@@ -13,11 +14,11 @@ setopt hist_verify            # show command with history expansion to user befo
 unsetopt ksharrays # 0-indexing arrays breaks highlighting
 
 # Start gpg agent
-unset SSH_AGENT_PID
-if [ "${gnupg_SSH_AUTH_SOCK_by:-0}" -ne $$ ]; then
+if [ -z "$(pidof gpg-agent)" ];
+    unset SSH_AGENT_PID
     export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
+    eval $(gpg-agent --daemon)
 fi
-eval $(gpg-agent --daemon)
 
 export PATH="$PATH:~/.local/share/cargo/bin/"
 export PATH="$PATH:$JAVA_HOME/bin/"
@@ -27,6 +28,8 @@ if [ ! -z "$(grep nixos /etc/os-release)" ]; then
     # Yes I know I'm circumventing immutability.
     export PATH=/usr/local/bin:$PATH
 fi
+
+export PATH=sourced:$PATH # Flag to prevent setting PATH multiple times
 export PATH=~/.local/bin/overrides:$PATH # Overriding /usr/bin/*
 export PATH=~/.local/bin:$PATH # Highest precedence to local bin
 
