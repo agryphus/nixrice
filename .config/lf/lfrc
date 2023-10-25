@@ -65,7 +65,16 @@ cmd extract ${{
 	printf "%s\n\t" "$fx"
 	printf "extract?[y/N]"
 	read ans
-	[ $ans = "y" ] && aunpack $fx
+	[ ! $ans = "y" ] && exit 0
+
+    case $(file --mime-type "$(readlink -f $f)" -b) in
+    application/x-rar)
+        unrar x $fx
+        ;;
+    *)
+        aunpack $fx
+        ;;
+    esac
 }}
 
 cmd broot_jump ${{
@@ -82,7 +91,7 @@ cmd broot_jump ${{
 
 cmd open ${{
     # Set $new_window based on arguments
-    test ! -z $@ && test "$@" = "new_window" && new_window=1
+    [ ! -z $@ ] && [ "$@" = "new_window" ] && new_window=1
 
     case $(file --mime-type "$(readlink -f $f)" -b) in
     application/json|\
@@ -90,9 +99,9 @@ cmd open ${{
 	application/pgp-encrypted|\
     inode/x-empty|\
     text/*)
-        test -v new_window \
-            && ($TERMINAL -e $SHELL -c "$EDITOR \"$fx\"" >/dev/null 2>&1 &) \
-            || ($EDITOR $fx)
+        [ -v new_window ] \
+            && ($TERMINAL -e $SHELL -c "$EDITOR \\\"$fx\\\"" >/dev/null 2>&1 &) \
+            || ($EDITOR \"$fx\")
         ;;
     audio/*|video/x-ms-asf) 
         mpv --audio-display=no $f ;;
@@ -104,14 +113,14 @@ cmd open ${{
     application/postscript|\
     application/vnd.djvu|\
     image/vnd.djvu)
-        setsid -f $(test ! -v new_window && echo devour) zathura $fx >/dev/null 2>&1
+        setsid -f $([ ! -v new_window ] && echo devour) zathura $fx >/dev/null 2>&1
         ;;
     image/*) 
         find . -maxdepth 1 -type f -exec file -i {} \; | 
         grep -E 'image/.*' | 
         awk -F: '{ print substr($0, 1, length($0) - length($NF) - 1) }' |
         rotdir $f |
-		setsid -f $(test ! -v new_window && echo devour) nsxiv -aio 2>/dev/null |
+		setsid -f $([ ! -v new_window ] && echo devour) nsxiv -aio 2>/dev/null |
         while read -r file; do
 			[ -z "$file" ] && continue
 			lf -remote "send select \"$file\""
@@ -132,7 +141,7 @@ cmd open ${{
     application/vnd.openxmlformats-officedocument.presentationml.presentation|\
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|\
     application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-        setsid -f $(test ! -v new_window && echo devour) libreoffice $fx >/dev/null 2>&1
+        setsid -f $([ ! -v new_window ] && echo devour) libreoffice $fx >/dev/null 2>&1
         ;;
     *)
         # test -v new_window \
