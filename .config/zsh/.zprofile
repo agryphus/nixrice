@@ -1,12 +1,13 @@
 # ZSH Configurations
 
-unsetopt autocd            # Change directory just by typing its name (hurts performance)
-setopt interactivecomments # Allow comments in interactive mode
-setopt magicequalsubst     # Enable filename expansion for arguments of the form ‘anything=expression’
-setopt nonomatch           # Hide error message if there is no match for the pattern
-setopt notify              # Report the status of background jobs immediately
-setopt numericglobsort     # Sort filenames numerically when it makes sense
-setopt promptsubst         # Enable command substitution in prompt
+unsetopt autocd               # Change directory just by typing its name (hurts performance)
+setopt interactivecomments    # Allow comments in interactive mode
+setopt complete_aliases       # Allows auto-completion with aliases
+setopt magicequalsubst        # Enable filename expansion for arguments of the form ‘anything=expression’
+setopt nonomatch              # Hide error message if there is no match for the pattern
+setopt notify                 # Report the status of background jobs immediately
+setopt numericglobsort        # Sort filenames numerically when it makes sense
+setopt promptsubst            # Enable command substitution in prompt
 setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
 setopt hist_ignore_dups       # ignore duplicated commands history list
 setopt hist_ignore_space      # ignore commands that start with space
@@ -29,6 +30,7 @@ if [ ! -z "$(grep nixos /etc/os-release)" ]; then
 fi
 
 export PATH=sourced:$PATH # Flag to prevent setting PATH multiple times
+export PATH=~/.local/bin/layouts/:$PATH # Overriding /usr/bin/*
 export PATH=~/.local/bin/overrides:$PATH # Overriding /usr/bin/*
 export PATH=~/.local/bin:$PATH # Highest precedence to local bin
 
