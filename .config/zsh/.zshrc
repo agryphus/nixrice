@@ -16,10 +16,6 @@ alias blueman='blueman-manager'
 alias spotify='dlkiller spotify'
 alias zoom='dlkiller zoom'
 alias tor='torbrowser-launcher'
-if [ ! -z "$(grep nixos /etc/os-release)" ]; then
-    # NixOS specific aliases
-    alias nvim='fhs-run nvim'
-fi
 
 # Print out all colors
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$"\n"}; done'
