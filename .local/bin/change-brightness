@@ -1,7 +1,14 @@
-#!/bin/sh
+#!/usr/bin/env sh
+# Simple script to change the system backlight.  Requires a udev rules that gives the user permission
+# to the backlight folder.
+# $ change-brightness up   # Increases brightness
+# $ change-brightness down # Decreases brightness
 
-max_brightness=`cat /sys/class/backlight/intel_backlight/max_brightness`
-brightness=`cat /sys/class/backlight/intel_backlight/brightness`
+kernel="$(ls /sys/class/backlight/ | head -n 1)"
+dir="/sys/class/backlight/$kernel"
+
+max_brightness="$(cat $dir/max_brightness)"
+brightness="$(cat $dir/brightness)"
 increment=12000
 
 if [ "$1" = "down" ]; then
@@ -16,7 +23,7 @@ else
     fi
 fi
 
-echo $new_brightness > /sys/class/backlight/intel_backlight/brightness
+echo $new_brightness > $dir/brightness
 ratio=$(( (new_brightness * 100) / max_brightness ))
 notify-send -r 43 "Brightness: ${ratio}%"
 

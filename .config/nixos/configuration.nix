@@ -113,6 +113,14 @@
   };
 
   # Misc services
+  services.udev = {
+    # Allows member of the "video" group to change system backlight
+    extraRules = ''
+      ACTION=="add", SUBSYSTEM=="backlight", RUN+="${pkgs.coreutils}/bin/chgrp video %S%p/brightness", RUN+="${pkgs.coreutils}/bin/chmod g+w %S%p/brightness"
+    '';
+    path = [ pkgs.coreutils ]; # For chgrp
+  };
+  services.autorandr.enable = true;
   services.udisks2.enable = true; # USB Mounting
   # services.printing.enable = true; # CUPS
 
@@ -155,11 +163,13 @@
     killall # Easy way to kill a process
     libnotify # Send messages to notification daemon
     libreoffice # MSOffice btfo
+    maim # Screenshot utility
     neofetch # Aesthetic sysinfo
     pass-nodmenu # CLI password store (without dmenu dependency)
     picom # X Compositor
     pinentry-curses # Terminal-based pinentry program
     pinentry-rofi # Rofi frontend for pinentry program
+    python311 # Python
     rofi # Menu prompt program
     rofi-pass # Rofi frontend for password store
     st # Suckless terminal
@@ -200,6 +210,7 @@
     perl536Packages.FileMimeInfo # Provides mimeopen, to ask what program to open files in
     poppler_utils # Provides pdftoppm, to turn pdfs into images
     ueberzugpp # Terminal image overlayer
+    unrar-wrapper # Extract .rar files
     xclip # Copy file name to clip
     zathura # PDF viewer
 
@@ -208,9 +219,10 @@
     xclip
 
     # Silly programs
-    sl # Choo choo
     asciiquarium # Good to throw on an extra monitor
+    bsdgames # Fun collection of command-line games
     neo-cowsay # The cow says moo
+    sl # Choo choo
 
     # Some nix specific stuff
     nix-index
@@ -258,8 +270,6 @@
         nix-shell -p ${make-shell} --run "make $*"
       '')
     )
-
-
   ];
 
   #nixpkgs.overlays = [

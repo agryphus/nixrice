@@ -30,10 +30,16 @@ super + e
 # Implementing basic control hotkeys
 super + l
     xsecurelock
-super + Print
-    dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim -s ~/name
-super + shift + Print
-    dmenu -p "Screenshot filename:" < /dev/null | xargs -I "name" maim ~/name
+# Print
+F10
+    rofi -dmenu -l 0 -p "Screenshot filename" < /dev/null | xargs -I "name" maim -s ~/name
+# shift + Print
+shift + F10
+    rofi -dmenu -l 0 -p "Screenshot filename" < /dev/null | xargs -I "name" maim ~/name
+super + p
+    rofi -dmenu -l 0 -p "Screenshot filename" < /dev/null | xargs -I "name" maim -s ~/name
+super + P
+    rofi -dmenu -l 0 -p "Screenshot filename" < /dev/null | xargs -I "name" maim ~/name
 super + minus
     wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
 super + shift + minus
@@ -42,8 +48,10 @@ super + equal
     wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
 super + shift + equal
     wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; notify-send -r 44 "$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" 
-XF86MonBrightnessUp
+# XF86MonBrightnessUp
+F7
     change-brightness up
-XF86MonBrightnessDown
+# XF86MonBrightnessDown
+F6
     change-brightness down
 
