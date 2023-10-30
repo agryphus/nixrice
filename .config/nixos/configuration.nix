@@ -40,10 +40,6 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
   i18n = {
     defaultLocale = "en_US.UTF-8";
     inputMethod = {
@@ -57,12 +53,6 @@
       ];
     };
   };
-
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
-  # };
 
   fonts.fonts = with pkgs; [
     source-han-sans
@@ -112,7 +102,7 @@
     jack.enable = true;
   };
 
-  # Misc services
+  # Udev service
   services.udev = {
     # Allows member of the "video" group to change system backlight
     extraRules = ''
@@ -120,13 +110,19 @@
     '';
     path = [ pkgs.coreutils ]; # For chgrp
   };
-  services.autorandr.enable = true;
+
+  # Monitor switching service.  Allow users to restart the service without password
+  # services.autorandr.enable = true;
+  security.sudo.extraConfig = ''
+    %wheel ALL=(ALL:ALL) NOPASSWD: ${pkgs.systemd}/bin/systemctl restart autorandr
+  '';
+
+  # Misc services
   services.udisks2.enable = true; # USB Mounting
   # services.printing.enable = true; # CUPS
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
-  # programs.mtr.enable = true;
   programs = {
     zsh.enable = true;
     gnupg.agent = {
@@ -156,6 +152,7 @@
     dunst # Notification daemon
     dwmblocks # Suckless statusbar for DWM
     dwm # Suckless tiling window manager
+    emacs # Lisp machine VM / ELisp interpreter / way of life
     feh # Image viewer I use for background setting
     firefox # My browser of choice
     git # Imagine not having this
@@ -183,6 +180,10 @@
     xsecurelock # Session locker
     zsh # Shell
     zsh-syntax-highlighting # Shell syntax highlighting
+
+    # GTK Themes
+    lxappearance-gtk2 # Theme switcher
+    gruvbox-dark-gtk
 
     # Neovim and neovim accessories
     neovim # Editor
@@ -271,18 +272,6 @@
       '')
     )
   ];
-
-  #nixpkgs.overlays = [
-  #  (final: prev: {
-  #    dwm = prev.dwm.overrideAttrs (old: {src = /home/vince/.config/dwm;});
-  #  })
-  #];
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
