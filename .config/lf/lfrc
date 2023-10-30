@@ -44,6 +44,8 @@ map I :rename; cmd-home # at the very beginning
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 map F broot_jump
 
+map b set_bg
+
 ## COMMAND DEFINITIONS
 
 cmd touch %touch $1 && lf -remote "send $id load" && lf -remote "send $id select $1"
@@ -57,6 +59,12 @@ cmd delete ${{
 	printf "delete?[y/N]"
 	read ans
 	[ $ans = "y" ] && rm -rf -- $fx
+}}
+
+cmd set_bg ${{
+    rm ~/.config/wallpaper
+    cp "$fx" ~/.config/wallpaper
+    feh --bg-fill --no-fehbg "$HOME/.config/wallpaper"
 }}
 
 cmd extract ${{
