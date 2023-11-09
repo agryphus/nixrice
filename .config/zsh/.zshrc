@@ -80,9 +80,21 @@ function br {
     fi
 }
 
+function nix_shell_menu {
+    shell_dir="$HOME/shells"
+    shells=$(ls "$shell_dir")
+    selection=$(echo "$shells" | rofi -dmenu)
+    nix-shell "$shell_dir/$selection" --run "
+        export NIX_SHELL_NAME=${selection%.*};
+        $([ "$1" = "fhs" ] && echo "fhs-run ")$SHELL
+    "
+}
+
 ## KEYBINDS ##
 
 bindkey -s '^e' 'lfcd\n'
+bindkey -s '^n' 'nix_shell_menu\n'
+bindkey -s '^[n' 'nix_shell_menu fhs\n'
 
 # Enable completion features
 autoload -Uz compinit
@@ -116,7 +128,8 @@ function precmd {
     err="$?"
     curr_time="%*"
     dir='%(4~|.../%3~|%~)' # 3 deep, or truncation
-    PROMPT="${C_PROMPT}[$USERNAME@$(sed 1q /etc/hostname)${C_DIR}:${dir}${C_PROMPT}]"
+    hostname="$([ -f /etc/hostname ] && echo "@$(sed 1q /etc/hostname)")"
+    PROMPT="${C_PROMPT}[$USERNAME$hostname${C_DIR}:${dir}${C_PROMPT}]"
     extra="$(parse_conda)$(parse_git)"
     if [ ! -z "$extra" ]; then
         PROMPT+=$'\n'"$extra"
@@ -171,12 +184,21 @@ function parse_git() {
 
 function parse_conda() {
     env=$CONDA_DEFAULT_ENV
-    if [ -z "$env" ]; then
+    if [ ! -z "$env" ]; then
+        output="$env"
+    fi
+
+    nix_shell=$NIX_SHELL_NAME
+    if [ ! -z "$nix_shell" ]; then
+        output="$nix_shell"
+    fi
+
+    if [ -z "$output" ]; then
         echo ""
         return
     fi
 
-    echo "${C_CONDA}[$env]"
+    echo "${C_CONDA}[$output]"
 }
 
 # Config for zsh-syntax-highlighting
