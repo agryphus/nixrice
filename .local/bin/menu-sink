@@ -11,7 +11,7 @@ sinks=`echo "$sinks_and_numbers" |
     awk -F'[' '{print $1}' | 
     cut -c 2-`
 
-chosen=`echo "$sinks" | rofi -dmenu -p "Select audio sink" -i`
+chosen=`echo "$sinks" | rofi -dmenu -p "Select audio sink:" -i`
 if [ -z "$chosen" ]; then
     # Exited out of dmenu prompt
     exit

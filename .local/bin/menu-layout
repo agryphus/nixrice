@@ -1,9 +1,5 @@
 #!/usr/bin/env sh
-layout=`autorandr | rofi -dmenu -i -p "Select layout" | awk '{print $1}'`
+
+layout=`autorandr | rofi -dmenu -i -p "Select layout:" | awk '{print $1}'`
 autorandr $layout
-feh --bg-scale --no-fehbg "$HOME/.config/wallpaper"
-# echo "dwm.accent: $(color-picker $WALLPAPER)" > /tmp/dwm_accent
-# xrdb -override -merge /tmp/dwm_accent
-# rm /tmp/dwm_accent
-# kill -HUP $(pidof dwm)
 
