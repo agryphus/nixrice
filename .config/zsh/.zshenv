@@ -9,9 +9,19 @@ if [ -z "$(printf $PATH | grep :sourced:)" ] && [ "$DISPLAY" = ":10.0" ]; then
     source ~/.config/zsh/.zprofile
 fi
 
+# Below causes discord to not launch
+# export LIBVA_DRIVER_NAME=nvidia
+# export GBM_BACKEND=nvidia-drm
+# export __GLX_VENDOR_LIBRARY_NAME=nvidia
+
+export WLR_NO_HARDWARE_CURSORS=1
+
 export BROWSER="$(which firefox)"
 export EDITOR="$(which nvim)"
-export TERMINAL="$(which st)"
+export TERMINAL="$(which foot)"
+
+export MANPAGER='nvim +Man! -c "ZenMode" -c "map q :qa!<CR>"'
+export PAGER=
 
 # Configuring input method
 export GTK_IM_MODULE='fcitx'
@@ -41,17 +51,19 @@ export PYTHONUSERBASE="$XDG_DATA_HOME/python"
 export RUSTUP_HOME="$XDG_DATA_HOME/rustup"
 export SSB_HOME="$XDG_DATA_HOME/zoom"
 export TEXMFVAR="$XDG_CACHE_HOME/texlive/texmf-var"
+export TLDR_CACHE_DIR="$XDG_CACHE_HOME/tldr"
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.lua" | so $MYVIMRC'
 export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
 export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"
 export XSERVERRC="$XDG_CONFIG_HOME/X11/xserverrc"
 
-export JAVA_HOME="/usr/lib/jvm/default/"
+export JAVA_HOME="/usr/lib/jvm/default"
 export XSECURELOCK_PASSWORD_PROMPT='kaomoji'
+export DOOMDIR="$HOME/.config/doom"
 
 export WALLPAPER=~/.config/wallpaper
 
-export SUDO_PROMPT="$(cowsay --random $(fortune))
+export SUDO_PROMPT="$(cowsay $(fortune))
 Sudo password: "
 

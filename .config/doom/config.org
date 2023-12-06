@@ -1,0 +1,321 @@
+#+TITLE: Agryphus' Emacs Config
+#+AUTHOR: agryphus
+
+# Unfold all org headings
+#+STARTUP: showeverything
+
+# Show toc up to two headers
+#+OPTIONS: toc:2
+
+* TABLE OF CONTENTS :toc:
+- [[#quick-find-files][Quick Find Files]]
+- [[#org-agenda][Org Agenda]]
+- [[#eat-terminal][Eat Terminal]]
+- [[#vterm][Vterm]]
+- [[#languages][Languages]]
+  - [[#lsp-config][LSP Config]]
+  - [[#python][Python]]
+  - [[#typst][Typst]]
+- [[#tweaksfixes][Tweaks/Fixes]]
+  - [[#block-cursor-not-showing-up-in-terminal-mode][Block cursor not showing up in terminal mode]]
+  - [[#disable-really-quit-emacs-prompt][Disable "Really Quit Emacs" Prompt]]
+  - [[#fontify-natively][Fontify natively]]
+  - [[#evil][Evil]]
+  - [[#fonts][Fonts]]
+  - [[#swap-evil-gkj-and-kj][Swap evil g[k/j] and k/j]]
+  - [[#scrolloff][Scrolloff]]
+  - [[#scratch-buffer-mode][Scratch Buffer Mode]]
+- [[#elisp-evaluation][Elisp Evaluation]]
+- [[#exwm][EXWM]]
+- [[#window-transparency][Window transparency]]
+
+* Quick Find Files
+#+begin_src emacs-lisp
+  (map! :leader
+      (:prefix ("=" . "open file")
+      :desc "Edit doom config.org"  "c" #'(lambda () (interactive) (find-file "~/.config/doom/config.org"))
+      :desc "Edit doom init.el"     "i" #'(lambda () (interactive) (find-file "~/.config/doom/init.el"))
+      :desc "Edit doom packages.el" "p" #'(lambda () (interactive) (find-file "~/.config/doom/packages.el"))))
+  (map! "C-/" #'comment-line)
+#+end_src
+
+* Org Agenda
+#+begin_src emacs-lisp
+  (setq org-agenda-files
+    '("~/.local/share/org-agenda"))
+
+  (map! :leader :desc "Open org calendar" "o c" #'cfw:open-org-calendar)
+  (add-hook 'calendar-after-frame-setup-hook 'cfw:refresh-calendar-buffer)
+#+end_src
+
+* Eat Terminal
+#+begin_src emacs-lisp
+#+end_src
+
+* Vterm
+#+begin_src emacs-lisp
+  (use-package! vterm
+    :config
+    (setq vterm-timer-delay 0.01))
+
+  (map! :after vterm
+      :map vterm-mode-map
+
+      ;; Send special keys to vterm
+      :ni "C-c" #'vterm--self-insert
+      :ni "C-x" #'vterm--self-insert
+      :ni [escape] #'vterm--self-insert
+
+      :ni "M-:" #'eval-expression
+
+      ;; Text size controls
+      :ni "C-=" #'text-scale-increase
+      :ni "C--" #'text-scale-decrease
+      :ni "C-M-=" #'doom/increase-font-size
+      :ni "C-M--" #'doom/decrease-font-size)
+  (setq vterm-min-window-width 1)
+  (setq ansi-color-bold-is-bright t)
+  (setq vterm-set-bold-hightbright t)
+  (setq confirm-kill-processes nil)
+  ;; (setq kill-buffer-query-functions nil)
+#+end_src
+
+Making a function to open vterm in a new frame.  Vterm needs to be attached to some buffer,
+so this function generates a new one, and then a hook is needed to clear the buffer upon exit
+from the terminal.
+#+begin_src emacs-lisp
+  ;; (defun vterm-frame (&optional new-t)
+  ;;   "Open a new terminal frame.
+  ;;   If `new-t` is t, a new frame is created.
+  ;;   If `new-t` is nil, use the selected frame."
+  ;;   (interactive)
+  ;;   (let ((frame (if new-t (make-frame) (selected-frame))))
+  ;;     (with-selected-frame frame
+  ;;       (let ((default-directory "~"))
+  ;;         (let ((buffer (generate-new-buffer "*vterm*")))
+  ;;           (switch-to-buffer buffer)
+  ;;           (vterm-mode))))))
+  (defun vterm-frame (&optional new-t)
+    "Open a new terminal frame.
+    If `new-t` is t, a new frame is created.
+    If `new-t` is nil, use the selected frame.
+    If a buffer with vterm-mode is not visible, switch to it."
+    (interactive)
+    (let* ((buffers-with-vterm (cl-remove-if-not (lambda (buf)
+                                                   (with-current-buffer buf
+                                                     (and (derived-mode-p 'vterm-mode)
+                                                          (not (get-buffer-window buf t)))))
+                                                 (buffer-list)))
+           (buffer (car buffers-with-vterm)))
+      (if buffer
+          (switch-to-buffer buffer)
+        (let ((frame (if new-t (make-frame) (selected-frame))))
+          (with-selected-frame frame
+            (let ((default-directory "~"))
+              (let ((buffer (generate-new-buffer "*vterm*")))
+                (switch-to-buffer buffer)
+                (vterm-mode))))))))
+
+  (add-hook 'vterm-exit-functions #'(lambda (buffer str)
+    (kill-buffer buffer)
+    (if (one-window-p)
+      (delete-frame (selected-frame) t)
+      (delete-window (selected-window)))))
+
+  (defun vterm-send-escape ()
+    (vterm-send-key "<escape>")
+  )
+#+end_src
+
+* Languages
+** LSP Config
+*** Change suggestion rate
+#+begin_src emacs-lisp
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0.0) ;; Give completion suggestions immediately
+#+end_src
+
+*** Make lsp-ui sideline suggestions the same size as buffer text
+#+begin_src emacs-lisp
+  (use-package lsp-ui :commands lsp-ui-mode
+    :config (progn
+            ;;
+            ;; 2022-03-28 - fix sideline height computation
+            ;;
+            (defun lsp-ui-sideline--compute-height nil
+              "Return a fixed size for text in sideline."
+              (let ((fontHeight (face-attribute 'lsp-ui-sideline-global :height)))
+                (if (null text-scale-mode-remapping)
+                    '(height
+                      (if (floatp fontHeight) fontHeight
+                        (/ (face-attribute 'lsp-ui-sideline-global :height) 100.0)
+                        )
+                      ;; Readjust height when text-scale-mode is used
+                      (list 'height
+                            (/ 1 (or (plist-get (cdr text-scale-mode-remapping) :height)
+                                     1)))))))
+
+            ;;
+            ;; 2022-03-28 - fix sideline alignment
+            ;;
+            (defun lsp-ui-sideline--align (&rest lengths)
+              "Align sideline string by LENGTHS from the right of the window."
+              (list (* (window-font-width nil 'lsp-ui-sideline-global)
+                       (+ (apply '+ lengths) (if (display-graphic-p) 1 2)))))
+            ))
+#+end_src
+
+** Python
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (tree-sitter-hl-mode)
+                          (lsp))))  ; or lsp-deferred
+#+end_src
+
+** Typst
+Automatically compile typst documents upon save
+#+begin_src emacs-lisp
+  (add-hook 'after-save-hook (lambda ()
+    (when (and (buffer-file-name)
+          (string= (file-name-extension (buffer-file-name)) "typ"))
+      (let ((filename (shell-quote-argument (buffer-file-name))))
+        (shell-command (format "typst compile %s" filename))))))
+#+end_src
+
+* Tweaks/Fixes
+** Block cursor not showing up in terminal mode
+Corresponding package in package.el
+#+begin_src emacs-lisp
+  (use-package! evil-terminal-cursor-changer
+    :hook (tty-setup . evil-terminal-cursor-changer-activate))
+#+end_src
+*** TODO : Figure out how to tangle package.el inside config.org
+
+** Disable "Really Quit Emacs" Prompt
+#+begin_src emacs-lisp
+  (setq confirm-kill-emacs nil)
+#+end_src
+
+** Fontify natively
+By default, if you enter into an org buffer with part of a code block showing, it will
+not have syntax highlighting until scrolling up to the begin_src declaration.  This variable
+fixes that and disables the previous lazy-loading behavior.
+#+begin_src emacs-lisp
+  (setq org-src-fontify-natively t)
+#+end_src
+
+** Evil
+Quit insert/visual modes using C-c
+#+begin_src emacs-lisp
+  (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
+  (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
+#+end_src
+
+Clear all highlighting using C-l.  Mimics the "redraw" signal sent to terminals for vim.
+#+begin_src emacs-lisp
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-ex-nohighlight)
+#+end_src
+
+** Fonts
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 15"))
+#+end_src
+
+** Swap evil g[k/j] and k/j
+#+begin_src emacs-lisp
+  (define-key evil-normal-state-map (kbd "gj") 'evil-next-line)
+  (define-key evil-normal-state-map (kbd "gk") 'evil-previous-line)
+  (define-key evil-normal-state-map (kbd "j")  'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k")  'evil-previous-visual-line)
+#+end_src
+
+** Scrolloff
+#+begin_src emacs-lisp
+  (setq default-scroll-margin 8) ;; Custom var
+  (setq scroll-margin default-scroll-margin)
+
+  ;; Scrolloff causes ncurses applications to run off the frame
+  (add-hook 'eat-mode-hook (lambda () (setq-local scroll-margin 0)))
+  (add-hook 'eat-exit-hook (lambda () (setq-local scroll-margin default-scroll-margin)))
+#+end_src
+
+** Scratch Buffer Mode
+Scratch buffer is, by default, in interactive lisp mode.  Default to just plaintext.
+#+begin_src emacs-lisp
+  (setq initial-major-mode 'text-mode)
+#+end_src
+
+* Elisp Evaluation
+#+begin_src emacs-lisp
+  (map! :leader
+        (:prefix ("e". "evaluate")
+         :desc "Evaluate elisp in buffer"  "b" #'eval-buffer
+         :desc "Evaluate defun"            "d" #'eval-defun
+         :desc "Evaluate elisp expression" "e" #'eval-expression
+         :desc "Evaluate last sexpression" "l" #'eval-last-sexp
+         :desc "Evaluate elisp in region"  "r" #'eval-region))
+#+end_src
+
+* EXWM
+#+begin_src emacs-lisp
+#+end_src
+
+* Window transparency
+There are four principle ways to start emacs with the combinations of  GUI/TUI and standalone/daemon.
+Unfortunately, each of these four methods requires a slightly different way to set window transparency.
+#+begin_src emacs-lisp
+  (defun make-terminal-transparent (frame)
+    (custom-set-faces!
+      '(default               :background "unspecified-bg" frame)
+      '(org-block             :background "unspecified-bg" frame)
+
+      ;; For some reason, despite setting all dashboard faces, the dashboard does not want to turn transparent.
+      ;; '(doom-dashboard-banner :background "unspecified-bg")
+      ;; '(doom-dashboard-footer :background "unspecified-bg")
+      ;; '(doom-dashboard-loaded :background "unspecified-bg")
+      ;; '(doom-dashboard-footer-icon :background "unspecified-bg")
+      ;; '(doom-dashboard-menu-title  :background "unspecified-bg")
+      ;; '(doom-dashboard-menu-desc   :background "unspecified-bg")
+
+      '(hl-line               :background "unspecified-bg" frame)))
+
+  (defun window-transparency ()
+    (if (display-graphic-p (selected-frame))
+      (progn ;; $ emacs
+             ;; Transparency for graphical session
+             (set-frame-parameter nil 'alpha-background 90))
+      (progn ;; $ emacs -nw
+             ;; Transparency for terminal session
+             (make-terminal-transparent (selected-frame)))))
+  (unless (daemonp)
+    (add-hook 'window-setup-hook 'window-transparency))
+
+  (defun ag/make-client-frame (frame)
+    ;; Called at the creation of each emacsclient frame
+    (if (display-graphic-p frame)
+      (progn ;; $ emacsclient -c
+             ;; Transparency for specific graphical frame
+             (set-frame-parameter frame 'alpha-background 90))
+      (progn ;; $ emacsclient -nw
+             ;; Transparency for specific terminal frame
+             (make-terminal-transparent frame))))
+  (add-hook 'after-make-frame-functions 'ag/make-client-frame)
+#+end_src
+
+Keybinds in order to increase/decrease the transparency of emacs windows in GUI mode.  I try to keep these
+bindings in sync with the terminal that I use, as to make the experiences of GUI and TUI emacs relatively similar.
+#+begin_src emacs-lisp
+  (defun ag/adjust-alpha-background (delta)
+    "Increase or decrease the alpha-background by DELTA, not exceeding 100 or going below 0."
+    (interactive "p")
+    ;; let* macro instead of let, since new-alpha relies on alpha
+    (let* ((current-alpha (or (frame-parameter (selected-frame) 'alpha-background) 0))
+           (new-alpha (+ current-alpha delta)))
+      (when (and (<= new-alpha 100) (>= new-alpha 0))
+        (set-frame-parameter (selected-frame) 'alpha-background new-alpha))))
+  (global-set-key (kbd "M-a") (lambda () (interactive) (ag/adjust-alpha-background 5)))
+  (global-set-key (kbd "M-s") (lambda () (interactive) (ag/adjust-alpha-background -5)))
+#+end_src
