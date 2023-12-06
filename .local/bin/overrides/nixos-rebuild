@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+# Since the below command is piped into nom, it has weird output if the sudo password
+# has to be prompted.  Add a dummy command to make sure a valid token exists (assuming the
+# user's sudo config saves sudo password for some time after entry)
+sudo echo 
+
+# Rebuild, pipe into output monitor to build a live dependency graph
+sudo $(sysbin nixos-rebuild) "$@" |& nom
+
+# Print diff
+ls -v1 /nix/var/nix/profiles | tail -n 2 | awk '{print "/nix/var/nix/profiles/" $0}' - | xargs nvd diff
+
