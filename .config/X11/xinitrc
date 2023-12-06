@@ -41,20 +41,33 @@ if command -v dbus-update-activation-environment >/dev/null 2>&1; then
     dbus-update-activation-environment DISPLAY XAUTHORITY
 fi
 
-# Some x stuff
+# Setting any of these parameters causes issues when trying to use xrandr
+# while on offload mode.  Specifically, the prover named NVIDIA-G0 sets up
+# the system to expect reverse-sync mode.  Using --auto also does the same
+# for some reason.  Basically any of these commands are not needed.
 # xrandr --setprovideroutputsource modesetting NVIDIA-0
-xrandr --auto
+# xrandr --setprovideroutputsource 0 1
+# xrandr --auto
+# autorandr --change
+
+# Speed when holding down key
 xset r rate 300 50
+xserverauthfile=$XAUTHORITY # Stop the accumulation of ~/.serverauth.### files
 
 # Need to source environment before starting fcitx5 so that it can
 # read the *_IM_MODULE and XMODIFIER variables.
 source ~/.config/zsh/.zshenv
+autorandr -c -d "default"
+
+# Start important daemons
 kill $(pidof fcitx5) 2>/dev/null
 fcitx5 -d
-
-feh --bg-fill --no-fehbg ~/.config/wallpaper
 picom -b
 sxhkd &
+killall emacs 2>/dev/null
+emacs -daemon
+
+~/.config/autorandr/postswitch
 dwmblocks &
 exec dwm
 
