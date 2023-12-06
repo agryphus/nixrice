@@ -1,0 +1,9 @@
+profile default {
+    output eDP-1 enable position 0,0
+}
+
+profile dual-monitor-main {
+    output eDP-1 enable position 0,600
+    output DP-3 enable mode 1920x1080@143.856003Hz position 1920,0
+}
+

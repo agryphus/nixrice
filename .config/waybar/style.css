@@ -1,0 +1,78 @@
+* {
+    font-family: FiraCode Nerd Font, FontAwesome;
+    font-size: 15px;
+}
+
+window#waybar { 
+    background-color: rgba(0, 0, 0, 0.8); 
+    color: #ffffff;    
+}
+
+#window {
+	color: #ffffff;
+    padding: 0px 10px 0px 10px;
+}
+
+button:hover {
+	color: #ffffff;
+    border-bottom: 3px solid #ffffff;
+    background: rgba(150, 150, 150, 0.5);
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+.modules-left {
+	padding: 0px 0px 0px 0px;
+}
+
+.modules-right {
+	padding: 0px 5px 0px 0px;
+}
+
+
+#custom-scratch {
+	color: #b8b8b8;
+	padding: 0px 9px 0px 9px;
+}
+
+#workspaces button {
+	padding: 0px 11px 0px 11px; 
+ 	min-width: 1px;
+	color: #888888;
+    border: none;
+    border-radius: 0;
+}
+
+#workspaces button.active { 
+	padding: 0px 11px 0px 11px; 
+	color: #ffffff;
+    box-shadow: inset 0 -3px #ffffff;
+}
+
+#mode { 
+	 background-color: #900000;
+	 color: #ffffff;
+     padding: 0px 5px 0px 5px;
+     border: 1px solid #2f343a;
+}
+
+#network, #temperature, #backlight, #pulseudio, #battery {
+    padding: 0px 15px 0px 15px;
+}
+
+#clock {
+	margin: 0px 15px 0px 15px;
+}
+
+#tray{
+   padding: 0px 8px 0px 5px;
+   margin: 0px 5px 0px 5px;
+}
+
+#battery.critical {
+   color: #ff5555;
+}
+
+#network.disconnected {
+    color: #ff5555;
+}
+

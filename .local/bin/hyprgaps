@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+
+increase=0
+if [ "$1" != "-i" ] && [ "$1" != "-d" ] || [ -z "$2" ]; then
+    echo "Wrong number of arguments"
+    exit 1
+else
+    [ "$1" = "-i" ] && increase=1
+fi
+
+amount="$2"
+curr_out="$(hyprctl -j getoption general:gaps_out | jq '.int')"
+
+if [ $increase = 1 ]; then
+    new_out=$(($curr_out + $amount))
+else
+    new_out=$(($curr_out - $amount))
+fi
+
+new_in="$(($new_out / 2))"
+
+if [ $new_out -lt 0 ] || [ $new_in -lt 0 ]; then
+    new_out=0
+    new_in=0
+fi
+
+hyprctl keyword general:gaps_out "$new_out"
+hyprctl keyword general:gaps_in  "$new_in"
+

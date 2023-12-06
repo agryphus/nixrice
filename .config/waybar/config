@@ -1,0 +1,72 @@
+{
+	"layer": "top",	
+	"position": "top",
+    "height": 27,
+
+    "modules-left": ["hyprland/workspaces", "custom/scratch", "hyprland/mode", "hyprland/window"],
+    "modules-center": [],
+    "modules-right": ["memory", "network", "pulseaudio", "clock", "tray", "battery"],
+
+	"hyprland/workspaces": {
+        "disable-scroll": true,
+        "disable-markup": true,
+        "format": "{name}" 
+    },
+
+	"hyprland/window": {
+    	"format": "{}",
+    	"max-length": 150
+    },
+
+    "tray": {
+        "icon-size": 18,
+        "spacing": 15
+    },
+
+    "clock": {
+        "format": "{: %a %b%e   %R}",
+        "interval": 30
+    },
+
+    "memory": {
+        "interval": 5,
+        "format": " {used:0.1f}G/{total:0.1f}G "
+    },
+
+    "battery": {
+        "bat": "BAT0",
+        "states": {
+              "full": 99,
+              "good": 98,
+              "normal": 98,
+              "warning": 20,
+              "critical": 20
+        },
+        "format":      "{icon} {capacity}%",
+        "format-good": "{icon} {capacity}%", 
+        "format-full":      " {capacity}%",
+        "format-charging":  "󰂄 {capacity}%",
+        "format-icons": ["", "", "", "", ""],
+        "interval": 30
+    },
+
+    "network": {
+        "interface": "wlp0s20f3", 
+        "format-wifi": "  {essid} ",
+        "format-disconnected": " ",
+        "interval": 60
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}% ",
+        "format-bluetooth": "  {volume}%  ",
+        "format-muted":"婢  Mute  ",
+        "interval": 60,
+
+        "format-icons": {
+            "default": [""]
+        },
+            
+       "on-click": "blueman-manager"    
+    }
+}
