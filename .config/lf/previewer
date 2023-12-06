@@ -1,19 +1,7 @@
 #!/usr/bin/env sh
 
 image() {
-    FILE_PATH="$1"
-    X=$4
-    Y=$5
-    MW=$(($2 - 1))
-    MH=$3
-
-    # Handling floating terms like nvim floatterm
-    if [ ! -z "$LF_OVERRIDE_X" ] && [ ! -z "$LF_OVERRIDE_Y" ]; then
-        X="$LF_OVERRIDE_X"
-        Y="$LF_OVERRIDE_Y"
-    fi
-
-    ueberzug cmd -s "$UB_SOCKET" -a add -i PREVIEW -x "$X" -y "$Y" --max-width "$MW" --max-height "$MH" -f "$FILE_PATH"
+    chafa -f sixel -s "$2x$3" --animate false "$1"
     exit 1
 }
 
@@ -39,7 +27,7 @@ case "$(file --dereference --brief --mime-type -- "$1")" in
 		;;
 	*/pdf)
 		CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/lf/thumb.$(stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$1")" | sha256sum | cut -d' ' -f1)"
-		[ ! -f "$CACHE.jpg" ] && pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE"
+		[ ! -f "$CACHE.jpg" ] && pdftoppm -jpeg -f 1 -singlefile "$1" "$CACHE" && convert "$CACHE.jpg" -negate "$CACHE.jpg"
 		image "$CACHE.jpg" "$2" "$3" "$4" "$5" "$1"
 		;;
 	application/*zip)

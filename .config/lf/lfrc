@@ -9,6 +9,7 @@ set ifs "\n"
 set scrolloff 10
 set icons # Use icons
 set period 1 # Poll directory status every X seconds
+set sixel true
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
 set cleaner '~/.config/lf/cleaner' # Clear preview
 set previewer '~/.config/lf/previewer' # Make preview
@@ -62,9 +63,14 @@ cmd delete ${{
 }}
 
 cmd set_bg ${{
-    rm ~/.config/wallpaper
+    rm -f ~/.config/wallpaper
     cp "$fx" ~/.config/wallpaper
-    feh --bg-fill --no-fehbg "$HOME/.config/wallpaper"
+    if [ -z "$(pidof Hyprland)" ]; then
+        feh --bg-fill --no-fehbg "$HOME/.config/wallpaper"
+    else
+        swww img "$HOME/.config/wallpaper"
+    fi
+
 }}
 
 cmd extract ${{
@@ -108,8 +114,8 @@ cmd open ${{
     inode/x-empty|\
     text/*)
         [ -v new_window ] \
-            && ($TERMINAL -e $SHELL -c "$EDITOR \\\"$fx\\\"" >/dev/null 2>&1 &) \
-            || ($EDITOR \"$fx\")
+            && ($TERMINAL -e $SHELL -c "$EDITOR \"$fx\"" >/dev/null 2>&1 &) \
+            || ($EDITOR "$fx")
         ;;
     audio/*|video/x-ms-asf) 
         mpv --audio-display=no $f ;;
@@ -135,6 +141,7 @@ cmd open ${{
 			lf -remote "send toggle"
 		done &
 		;;
+    application/msword|\
     application/octet-stream|\
     application/vnd.ms-powerpoint|\
     application/vnd.oasis.opendocument.database|\
