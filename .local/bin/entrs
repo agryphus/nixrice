@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+
+
+accent="$ACCENT_COLOR"
+if [ -z "$accent" ]; then
+    accent=blue
+fi
+
+loc="$HOME/.config"
+echo "$loc/starship.def.toml" | entr sh -c "
+    rm $loc/starship.toml
+    sed 's/\${ACCENT_COLOR}/$accent/g' $loc/starship.def.toml > $loc/starship.toml
+    notify-send 'Updated starship.toml'
+"
+

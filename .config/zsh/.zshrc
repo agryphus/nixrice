@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
+  source "$EAT_SHELL_INTEGRATION_DIR/zsh"
+
 # ZSH Configurations
 unsetopt autocd               # Change directory just by typing its name (hurts performance)
 setopt interactivecomments    # Allow comments in interactive mode
@@ -15,11 +18,39 @@ setopt hist_ignore_space      # ignore commands that start with space
 setopt hist_verify            # show command with history expansion to user before running it
 unsetopt ksharrays # 0-indexing arrays breaks highlighting
 
+# vi mode
+bindkey -v
+bindkey -M vicmd -r ":"
+export KEYTIMEOUT=1
+
+# Change cursor shape for different vi modes.
+function zle-keymap-select {
+  if [[ ${KEYMAP} == vicmd ]] ||
+     [[ $1 = 'block' ]]; then
+    echo -ne '\e[1 q'
+  elif [[ ${KEYMAP} == main ]] ||
+       [[ ${KEYMAP} == viins ]] ||
+       [[ ${KEYMAP} = '' ]] ||
+       [[ $1 = 'beam' ]]; then
+    echo -ne '\e[5 q'
+  fi
+}
+zle -N zle-keymap-select
+zle-line-init() {
+    zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
+    echo -ne "\e[5 q"
+}
+zle -N zle-line-init
+echo -ne '\e[5 q' # Use beam shape cursor on startup.
+preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
+
 ## ALIASES ##
 
 # The rice repo
 alias config='git --git-dir $HOME/repos/dotfiles/ --work-tree=$HOME'
 
+alias pypr='sh -c pypr'
+alias asciiquarium='asciiquarium -t'
 alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
@@ -31,6 +62,8 @@ alias blueman='blueman-manager'
 alias spotify='dlkiller spotify'
 alias zoom='dlkiller zoom'
 alias tor='torbrowser-launcher'
+alias emax="devour emacsclient -c -a 'emacs' 1>/dev/null"
+alias em="emacsclient -nw -a 'emacs -nw'"
 
 # Print out all colors
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$"\n"}; done'
@@ -45,10 +78,9 @@ alias ip='ip --color=auto'
 
 ## FUNCTIONS ##
 
-# Use lf to switch directories and bind it to ctrl-o
-lfcd () {
+function lfcd {
     tmp="$(mktemp)"
-    command lfub -last-dir-path="$tmp" "$@"
+    command lf -last-dir-path="$tmp" "$@"
     if [ -f "$tmp" ]; then
         dir="$(cat "$tmp")"
         rm -f "$tmp"
@@ -85,16 +117,20 @@ function nix_shell_menu {
     shells=$(ls "$shell_dir")
     selection=$(echo "$shells" | rofi -dmenu)
     nix-shell "$shell_dir/$selection" --run "
-        export NIX_SHELL_NAME=${selection%.*};
-        $([ "$1" = "fhs" ] && echo "fhs-run ")$SHELL
+        export name=${selection%.*};
+        $([ "$1" = "fhs" ] && echo "fhs-run ")$([ "$1" = "sudo" ] && echo "sudo ")$SHELL
     "
 }
+
+# function man () {
+#     emacsclient -nw --eval '(progn (man "'$1'"))'
+# }
 
 ## KEYBINDS ##
 
 bindkey -s '^e' 'lfcd\n'
-bindkey -s '^n' 'nix_shell_menu\n'
-bindkey -s '^[n' 'nix_shell_menu fhs\n'
+bindkey -s '^n' 'nix_shell_menu'
+bindkey -s '^[^M' 'nohup $TERMINAL -e $SHELL -c "cd $PWD && exec $SHELL" >/dev/null 2>&1 & \n'
 
 # Enable completion features
 autoload -Uz compinit
@@ -116,142 +152,32 @@ alias history="history 0"     # force zsh to show the complete history
 
 export GPG_TTY=$(tty)
 
-# Building the prompt
-C_PROMPT="%F{cyan}"
-C_GIT="%F{green}"
-C_CONDA="%F{009}"
-C_DIR="%F{yellow}"
-C_RESET="%F{reset}"
-RPROMPT=$'%(?.. %? %F{red}%B⨯%b%F{reset})'
-
-function precmd {
-    err="$?"
-    curr_time="%*"
-    dir='%(4~|.../%3~|%~)' # 3 deep, or truncation
-    hostname="$([ -f /etc/hostname ] && echo "@$(sed 1q /etc/hostname)")"
-    PROMPT="${C_PROMPT}[$USERNAME$hostname${C_DIR}:${dir}${C_PROMPT}]"
-    extra="$(parse_conda)$(parse_git)"
-    if [ ! -z "$extra" ]; then
-        PROMPT+=$'\n'"$extra"
-    fi
-    PROMPT+="${C_RESET}$ "
-}
-
-function parse_git() {
-    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-        echo ""
-        return
-    fi
-
-    # Get branch
-    local branch
-    branch="$(git symbolic-ref HEAD 2> /dev/null)"
-    branch="${branch#refs/heads/}"
-    # If we're in detached HEAD the above doesn't work, so use reflog instead
-    [[ -z $branch ]] && branch="$(git reflog HEAD | grep 'checkout:' | head -n1 | grep -oE '[^ ]+$')"
-
-    # Check dirty status
-    [[ -z $(git status --porcelain 2> /dev/null) ]] \
-    && dirty="%F{green}✓${C_RESET}" \
-    || dirty="%F{red}✗${C_RESET}"
-
-    # Get our branch or ref, depending if we're in detached HEAD or not.
-    ref=$(git symbolic-ref HEAD 2>/dev/null) \
-    && { ref=${ref#refs/heads/} ; branch="$ref" ; } \
-    || ref=$(git reflog HEAD | awk 'NR==1 && /checkout:/ { print $NF }')
-
-    # Checking number of comits ahead or behind
-    upstream_ref=$(git for-each-ref --format='%(refname:short)|%(upstream:short)' refs/heads \
-     | grep "^$branch|" \
-     | cut -d'|' -f2)
-
-    if [[ "$upstream_ref" ]]; then
-        updown=( $(git rev-list --count --left-right "$upstream_ref"...HEAD) )
-
-        [[ ${updown[1]} -gt 0 ]] && tracking+="%F{red}-${updown[1]}${C_RESET}:"    # Behind
-        [[ ${updown[2]} -gt 0 ]] && tracking+="%F{magenta}+${updown[2]}${C_RESET}:" # Ahead
-    fi
-
-    # Put together our prompt string
-    git_prompt+="${C_GIT}["
-    git_prompt+="${ref}:${C_RESET}"
-    git_prompt+="${tracking}"
-    git_prompt+="${dirty}"
-    git_prompt+="${C_GIT}]${C_RESET}"
-
-    echo "$git_prompt"
-}
-
-function parse_conda() {
-    env=$CONDA_DEFAULT_ENV
-    if [ ! -z "$env" ]; then
-        output="$env"
-    fi
-
-    nix_shell=$NIX_SHELL_NAME
-    if [ ! -z "$nix_shell" ]; then
-        output="$nix_shell"
-    fi
-
-    if [ -z "$output" ]; then
-        echo ""
-        return
-    fi
-
-    echo "${C_CONDA}[$output]"
-}
-
-# Config for zsh-syntax-highlighting
-LIGHT_GREY=242
-
 if [ ! -z "$(grep nixos /etc/os-release)" ]; then
+    # Shell niceties
+    source /run/current-system/sw/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     source /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+    # Use zsh as default nix build shell
+    source /run/current-system/sw/share/zsh-nix-shell/nix-shell.plugin.zsh
+    nix-shell-name() {
+        # If hopping into a pkg subshell, the shell name should reflect the
+        # package linked. (i.e.: 'nix-shell -p nyancat' => 'export name=nyancat')
+        if [ "$1" = "-p" ]; then
+            nix-shell "$@" --command "export name='$2'"
+        else
+            nix-shell "$@"
+        fi
+    }
+    alias nix-shell='nix-shell-name'
 else
     source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 fi
 
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
-ZSH_HIGHLIGHT_STYLES[arg0]=fg=yello
-ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=cyan,bold
-ZSH_HIGHLIGHT_STYLES[suffix-alias]=fg=green,underline
-ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=fg=$LIGHT_GREY
-ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=fg=$LIGHT_GREY
-ZSH_HIGHLIGHT_STYLES[global-alias]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[precommand]=fg=cyan
-ZSH_HIGHLIGHT_STYLES[commandseparator]=fg=blue,bold
-ZSH_HIGHLIGHT_STYLES[globbing]=fg=blue,bold
-ZSH_HIGHLIGHT_STYLES[history-expansion]=fg=blue,bold
-ZSH_HIGHLIGHT_STYLES[command-substitution-delimiter]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[process-substitution-delimiter]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[back-quoted-argument-delimiter]=fg=blue,bold
-ZSH_HIGHLIGHT_STYLES[single-quoted-argument]=fg=yellow
-ZSH_HIGHLIGHT_STYLES[double-quoted-argument]=fg=yellow
-ZSH_HIGHLIGHT_STYLES[dollar-quoted-argument]=fg=yellow
-ZSH_HIGHLIGHT_STYLES[rc-quote]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[dollar-double-quoted-argument]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[back-double-quoted-argument]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[back-dollar-quoted-argument]=fg=magenta
-ZSH_HIGHLIGHT_STYLES[redirection]=fg=blue,bold
-ZSH_HIGHLIGHT_STYLES[comment]=fg=black,bold
-ZSH_HIGHLIGHT_STYLES[bracket-error]=fg=red,bold
-ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=blue,bold
-ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=green,bold
-ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=magenta,bold
-ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=yellow,bold
-ZSH_HIGHLIGHT_STYLES[bracket-level-5]=fg=cyan,bold
-ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]=standout
+source ~/.config/zsh/.zshhighlighting
 
-# Unset styles
-ZSH_HIGHLIGHT_STYLES[path]=none
-ZSH_HIGHLIGHT_STYLES[assign]=none
-ZSH_HIGHLIGHT_STYLES[default]=none
-ZSH_HIGHLIGHT_STYLES[named-fd]=none
-ZSH_HIGHLIGHT_STYLES[numeric-fd]=none
-ZSH_HIGHLIGHT_STYLES[unknown-token]=none
-ZSH_HIGHLIGHT_STYLES[back-quoted-argument]=none
-ZSH_HIGHLIGHT_STYLES[command-substitution]=none
-ZSH_HIGHLIGHT_STYLES[process-substitution]=none
-ZSH_HIGHLIGHT_STYLES[path_pathseparator]=
-ZSH_HIGHLIGHT_STYLES[path_prefix_pathseparator]=
+if [ -f  ~/.config/zsh/.zshpersonalrc ]; then
+    source ~/.config/zsh/.zshpersonalrc
+fi
 
-#source ~/.config/zsh/.zshpersonalrc
+eval "$(starship init zsh)"
+
