@@ -6,26 +6,38 @@ super + shift + r
     pkill -usr1 -x sxhkd; notify-send 'sxhkd' 'Reloaded config'
 
 # Running dmenu/rofi scripts
-super + d
+ctrl + alt + BackSpace
+    $TERMINAL -e $SHELL -c 'htop'
+super + r
     menu-run
-super + D
+super + d; p
     rofi-pass
-super + S
+super + d; s
     menu-sink
 super + grave
     menu-unicode
-super + M
+super + d; l
     menu-layout
 super + n
     menu-norg
 
+# Change layouts
+super + C
+    autorandr --change --default default
+
 # Spawn programs
+super + c
+    emacsclient -c -a "emacs" -n --eval '(progn (set-frame-font "FiraCode Nerd Font") (cfw:open-org-calendar))'
+super + u
+    emacsclient -c -a "emacs" -n --eval '(vterm-frame)'
 super + Return
     $TERMINAL
 super + w
     $BROWSER
 super + e
-    $TERMINAL -t "lf" -e $SHELL -c 'tmp="$(mktemp)" && command lf -last-dir-path="$tmp" "$@" && test -f "$tmp" && dir="$(command cat "$tmp")" && rm -f "$tmp" && test -d "$dir" && cd "$dir" && exec $SHELL'
+    $TERMINAL -e $SHELL -c 'tmp="$(mktemp)" && command lf -last-dir-path="$tmp" "$@" && test -f "$tmp" && dir="$(command cat "$tmp")" && rm -f "$tmp" && test -d "$dir" && cd "$dir" && exec $SHELL'
+super + s; e
+    emacsclient -c -a 'emacs'
 
 # Implementing basic control hotkeys
 super + l
