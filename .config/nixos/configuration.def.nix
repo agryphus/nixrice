@@ -2,7 +2,13 @@
 
 {
   imports = [
+    # Do not remove
     ./core.nix
+
+    # Specific profiles for this machine
+    # ./profiles/lf.nix
+    # ./profiles/nvim.nix
+    # ./profiles/desktop_x.nix
   ];
 
   networking.hostName = "nix";
