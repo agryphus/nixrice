@@ -69,7 +69,7 @@ alias em="emacsclient -nw -a 'emacs -nw'"
 alias colors='for i in {0..255}; do print -Pn "%K{$i}  %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%6)):#3}:+$"\n"}; done'
 
 # Colorful output
-alias ls='LC_COLLATE=C grc ls --color=auto --group-directories-first -hN -A'
+alias ls='LC_COLLATE=C ls --color=auto --group-directories-first -hN -A'
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
