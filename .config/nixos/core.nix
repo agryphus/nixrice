@@ -1,26 +1,6 @@
-# This configuration is considered to be core to my system.  Each group of features considered not core
-# will be found in one of the ./profile 
-
 { config, pkgs, ... }:
 
-let
-    # Change this to your user's name
-    HOME = "/home/vince";
-in
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./personal.nix
-
-      ./profiles/emacs.nix
-      ./profiles/lf.nix
-      ./profiles/nvim.nix
-      ./profiles/virtualbox.nix
-      ./profiles/desktop_wayland.nix
-      ./profiles/desktop_x.nix
-    ];
-
   nix = {
     package = pkgs.nixFlakes;
     extraOptions = ''
@@ -28,28 +8,18 @@ in
     '';
   };
 
-  environment.sessionVariables = {
-    ZDOTDIR = "$HOME/.config/zsh";
+  # Files to add to /etc
+  environment.etc = {
+    "zshenv.local".text = ''
+        export ZDOTDIR="$HOME/.config/zsh"
+    '';
   };
 
   environment.pathsToLink = [
     "/share"
   ];
 
-  system.activationScripts.linkLocalBin.text = ''
-    #!/usr/bin/env sh
-    # Links things in and out of /usr/local/bin
-
-    # Linking files into /usr/local/bin from main user
-    if [ ! -e /usr/local/bin/pinentry-wrapper ] && [ -e /home/vince/.local/bin/pinentry-wrapper ]; then
-        ln -s /home/vince/.local/bin/pinentry-wrapper /usr/local/bin/pinentry-wrapper
-    fi
-  '';
-
   networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "America/New_York";
 
   # Bluetooth daemon
   services.blueman.enable = true;
@@ -110,6 +80,7 @@ in
     devour # Opens new program on top of terminal
     distrobox # Easily spin up VMs of other distos
     entr # Hooks for file changes
+    expect # Provides `unbuffer`
     git # Imagine not having this
     grc # Generic command output colorizer
     htop-vim # Process monitor, with vim bindings
