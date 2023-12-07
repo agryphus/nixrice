@@ -14,14 +14,13 @@ fi
 # export GBM_BACKEND=nvidia-drm
 # export __GLX_VENDOR_LIBRARY_NAME=nvidia
 
-export WLR_NO_HARDWARE_CURSORS=1
-
 export BROWSER="$(which firefox)"
 export EDITOR="$(which nvim)"
-export TERMINAL="$(which foot)"
 
 export MANPAGER='nvim +Man! -c "ZenMode" -c "map q :qa!<CR>"'
 export PAGER=
+
+export GTK_THEME=gruvbox-dark
 
 # Configuring input method
 export GTK_IM_MODULE='fcitx'
