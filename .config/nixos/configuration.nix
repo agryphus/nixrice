@@ -17,8 +17,8 @@ in
       ./profiles/lf.nix
       ./profiles/nvim.nix
       ./profiles/virtualbox.nix
-      ./profiles/wayland_desktop.nix
-      ./profiles/xdesktop.nix
+      ./profiles/desktop_wayland.nix
+      ./profiles/desktop_x.nix
     ];
 
   nix = {
@@ -111,6 +111,7 @@ in
     distrobox # Easily spin up VMs of other distos
     entr # Hooks for file changes
     git # Imagine not having this
+    grc # Generic command output colorizer
     htop-vim # Process monitor, with vim bindings
     imagemagick # Image conversion/processing tool
     jq # Commandline JSON processor

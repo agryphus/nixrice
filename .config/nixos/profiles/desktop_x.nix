@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  environment.sessionVariables = {
+    TERMINAL = "st";
+  };
+
   security.sudo.extraConfig = ''
     %wheel ALL=(ALL:ALL) NOPASSWD: ${pkgs.systemd}/bin/systemctl restart autorandr
   '';

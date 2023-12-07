@@ -1,6 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  environment.sessionVariables = {
+    TERMINAL = "footclient";
+  };
+
   # Or else swaylock will not accept correct password
   security.pam.services.swaylock = {};
 
