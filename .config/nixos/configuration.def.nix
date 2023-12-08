@@ -5,6 +5,9 @@
     # Do not remove
     ./core.nix
 
+    # Want this for bare metal
+    # ./hardware-configuration.nix
+
     # Specific profiles for this machine
     # ./profiles/lf.nix
     # ./profiles/nvim.nix
