@@ -6,7 +6,7 @@
 sudo echo 
 
 # Rebuild, pipe into output monitor to build a live dependency graph
-sudo $(sysbin nixos-rebuild) "$@" |& nom
+sudo unbuffer sysbin nixos-rebuild "$@" |& nom
 
 # Print diff
 ls -v1 /nix/var/nix/profiles | tail -n 2 | awk '{print "/nix/var/nix/profiles/" $0}' - | xargs nvd diff

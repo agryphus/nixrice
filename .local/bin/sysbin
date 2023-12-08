@@ -20,7 +20,7 @@ for dir in "${path_dirs[@]}"; do
 
     potential_path="$dir/$1"
     if [ -x "$potential_path" ]; then
-        echo "$potential_path"
+        "$dir/$@"
         exit 0
     fi
 done

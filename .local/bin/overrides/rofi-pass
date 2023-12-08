@@ -2,5 +2,5 @@
 # Passes a userdata var, which will eventually be passed to pinentry-wrapper, and open
 # pinentry-rofi to enter the decryption password
 
-PINENTRY_USER_DATA=rofi $(sysbin rofi-pass)
+PINENTRY_USER_DATA=rofi sysbin rofi-pass
 
