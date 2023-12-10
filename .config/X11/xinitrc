@@ -58,6 +58,7 @@ xserverauthfile=$XAUTHORITY # Stop the accumulation of ~/.serverauth.### files
 # read the *_IM_MODULE and XMODIFIER variables.
 source ~/.config/zsh/.zshenv
 autorandr -c -d "default"
+export TERMINAL=/usr/local/bin/st
 
 # Start important daemons
 kill $(pidof fcitx5) 2>/dev/null

@@ -5,7 +5,7 @@
 
     "modules-left": ["hyprland/workspaces", "custom/scratch", "hyprland/mode", "hyprland/window"],
     "modules-center": [],
-    "modules-right": ["memory", "network", "pulseaudio", "clock", "tray", "battery"],
+    "modules-right": ["memory", "network", "pulseaudio", "battery", "tray", "clock"],
 
 	"hyprland/workspaces": {
         "disable-scroll": true,

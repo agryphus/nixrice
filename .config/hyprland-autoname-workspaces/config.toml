@@ -38,6 +38,7 @@ workspace = "{id}:{delim}{clients}" # {id}, {delim} and {clients} are supported
 "(?i)spotify"  = " "
 "(?i)chromium" = " "
 "(?i)emacs"    = " "
+"(?i)steam"    = " "
 
 # [class_active]
 # DEFAULT = "*{icon}*"
