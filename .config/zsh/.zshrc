@@ -49,6 +49,7 @@ preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 # The rice repo
 alias config='git --git-dir $HOME/repos/dotfiles/ --work-tree=$HOME'
 
+alias sudo='sudo ' # Allow aliases to be passed to sudo
 alias pypr='sh -c pypr'
 alias asciiquarium='asciiquarium -t'
 alias ll='ls -l'
