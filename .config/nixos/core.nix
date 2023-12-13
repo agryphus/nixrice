@@ -19,6 +19,12 @@
     "/share"
   ];
 
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  fonts.packages = with pkgs; [
+    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+  ];
+
   networking.networkmanager.enable = true;
 
   # Bluetooth daemon
@@ -91,6 +97,7 @@
     pass-nodmenu # CLI password store (without dmenu dependency)
     pinentry-curses # Terminal-based pinentry program
     python311 # Python
+    socat # Interact with sockets
     syncthing # Syncing files between machines
     tldr # Brief info about a command
     tmux # Terminal multiplexor
