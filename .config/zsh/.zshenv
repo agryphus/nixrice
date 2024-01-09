@@ -54,7 +54,6 @@ export TEXMFVAR="$XDG_CACHE_HOME/texlive/texmf-var"
 export TLDR_CACHE_DIR="$XDG_CACHE_HOME/tldr"
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.lua" | so $MYVIMRC'
-export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
 export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"
 export XSERVERRC="$XDG_CONFIG_HOME/X11/xserverrc"
 
