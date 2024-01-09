@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+accent=$(echo "black
+red
+green
+yellow
+blue
+purple
+cyan
+white" | rofi -no-fixed-num-lines -dmenu -p "Choose an accent color:")
+[ -z "$accent" ] && exit 0
+echo "$accent" > ~/.config/colors/accent
+source ~/.config/zsh/.zshrc
+
