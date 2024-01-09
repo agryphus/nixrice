@@ -3,11 +3,25 @@
 # Since the below command is piped into nom, it has weird output if the sudo password
 # has to be prompted.  Add a dummy command to make sure a valid token exists (assuming the
 # user's sudo config saves sudo password for some time after entry)
-sudo echo 
+sudo echo >/dev/null
 
-# Rebuild, pipe into output monitor to build a live dependency graph
-sudo unbuffer sysbin nixos-rebuild "$@" |& nom
+function last_two_builds {
+    ls -v1 /nix/var/nix/profiles | tail -n 2
+}
 
-# Print diff
+before="$(last_two_builds)"
+
+sudo \
+    unbuffer `# Preserve colors when piping into nom` \
+    sysbin `# Use the system's nixos-rebuild (as opposed to running this script again)` \
+    nixos-rebuild "$@" `# Rebuild` \
+    |& nom `# Visualize a live dependency graph while building`
+
+after="$(last_two_builds)"
+if [ "$before" = "$after" ]; then
+    exit 0 # No new build happened
+fi
+
+# Print diff between last two builds
 ls -v1 /nix/var/nix/profiles | tail -n 2 | awk '{print "/nix/var/nix/profiles/" $0}' - | xargs nvd diff
 
