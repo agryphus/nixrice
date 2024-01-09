@@ -20,6 +20,7 @@
     poppler_utils # Provides pdftoppm, to turn pdfs into images
     unrar-wrapper # Extract .rar files
     xclip # Copy file name to clip
+    xdragon # Drag and drop utility
     zathura # PDF viewer
   ];
 }

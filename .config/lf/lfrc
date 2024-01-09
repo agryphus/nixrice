@@ -1,6 +1,4 @@
-#!/usr/bin/env fish
-# Not meant to actually be executable in fish, but it looks like lf config
-# uses fish syntax, so the shebang helps treesitter highlighting properly
+#!/usr/bin/env zsh
 
 ## LF VARS
 
@@ -14,6 +12,9 @@ set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
 set cleaner '~/.config/lf/cleaner' # Clear preview
 set previewer '~/.config/lf/previewer' # Make preview
 set autoquit true
+set cursorpreviewfmt "" # No cursor in the directory preview pane
+# set cursoractivefmt "\033[1m"
+set drawbox true
 
 ## MAPPINGS
 
@@ -41,11 +42,14 @@ map c push A<c-u> # new rename
 map i :rename # before extension
 map I :rename; cmd-home # at the very beginning
 
+map r drag-and-drop
+
 # Fuzzy finding
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
 map F broot_jump
 
-map b set_bg
+map b set_bg one
+map B set_bg all
 
 ## COMMAND DEFINITIONS
 
@@ -63,14 +67,22 @@ cmd delete ${{
 }}
 
 cmd set_bg ${{
-    rm -f ~/.config/wallpaper
-    cp "$fx" ~/.config/wallpaper
     if [ -z "$(pidof Hyprland)" ]; then
+        rm -f ~/.config/wallpaper
+        cp "$fx" ~/.config/wallpaper
         feh --bg-fill --no-fehbg "$HOME/.config/wallpaper"
+        exit
+    fi  
+    if [ "$1" = "all" ]; then
+        swww img "$fx"
     else
-        swww img "$HOME/.config/wallpaper"
+        output="$(slurp -o -f "%o")"
+        swww img "$fx" --outputs "$output"
     fi
+}}
 
+cmd drag-and-drop ${{
+    GKD_BACKEND=11 setsid -f dragon "$fx" >/dev/null 2>&1
 }}
 
 cmd extract ${{
@@ -107,6 +119,18 @@ cmd open ${{
     # Set $new_window based on arguments
     [ ! -z $@ ] && [ "$@" = "new_window" ] && new_window=1
 
+    function launch {
+        swallower="gobble"
+        [ -z "$WAYLAND_DISPLAY" ] && swallower="devour"
+        swallower="devour"
+
+        if [ ! -v new_window ]; then
+            $swallower "$@" >/dev/null 2>&1
+        else
+            setsid -f "$@" >/dev/null 2>&1
+        fi
+    }
+
     case $(file --mime-type "$(readlink -f $f)" -b) in
     application/json|\
     application/x-subrip|\
@@ -118,23 +142,25 @@ cmd open ${{
             || ($EDITOR "$fx")
         ;;
     audio/*|video/x-ms-asf) 
-        mpv --audio-display=no $f ;;
+        launch mpv --audio-display=no "$f"
+        ;;
 	video/*) 
-        setsid -f mpv $f -quiet >/dev/null 2>&1 ;;
+        launch mpv -quiet "$f"
+        ;;
     application/epub*|\
     application/octet-stream|\
     application/pdf|\
     application/postscript|\
     application/vnd.djvu|\
     image/vnd.djvu)
-        setsid -f $([ ! -v new_window ] && echo devour) zathura $fx >/dev/null 2>&1
+        launch zathura "$fx"
         ;;
     image/*) 
         find . -maxdepth 1 -type f -exec file -i {} \; | 
         grep -E 'image/.*' | 
         awk -F: '{ print substr($0, 1, length($0) - length($NF) - 1) }' |
         rotdir $f |
-		setsid -f $([ ! -v new_window ] && echo devour) nsxiv -aio 2>/dev/null |
+		launch nsxiv -aio |
         while read -r file; do
 			[ -z "$file" ] && continue
 			lf -remote "send select \"$file\""
@@ -156,12 +182,9 @@ cmd open ${{
     application/vnd.openxmlformats-officedocument.presentationml.presentation|\
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|\
     application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-        setsid -f $([ ! -v new_window ] && echo devour) libreoffice $fx >/dev/null 2>&1
+        launch libreoffice "$fx"
         ;;
     *)
-        # test -v new_window \
-        #     && () \
-        #     || ()
         ;;
     esac
 }}
