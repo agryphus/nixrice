@@ -20,7 +20,8 @@ export EDITOR="$(which nvim)"
 export MANPAGER='nvim +Man! -c "ZenMode" -c "map q :qa!<CR>"'
 export PAGER=
 
-export GTK_THEME=gruvbox-dark
+# export GTK_THEME=gruvbox-dark
+export GTK_THEME=Adwaita:dark
 
 # Configuring input method
 export GTK_IM_MODULE='fcitx'

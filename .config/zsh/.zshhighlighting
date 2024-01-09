@@ -6,7 +6,7 @@ ZSH_HIGHLIGHT_STYLES[precommand]=fg=none
 ZSH_HIGHLIGHT_STYLES[function]=fg=none
 ZSH_HIGHLIGHT_STYLES[alias]=fg=none
 
-ZSH_HIGHLIGHT_STYLES[unknown-token]=fg=008 # Bright black
+ZSH_HIGHLIGHT_STYLES[unknown-token]=fg=007 # Dimmed white
 ZSH_HIGHLIGHT_STYLES[reserved-word]=fg=green
 ZSH_HIGHLIGHT_STYLES[builtin]=none
 ZSH_HIGHLIGHT_STYLES[commandseparator]=none
