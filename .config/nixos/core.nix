@@ -1,8 +1,15 @@
 { config, pkgs, ... }:
 
 {
+  # Nix settings
   nix = {
     package = pkgs.nixFlakes;
+    settings.auto-optimise-store = true;
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
@@ -87,6 +94,7 @@
     distrobox # Easily spin up VMs of other distos
     entr # Hooks for file changes
     expect # Provides `unbuffer`
+    ffmpeg
     git # Imagine not having this
     grc # Generic command output colorizer
     htop-vim # Process monitor, with vim bindings
