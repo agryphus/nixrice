@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+# https://github.com/gokcehan/lf/blob/master/doc.md
+# ^ List of all options
+
 ## LF VARS
 
 set shellopts '-eu' # Treat undefined env vars as errors.  Exit upon error.
@@ -29,20 +32,22 @@ map L open new_window
 map o $mimeopen --ask "$f"
 
 # CRUD commands
-map D delete
+# map D delete
+map D push :delete?<space>[y/N]:<space>
 map N push :mkdir<space>
 map n push :touch<space>
-map u extract
+map x push :chmod<space>
+map U push :extract?<space>[y/N]:<space>
 map Y $printf "%s" "$fx" | xclip -selection clipboard
 
 # Renaming commands
 map A :rename; cmd-end # at the very end
 map a :rename; cmd-right # after extension
-map c push A<c-u> # new rename
+map r push A<c-u> # new rename
 map i :rename # before extension
 map I :rename; cmd-home # at the very beginning
 
-map r drag-and-drop
+map R drag-and-drop
 
 # Fuzzy finding
 map <c-f> $lf -remote "send $id select \"$(fzf)\""
@@ -51,19 +56,19 @@ map F broot_jump
 map b set_bg one
 map B set_bg all
 
+
 ## COMMAND DEFINITIONS
 
 cmd touch %touch $1 && lf -remote "send $id load" && lf -remote "send $id select $1"
 
 cmd mkdir %mkdir $1 && lf -remote "send $id load" && lf -remote "send $id select $1"
 
-cmd delete ${{
-	clear; tput cup $(($(tput lines)/3)); tput bold
-	set -f
-	printf "%s\n\t" "$fx"
-	printf "delete?[y/N]"
-	read ans
-	[ $ans = "y" ] && rm -rf -- $fx
+cmd chmod %chmod $1 "$fx" && lf -remote "send $id reload"
+
+cmd delete? ${{
+    [ -v 2 ] || exit 0 # Makes sure argument was passed in
+    [ ! "$2" = "y" ] && exit 0 # Exit if delete not confirmed
+    rm -rf -- $fx
 }}
 
 cmd set_bg ${{
@@ -85,13 +90,9 @@ cmd drag-and-drop ${{
     GKD_BACKEND=11 setsid -f dragon "$fx" >/dev/null 2>&1
 }}
 
-cmd extract ${{
-	clear; tput cup $(($(tput lines)/3)); tput bold
-	set -f
-	printf "%s\n\t" "$fx"
-	printf "extract?[y/N]"
-	read ans
-	[ ! $ans = "y" ] && exit 0
+cmd extract? ${{
+    [ -v 2 ] || exit 0 # Makes sure argument was passed in
+    [ ! "$2" = "y" ] && exit 0 # Exit if delete not confirmed
 
     case $(file --mime-type "$(readlink -f $f)" -b) in
     application/x-rar)
@@ -120,8 +121,8 @@ cmd open ${{
     [ ! -z $@ ] && [ "$@" = "new_window" ] && new_window=1
 
     function launch {
-        swallower="gobble"
-        [ -z "$WAYLAND_DISPLAY" ] && swallower="devour"
+        # swallower="gobble"
+        # [ ! -n "${WAYLAND_DISPLAY}" ] && swallower="devour"
         swallower="devour"
 
         if [ ! -v new_window ]; then
