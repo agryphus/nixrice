@@ -59,5 +59,14 @@
                ("terminfo/65" "terminfo/65/*")
                ("integration" "integration/*")
                (:exclude ".dir-locals.el" "*-tests.el"))))
-(package! exwm)
 (package! lsp-pyright)
+(package! vertico-posframe)
+(package! gruber-darker-theme)
+(package! no-clown-fiesta-theme)
+(package! mutt-mode)
+
+; Making org mode look good
+(package! writeroom-mode)
+(package! org-modern)
+(package! svg-tag-mode)
+(package! mixed-pitch)

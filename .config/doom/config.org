@@ -9,25 +9,32 @@
 
 * TABLE OF CONTENTS :toc:
 - [[#quick-find-files][Quick Find Files]]
-- [[#org-agenda][Org Agenda]]
-- [[#eat-terminal][Eat Terminal]]
+- [[#org][Org]]
+  - [[#org-whiteroom][Org Whiteroom]]
+  - [[#special-symbolscharacters][Special symbols/characters]]
+  - [[#agenda][Agenda]]
+  - [[#svg-tags][SVG Tags]]
 - [[#vterm][Vterm]]
 - [[#languages][Languages]]
-  - [[#lsp-config][LSP Config]]
+  - [[#lspcompletion-config][LSP/Completion Config]]
   - [[#python][Python]]
   - [[#typst][Typst]]
+  - [[#shell][Shell]]
+  - [[#nix][Nix]]
 - [[#tweaksfixes][Tweaks/Fixes]]
   - [[#block-cursor-not-showing-up-in-terminal-mode][Block cursor not showing up in terminal mode]]
   - [[#disable-really-quit-emacs-prompt][Disable "Really Quit Emacs" Prompt]]
-  - [[#fontify-natively][Fontify natively]]
+  - [[#relative-line-numbers][Relative Line Numbers]]
+  - [[#doom-dashboard][Doom Dashboard]]
+  - [[#vertico][Vertico]]
   - [[#evil][Evil]]
   - [[#fonts][Fonts]]
   - [[#swap-evil-gkj-and-kj][Swap evil g[k/j] and k/j]]
   - [[#scrolloff][Scrolloff]]
   - [[#scratch-buffer-mode][Scratch Buffer Mode]]
+  - [[#unsetting-bindings-that-step-on-mine][Unsetting bindings that step on mine]]
 - [[#elisp-evaluation][Elisp Evaluation]]
-- [[#exwm][EXWM]]
-- [[#window-transparency][Window transparency]]
+- [[#coloring][Coloring]]
 
 * Quick Find Files
 #+begin_src emacs-lisp
@@ -39,7 +46,72 @@
   (map! "C-/" #'comment-line)
 #+end_src
 
-* Org Agenda
+* Org
+** Org Whiteroom
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'mixed-pitch-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq org-src-fontify-natively t)
+#+end_src
+
+** Special symbols/characters
+#+begin_src emacs-lisp
+  (after! org
+    (setq org-ellipsis " ▼ "
+          org-superstar-headline-bullets-list '("⁖" "◉" "●" "○" "◉" "●" "○" "◉" "●" "○")
+          org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)))) ; changes +/- symbols in item lists
+
+  (defun ag/prettify-me ()
+    (setq prettify-symbols-alist
+      '(("TODO"         . "")
+        ("WAIT"         . "")
+        ("NOPE"         . "")
+        ("DONE"         . "")
+        ("[ ]"          . "")
+        ("[X]"          . "")
+        ("[-]"          . "")
+        ("#+begin_src"  . "")
+        ("#+BEGIN_SRC"  . "")
+        ("#+end_src"    . "")
+        ("#+END_SRC"    . "")
+        (":properties:" . "")
+        (":PROPERTIES:" . "")
+        (":end:"        . "―")
+        (":END:"        . "―")
+        ("#+options:"   . "")
+        ("#+OPTIONS:"   . "")
+        ("#+startup:"   . "")
+        ("#+STARTUP:"   . "")
+        ("#+title: "    . "")
+        ("#+TITLE: "    . "")
+        ("#+results:"   . "")
+        ("#+RESULTS:"   . "")
+        ("#+name:"      . "")
+        ("#+NAME:"      . "")
+        ("#+roam_tags:" . "")
+        ("#+ROAM_TAGS:" . "")
+        ("#+filetags:"  . "")
+        ("#+FILETAGS:"  . "")
+        ("#+html_head:" . "")
+        ("#+HTML_HEAD:" . "")
+        ("#+subtitle:"  . "")
+        ("#+SUBTITLE:"  . "")
+        ("#+author:"    . "󰙏")
+        ("#+AUTHOR:"    . "󰙏")
+        (":effort:"     . "")
+        (":EFFORT:"     . "")
+        ("scheduled:"   . "")
+        ("SCHEDULED:"   . "")
+        ("deadline:"    . "")
+        ("DEADLINE:"    . ""))))
+  (add-hook 'org-mode-hook 'ag/prettify-me)
+  ;; Can probably remove duplicates with
+  ;; (mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
+#+end_src
+
+** Agenda
 #+begin_src emacs-lisp
   (setq org-agenda-files
     '("~/.local/share/org-agenda"))
@@ -48,8 +120,12 @@
   (add-hook 'calendar-after-frame-setup-hook 'cfw:refresh-calendar-buffer)
 #+end_src
 
-* Eat Terminal
+** SVG Tags
 #+begin_src emacs-lisp
+  (use-package! svg-tag-mode)
+  (setq svg-tag-tags
+    '((":TODO:" . ((lambda (tag) (svg-tag-make "TODO"))))
+      ("[X]" . ((lambda (tag) (svg-tag-make "X"))))))
 #+end_src
 
 * Vterm
@@ -128,11 +204,32 @@ from the terminal.
 #+end_src
 
 * Languages
-** LSP Config
-*** Change suggestion rate
+** LSP/Completion Config
+*** Company-mode
 #+begin_src emacs-lisp
+  (setq ag/company-idle-delay 0.0) ;; Give completion suggestions immediately
   (setq company-minimum-prefix-length 1)
-  (setq company-idle-delay 0.0) ;; Give completion suggestions immediately
+  (setq company-idle-delay ag/company-idle-delay)
+
+  (set-company-backend!
+    '(text-mode
+      markdown-mode
+      gfm-mode)
+    '(:seperate
+      company-files
+      company-yasnippet
+      company-ispell))
+
+  ;; "lsp-mode overrides my config and prepends company-capf to company-backends, which results in shadowing
+  ;; the other backends. To avoid this issue we can remove the lsp added entry using lsp-after-open-hook"
+  ;;   - https://github.com/doomemacs/doomemacs/issues/4477#issuecomment-762882261
+  (add-hook! lsp-after-open
+    (setq-local company-backends '(:seperate
+                                   company-files
+                                   company-capf
+                                   company-yasnippet
+                                   company-ispell)))
+  (setq +lsp-company-backends '())
 #+end_src
 
 *** Make lsp-ui sideline suggestions the same size as buffer text
@@ -165,10 +262,42 @@ from the terminal.
             ))
 #+end_src
 
+*** LSP mode in org src blocks
+From: https://tecosaur.github.io/emacs-config/config.html
+#+begin_src emacs-lisp
+  (cl-defmacro lsp-org-babel-enable (lang)
+    "Support LANG in org source code block."
+    (setq centaur-lsp 'lsp-mode)
+    (cl-check-type lang stringp)
+    (let* ((edit-pre (intern (format "org-babel-edit-prep:%s" lang)))
+           (intern-pre (intern (format "lsp--%s" (symbol-name edit-pre)))))
+      `(progn
+         (defun ,intern-pre (info)
+           (let ((file-name (->> info caddr (alist-get :file))))
+             (unless file-name
+               (setq file-name (make-temp-file "babel-lsp-")))
+             (setq buffer-file-name file-name)
+             (lsp-deferred)))
+         (put ',intern-pre 'function-documentation
+              (format "Enable lsp-mode in the buffer of org source block (%s)."
+                      (upcase ,lang)))
+         (if (fboundp ',edit-pre)
+             (advice-add ',edit-pre :after ',intern-pre)
+           (progn
+             (defun ,edit-pre (info)
+               (,intern-pre info))
+             (put ',edit-pre 'function-documentation
+                  (format "Prepare local buffer environment for org source block (%s)."
+                          (upcase ,lang))))))))
+  (defvar org-babel-lang-list
+    '("go" "python" "ipython" "bash" "sh"))
+  (dolist (lang org-babel-lang-list)
+    (eval `(lsp-org-babel-enable ,lang)))
+#+end_src
+
 ** Python
 #+begin_src emacs-lisp
   (use-package lsp-pyright
-  :ensure t
   :hook (python-mode . (lambda ()
                           (require 'lsp-pyright)
                           (tree-sitter-hl-mode)
@@ -185,6 +314,35 @@ Automatically compile typst documents upon save
         (shell-command (format "typst compile %s" filename))))))
 #+end_src
 
+** Shell
+#+begin_src emacs-lisp
+  (set-company-backend!
+    '(sh-mode)
+    '(:seperate
+      company-files
+      company-shell
+      company-yasnippet
+      company-ispell))
+#+end_src
+
+** Nix
+#+begin_src emacs-lisp
+  (add-hook! lsp-nix-nil-after-open
+    (progn
+      ;; There's a silly goofy little function called doom--setq-company-idle-delay-for-nix-mode-h that, for some reason,
+      ;; has a hook that sets company-idle-delay to nil, which effectively removes auto completion in nix-mode.  This was
+      ;; very confusing to me and took me a bit to figure out why company-mode was buggy in nix-mode.
+      (setq-local company-idle-delay ag/company-idle-delay)
+
+      (setq-local company-backends nil)
+      (setq-local company-backends '(:separate
+                                     company-files
+                                     company-nixos-options
+                                     company-capf
+                                     company-yasnippet
+                                     company-ispell))))
+#+end_src
+
 * Tweaks/Fixes
 ** Block cursor not showing up in terminal mode
 Corresponding package in package.el
@@ -199,12 +357,89 @@ Corresponding package in package.el
   (setq confirm-kill-emacs nil)
 #+end_src
 
-** Fontify natively
-By default, if you enter into an org buffer with part of a code block showing, it will
-not have syntax highlighting until scrolling up to the begin_src declaration.  This variable
-fixes that and disables the previous lazy-loading behavior.
+** Relative Line Numbers
 #+begin_src emacs-lisp
-  (setq org-src-fontify-natively t)
+  (setq display-line-numbers-type 'relative)
+#+end_src
+
+** Doom Dashboard
+#+begin_src emacs-lisp
+  ;; (after! doom-dashboard)
+  ;;   (setq +doom-dashboard-banner-padding 0))
+
+(defun doom-dashboard-widget-shortmenu ()
+  (insert "\n")
+  (dolist (section +doom-dashboard-menu-sections)
+    (cl-destructuring-bind (label &key icon action when face key) section
+      (when (and (fboundp action)
+                 (or (null when)
+                     (eval when t)))
+        (insert
+         (+doom-dashboard--center
+          (- +doom-dashboard--width 1)
+          (let ((icon (if (stringp icon) icon (eval icon t))))
+            (format (format "%s%%s%%-10s" (if icon "%3s\t" "%3s"))
+                    (or icon "")
+                    (with-temp-buffer
+                      (insert-text-button
+                       label
+                       'action
+                       `(lambda (_)
+                          (call-interactively (or (command-remapping #',action)
+                                                  #',action)))
+                       'face (or face 'doom-dashboard-menu-title)
+                       'follow-link t
+                       'help-echo
+                       (format "%s (%s)" label
+                               (propertize (symbol-name action) 'face 'doom-dashboard-menu-desc)))
+                      (format "%-37s" (buffer-string)))
+                    ;; Lookup command keys dynamically
+                    (propertize
+                     (or key
+                         (when-let*
+                             ((keymaps
+                               (delq
+                                nil (list (when (bound-and-true-p evil-local-mode)
+                                            (evil-get-auxiliary-keymap +doom-dashboard-mode-map 'normal))
+                                          +doom-dashboard-mode-map)))
+                              (key
+                               (or (when keymaps
+                                     (where-is-internal action keymaps t))
+                                   (where-is-internal action nil t))))
+                           (with-temp-buffer
+                             (save-excursion (insert (key-description key)))
+                             (while (re-search-forward "<\\([^>]+\\)>" nil t)
+                               (let ((str (match-string 1)))
+                                 (replace-match
+                                  (upcase (if (< (length str) 3)
+                                              str
+                                            (substring str 0 3))))))
+                             (buffer-string)))
+                         "")
+                     'face 'doom-dashboard-menu-desc))))
+         ;; (if (display-graphic-p)
+         ;;     "\n\n"
+         ;;   "\n"))))))
+         "\n"))))) ;; Overwrote above lines so remove the extra newline in graphical mode from the doom dashboard
+
+  (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer) ;; No github at bottom
+#+end_src
+
+** Vertico
+#+begin_src emacs-lisp
+  (vertico-posframe-mode 1)
+  (setq vertico-multiform-commands
+        '((consult-line
+           posframe
+           (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+           (vertico-posframe-border-width . 10)
+           ;; NOTE: This is useful when emacs is used in both in X and
+           ;; terminal, for posframe do not work well in terminal, so
+           ;; vertico-buffer-mode will be used as fallback at the
+           ;; moment.
+           (vertico-posframe-fallback-mode . vertico-buffer-mode))
+          (t posframe)))
+  (vertico-multiform-mode 1)
 #+end_src
 
 ** Evil
@@ -222,6 +457,7 @@ Clear all highlighting using C-l.  Mimics the "redraw" signal sent to terminals 
 ** Fonts
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 15"))
+  (set-fontset-font "fontset-default" 'han "Source Han Sans")
 #+end_src
 
 ** Swap evil g[k/j] and k/j
@@ -234,18 +470,33 @@ Clear all highlighting using C-l.  Mimics the "redraw" signal sent to terminals 
 
 ** Scrolloff
 #+begin_src emacs-lisp
-  (setq default-scroll-margin 8) ;; Custom var
-  (setq scroll-margin default-scroll-margin)
+  (setq ag/scroll-margin 8) ;; Custom var
+  (setq scroll-margin ag/scroll-margin)
 
-  ;; Scrolloff causes ncurses applications to run off the frame
+  ;; Exceptions for modes that need 0 scroll margin
   (add-hook 'eat-mode-hook (lambda () (setq-local scroll-margin 0)))
-  (add-hook 'eat-exit-hook (lambda () (setq-local scroll-margin default-scroll-margin)))
+  (add-hook 'eat-exit-hook (lambda () (setq-local scroll-margin ag/scroll-margin)))
+  (add-hook '+doom-dashboard-mode-hook (lambda () (setq-local scroll-margin 0)))
 #+end_src
 
 ** Scratch Buffer Mode
 Scratch buffer is, by default, in interactive lisp mode.  Default to just plaintext.
 #+begin_src emacs-lisp
   (setq initial-major-mode 'text-mode)
+#+end_src
+
+** Unsetting bindings that step on mine
+#+begin_src emacs-lisp
+  (unbind-key "M-a" c-mode-base-map)
+
+  ;; The C package adds a keybind to (ccls-navigate "D"), which not
+  ;; only steps on my binding, but is not even a provided function.
+  (map! :after ccls
+        :map (c-mode-map c++-mode-map)
+        :n "C-h" nil
+        :n "C-j" nil
+        :n "C-k" nil
+        :n "C-l" nil)
 #+end_src
 
 * Elisp Evaluation
@@ -259,37 +510,51 @@ Scratch buffer is, by default, in interactive lisp mode.  Default to just plaint
          :desc "Evaluate elisp in region"  "r" #'eval-region))
 #+end_src
 
-* EXWM
-#+begin_src emacs-lisp
-#+end_src
-
-* Window transparency
-There are four principle ways to start emacs with the combinations of  GUI/TUI and standalone/daemon.
+* Coloring
+There are four ways to start emacs with the combinations of GUI/TUI and standalone/daemon.
 Unfortunately, each of these four methods requires a slightly different way to set window transparency.
 #+begin_src emacs-lisp
-  (defun make-terminal-transparent (frame)
-    (custom-set-faces!
-      '(default               :background "unspecified-bg" frame)
-      '(org-block             :background "unspecified-bg" frame)
+  (add-to-list 'custom-theme-load-path "~/.config/doom/themes/")
+  (load-theme 'some-clown-fiesta t)
 
-      ;; For some reason, despite setting all dashboard faces, the dashboard does not want to turn transparent.
-      ;; '(doom-dashboard-banner :background "unspecified-bg")
-      ;; '(doom-dashboard-footer :background "unspecified-bg")
-      ;; '(doom-dashboard-loaded :background "unspecified-bg")
-      ;; '(doom-dashboard-footer-icon :background "unspecified-bg")
-      ;; '(doom-dashboard-menu-title  :background "unspecified-bg")
-      ;; '(doom-dashboard-menu-desc   :background "unspecified-bg")
+  ;; GUI transparency
+  (set-frame-parameter nil 'alpha-background 80)
+  (add-to-list 'default-frame-alist '(alpha-background . 80))
 
-      '(hl-line               :background "unspecified-bg" frame)))
+  ;; Variable sized org headers
+  (custom-set-faces!
+    '(org-document-title :height 1.5)
+    '(org-document-info  :height 1.3)
+    '(org-level-1 :height 1.5)
+    '(org-level-2 :height 1.4)
+    '(org-level-3 :height 1.3)
+    '(org-level-4 :height 1.2)
+    '(org-level-5 :height 1.1)
+    '(org-level-6 :height 1.0)
+    '(org-level-7 :height 1.0)
+    '(org-level-8 :height 1.0)
+    '(default :background "black"))
+
+  (defun ag/terminal-faces (frame)
+    (set-face-attribute 'hl-line   frame :background "unspecified-bg")
+    (set-face-attribute 'org-block frame :background "unspecified-bg")
+    (set-face-attribute 'default   frame :background "unspecified-bg"))
+    ;; (set-face-background 'hl-line "unspecified-bg" frame))
+    ;; (custom-set-faces!
+    ;;   ))
+      ;; '(default               :background "unspecified-bg" frame)
+      ;; '(org-block             :background "unspecified-bg" frame)
+      ;; '(hl-line               :background "unspecified-bg" frame)))
+
 
   (defun window-transparency ()
     (if (display-graphic-p (selected-frame))
       (progn ;; $ emacs
              ;; Transparency for graphical session
-             (set-frame-parameter nil 'alpha-background 90))
+             )
       (progn ;; $ emacs -nw
              ;; Transparency for terminal session
-             (make-terminal-transparent (selected-frame)))))
+             (ag/terminal-faces (selected-frame)))))
   (unless (daemonp)
     (add-hook 'window-setup-hook 'window-transparency))
 
@@ -298,10 +563,10 @@ Unfortunately, each of these four methods requires a slightly different way to s
     (if (display-graphic-p frame)
       (progn ;; $ emacsclient -c
              ;; Transparency for specific graphical frame
-             (set-frame-parameter frame 'alpha-background 90))
+             )
       (progn ;; $ emacsclient -nw
              ;; Transparency for specific terminal frame
-             (make-terminal-transparent frame))))
+             (ag/terminal-faces frame))))
   (add-hook 'after-make-frame-functions 'ag/make-client-frame)
 #+end_src
 
@@ -309,7 +574,7 @@ Keybinds in order to increase/decrease the transparency of emacs windows in GUI 
 bindings in sync with the terminal that I use, as to make the experiences of GUI and TUI emacs relatively similar.
 #+begin_src emacs-lisp
   (defun ag/adjust-alpha-background (delta)
-    "Increase or decrease the alpha-background by DELTA, not exceeding 100 or going below 0."
+    "Increase or decrease the alpha-background by DELTA, not exceeding 1 or going below 0."
     (interactive "p")
     ;; let* macro instead of let, since new-alpha relies on alpha
     (let* ((current-alpha (or (frame-parameter (selected-frame) 'alpha-background) 0))
