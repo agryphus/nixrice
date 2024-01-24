@@ -64,6 +64,9 @@
 (package! gruber-darker-theme)
 (package! no-clown-fiesta-theme)
 (package! mutt-mode)
+(package! anki-connect)
+(package! anki-editor)
+(package! typst-mode)
 
 ; Making org mode look good
 (package! writeroom-mode)

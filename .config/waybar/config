@@ -5,7 +5,7 @@
 
     "modules-left": ["hyprland/workspaces", "custom/scratch", "hyprland/mode", "hyprland/window"],
     "modules-center": [],
-    "modules-right": ["memory", "network", "pulseaudio", "battery", "tray", "clock"],
+    "modules-right": ["memory", "pulseaudio", "battery", "tray", "clock"],
 
 	"hyprland/workspaces": {
         "disable-scroll": true,
@@ -58,7 +58,7 @@
     },
 
     "pulseaudio": {
-        "format": "{icon} {volume}% ",
+        "format": " {icon} {volume}%",
         "format-bluetooth": "  {volume}%  ",
         "format-muted":"婢  Mute  ",
         "interval": 60,

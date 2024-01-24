@@ -89,9 +89,9 @@
  ;; Basic
  ((border                   (:background alt-bg :foreground medium-gray))
   (cursor                   (:background cursor-bg :foreground cursor-fg))
-  (hl-line                  (:background dark-gray))
-  (line-number              (:foreground gray))
-  (line-number-current-line (:background dark-gray :foreground light-gray))
+  (hl-line                  (:background 'unspecified))
+  (line-number              (:foreground medium-gray))
+  (line-number-current-line (:foreground medium-gray))
   (default                  (:foreground fg :background bg))
   (fringe                   (:background 'unspecified :foreground light-gray))
   (vertical-border          (:background 'unspecified :foreground dark-gray))

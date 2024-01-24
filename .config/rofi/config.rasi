@@ -1,5 +1,5 @@
 configuration {
-  font: "FiraCodeNerdFont 12";
+  font: "FiraCode 12";
   kb-cancel: "Super+q,Escape,Control+c";
   timeout {
     action: "kb-cancel";

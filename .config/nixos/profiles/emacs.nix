@@ -1,10 +1,8 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  services.emacs.enable = true;
-
   environment.systemPackages = with pkgs; [
-    emacs29-gtk3
+    emacs29-pgtk # Transparency on Wayland requires Pure GTK
 
     # Misc
     ispell # Spellchecker

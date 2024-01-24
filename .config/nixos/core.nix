@@ -29,7 +29,13 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   fonts.packages = with pkgs; [
-    (nerdfonts.override { fonts = [ "FiraCode" ]; })
+    # The nerdfonts package does not allow the installation of only the
+    # Symbols Nerd Font.  Also, the "mono" (actually double wide)
+    # version of this font centers the symbols which is nice.
+    nur.repos.bandithedoge.symbols-nerd-font
+
+    hack-font
+    fira-code
   ];
 
   networking.networkmanager.enable = true;
@@ -126,7 +132,8 @@
     sl # Choo choo
 
     # Some nix specific stuff
-    nix-index
+    nil # Nix LSP
+    nix-index # See which packages source a file
     nix-output-monitor # Track dependency graph during builds
     nix-prefetch-git # Like nix-prefetch-url, but for git
     nvd # See diffs between builds
@@ -186,6 +193,12 @@
       });
     })
   ];
+
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+      inherit pkgs;
+    };
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

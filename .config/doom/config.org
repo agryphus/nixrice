@@ -59,7 +59,7 @@
 ** Special symbols/characters
 #+begin_src emacs-lisp
   (after! org
-    (setq org-ellipsis " ▼ "
+    (setq
           org-superstar-headline-bullets-list '("⁖" "◉" "●" "○" "◉" "●" "○" "◉" "●" "○")
           org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)))) ; changes +/- symbols in item lists
 
@@ -78,6 +78,8 @@
         ("#+END_SRC"    . "")
         (":properties:" . "")
         (":PROPERTIES:" . "")
+        ("#+property:"  . "")
+        ("#+PROPERTY:"  . "")
         (":end:"        . "―")
         (":END:"        . "―")
         ("#+options:"   . "")
@@ -86,6 +88,8 @@
         ("#+STARTUP:"   . "")
         ("#+title: "    . "")
         ("#+TITLE: "    . "")
+        ("#+TOC:"       . "󰠶")
+        ("#+toc:"       . "󰠶")
         ("#+results:"   . "")
         ("#+RESULTS:"   . "")
         ("#+name:"      . "")
@@ -307,6 +311,7 @@ From: https://tecosaur.github.io/emacs-config/config.html
 ** Typst
 Automatically compile typst documents upon save
 #+begin_src emacs-lisp
+  (use-package! typst-mode)
   (add-hook 'after-save-hook (lambda ()
     (when (and (buffer-file-name)
           (string= (file-name-extension (buffer-file-name)) "typ"))
@@ -456,16 +461,17 @@ Clear all highlighting using C-l.  Mimics the "redraw" signal sent to terminals 
 
 ** Fonts
 #+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font 15"))
+  (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
+  (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
   (set-fontset-font "fontset-default" 'han "Source Han Sans")
 #+end_src
 
 ** Swap evil g[k/j] and k/j
 #+begin_src emacs-lisp
-  (define-key evil-normal-state-map (kbd "gj") 'evil-next-line)
-  (define-key evil-normal-state-map (kbd "gk") 'evil-previous-line)
-  (define-key evil-normal-state-map (kbd "j")  'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k")  'evil-previous-visual-line)
+  (define-key evil-motion-state-map (kbd "gj") 'evil-next-line)
+  (define-key evil-motion-state-map (kbd "gk") 'evil-previous-line)
+  (define-key evil-motion-state-map (kbd "j")  'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "k")  'evil-previous-visual-line)
 #+end_src
 
 ** Scrolloff
