@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+sel="$(man -k . | rofi -dmenu -i -p "Man page:")"
+[ "$sel" = "" ] && exite # Exit on no selection
+
+# Selection comes in the form of:
+# $program ($num) - $desc
+# Need to run `man $num $program`
+page="$(echo "$sel" | awk -F'[()]' '{print $2" "$1}')"
+nohup $TERMINAL -e man $page >/dev/null 2>&1 &
+

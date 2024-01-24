@@ -7,7 +7,7 @@ super + shift + r
 
 # Running dmenu/rofi scripts
 ctrl + alt + BackSpace
-    $TERMINAL -e $SHELL -c 'htop'
+    st -e $SHELL -c 'htop'
 super + r
     menu-run
 super + d; p
@@ -18,6 +18,8 @@ super + grave
     menu-unicode
 super + d; l
     menu-layout
+super + d; m
+    menu-man
 super + n
     menu-norg
 
@@ -31,11 +33,11 @@ super + c
 super + u
     emacsclient -c -a "emacs" -n --eval '(vterm-frame)'
 super + Return
-    $TERMINAL
+    st
 super + w
     $BROWSER
 super + e
-    $TERMINAL -e $SHELL -c 'tmp="$(mktemp)" && command lf -last-dir-path="$tmp" "$@" && test -f "$tmp" && dir="$(command cat "$tmp")" && rm -f "$tmp" && test -d "$dir" && cd "$dir" && exec $SHELL'
+    st -e $SHELL -c 'tmp="$(mktemp)" && command lf -last-dir-path="$tmp" "$@" && test -f "$tmp" && dir="$(command cat "$tmp")" && rm -f "$tmp" && test -d "$dir" && cd "$dir" && exec $SHELL'
 super + s; e
     emacsclient -c -a 'emacs'
 
