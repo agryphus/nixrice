@@ -24,12 +24,12 @@ ln             # LINK
 or             # ORPHAN
 tw      t       # STICKY_OTHER_WRITABLE
 st      t       # STICKY
-ow             # OTHER_WRITABLE
-di             # DIR
+# ow            # OTHER_WRITABLE
+# di            # DIR
 # ow             # OTHER_WRITABLE
 # di             # DIR
-# ow      󰝰       # OTHER_WRITABLE
-# di      󰝰       # DIR
+ow      󰝰       # OTHER_WRITABLE
+di      󰝰       # DIR
 pi      p       # FIFO
 so      󰡂       # SOCK
 bd      b       # BLK
@@ -354,8 +354,17 @@ Vagrantfile             
 
 # other formats
 *.pdf   
+*.tpy   󰙩
 *.iso   
 *.org   
 *.ovpn  󰳌
 *.txt   
+*.pptx  󰈩
+*.docx  
+*.doc   
+*.odt   
+*.odg   󰽉
+*.csv   
+*.ics   
+*.typ   󰙩
 

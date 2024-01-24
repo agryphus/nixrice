@@ -9,6 +9,7 @@ set shellopts '-eu' # Treat undefined env vars as errors.  Exit upon error.
 set ifs "\n"
 set scrolloff 10
 set icons # Use icons
+set info "size"
 set period 1 # Poll directory status every X seconds
 set sixel true
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml"
@@ -121,9 +122,7 @@ cmd open ${{
     [ ! -z $@ ] && [ "$@" = "new_window" ] && new_window=1
 
     function launch {
-        # swallower="gobble"
-        # [ ! -n "${WAYLAND_DISPLAY}" ] && swallower="devour"
-        swallower="devour"
+        [ -v WAYLAND_DISPLAY ] && swallower="gobble" || swallower="devour"
 
         if [ ! -v new_window ]; then
             $swallower "$@" >/dev/null 2>&1
@@ -138,6 +137,10 @@ cmd open ${{
 	application/pgp-encrypted|\
     inode/x-empty|\
     text/*)
+        if [ "${f##*.}" = "org" ]; then
+            launch emacsclient -c "$fx"
+            exit
+        fi
         [ -v new_window ] \
             && ($TERMINAL -e $SHELL -c "$EDITOR \"$fx\"" >/dev/null 2>&1 &) \
             || ($EDITOR "$fx")
