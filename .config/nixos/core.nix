@@ -65,7 +65,6 @@
   };
 
   # Misc services
-  services.syncthing.enable = true;
   services.udisks2.enable = true; # USB Mounting
   # services.printing.enable = true; # CUPS
 
@@ -80,6 +79,8 @@
     zsh.enable = true;
   };
 
+  virtualisation.docker.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users = {
     mutableUsers = true;
@@ -90,6 +91,14 @@
     };
   };
 
+  documentation = {
+    # Pull in extra documentation/manpages
+    dev.enable = true;
+
+    # Allow whatis, apropos, and man -k to work, but breaks mandb
+    man.generateCaches = true;
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -98,6 +107,7 @@
     bear # Generate Clang compilation database
     devour # Opens new program on top of terminal
     distrobox # Easily spin up VMs of other distos
+    docker # Containerization
     entr # Hooks for file changes
     expect # Provides `unbuffer`
     ffmpeg
@@ -107,12 +117,13 @@
     imagemagick # Image conversion/processing tool
     jq # Commandline JSON processor
     killall # Easy way to kill a process
+    man-pages # Documentation
+    man-pages-posix # Documentation
     neofetch # Aesthetic sysinfo
     pass-nodmenu # CLI password store (without dmenu dependency)
     pinentry-curses # Terminal-based pinentry program
     python311 # Python
     socat # Interact with sockets
-    syncthing # Syncing files between machines
     tldr # Brief info about a command
     tmux # Terminal multiplexor
     udisks # Good way of dealing with USBs and similar media
