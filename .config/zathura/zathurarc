@@ -14,3 +14,7 @@ map i recolor
 map p print
 map g goto top
 
+set recolor true
+set recolor-darkcolor "#EBDBB2"
+set default-bg rgba(0,0,0,0.8)
+set adjust-open width
