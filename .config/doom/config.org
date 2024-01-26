@@ -22,17 +22,21 @@
   - [[#shell][Shell]]
   - [[#nix][Nix]]
 - [[#tweaksfixes][Tweaks/Fixes]]
+  - [[#scale-line-number-size-with-buffer-text][Scale line number size with buffer text]]
   - [[#block-cursor-not-showing-up-in-terminal-mode][Block cursor not showing up in terminal mode]]
   - [[#disable-really-quit-emacs-prompt][Disable "Really Quit Emacs" Prompt]]
   - [[#relative-line-numbers][Relative Line Numbers]]
   - [[#doom-dashboard][Doom Dashboard]]
   - [[#vertico][Vertico]]
-  - [[#evil][Evil]]
-  - [[#fonts][Fonts]]
-  - [[#swap-evil-gkj-and-kj][Swap evil g[k/j] and k/j]]
   - [[#scrolloff][Scrolloff]]
   - [[#scratch-buffer-mode][Scratch Buffer Mode]]
   - [[#unsetting-bindings-that-step-on-mine][Unsetting bindings that step on mine]]
+- [[#evil][Evil]]
+  - [[#leave-insertvisual-modes-with-c-c][Leave insert/visual modes with C-C]]
+  - [[#clearing-highlight-with-c-l][Clearing highlight with C-L]]
+  - [[#resize-font-in-insert-mode][Resize font in insert mode]]
+  - [[#swap-gkj-and-kj][Swap g[k/j] and k/j]]
+- [[#fonts][Fonts]]
 - [[#elisp-evaluation][Elisp Evaluation]]
 - [[#coloring][Coloring]]
 
@@ -349,6 +353,11 @@ Automatically compile typst documents upon save
 #+end_src
 
 * Tweaks/Fixes
+** Scale line number size with buffer text
+#+begin_src emacs-lisp
+  (add-hook 'text-scale-mode-hook (lambda() (face-remap--remap-face 'line-number)))
+  (add-hook 'text-scale-mode-hook (lambda() (face-remap--remap-face 'line-number-current-line)))
+#+end_src
 ** Block cursor not showing up in terminal mode
 Corresponding package in package.el
 #+begin_src emacs-lisp
@@ -369,9 +378,6 @@ Corresponding package in package.el
 
 ** Doom Dashboard
 #+begin_src emacs-lisp
-  ;; (after! doom-dashboard)
-  ;;   (setq +doom-dashboard-banner-padding 0))
-
 (defun doom-dashboard-widget-shortmenu ()
   (insert "\n")
   (dolist (section +doom-dashboard-menu-sections)
@@ -447,33 +453,6 @@ Corresponding package in package.el
   (vertico-multiform-mode 1)
 #+end_src
 
-** Evil
-Quit insert/visual modes using C-c
-#+begin_src emacs-lisp
-  (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
-  (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
-#+end_src
-
-Clear all highlighting using C-l.  Mimics the "redraw" signal sent to terminals for vim.
-#+begin_src emacs-lisp
-  (define-key evil-normal-state-map (kbd "C-l") 'evil-ex-nohighlight)
-#+end_src
-
-** Fonts
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
-  (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
-  (set-fontset-font "fontset-default" 'han "Source Han Sans")
-#+end_src
-
-** Swap evil g[k/j] and k/j
-#+begin_src emacs-lisp
-  (define-key evil-motion-state-map (kbd "gj") 'evil-next-line)
-  (define-key evil-motion-state-map (kbd "gk") 'evil-previous-line)
-  (define-key evil-motion-state-map (kbd "j")  'evil-next-visual-line)
-  (define-key evil-motion-state-map (kbd "k")  'evil-previous-visual-line)
-#+end_src
-
 ** Scrolloff
 #+begin_src emacs-lisp
   (setq ag/scroll-margin 8) ;; Custom var
@@ -503,6 +482,43 @@ Scratch buffer is, by default, in interactive lisp mode.  Default to just plaint
         :n "C-j" nil
         :n "C-k" nil
         :n "C-l" nil)
+#+end_src
+
+* Evil
+** Leave insert/visual modes with C-C
+#+begin_src emacs-lisp
+  (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
+  (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
+#+end_src
+
+** Clearing highlight with C-L
+Mimics the "redraw" signal sent to terminals for vim.
+#+begin_src emacs-lisp
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-ex-nohighlight)
+#+end_src
+
+** Resize font in insert mode
+These are the same keybinds that are able to work outside of insert mode.
+#+begin_src emacs-lisp
+  (define-key evil-insert-state-map (kbd "C-M-=") 'doom/increase-font-size)
+  (define-key evil-insert-state-map (kbd "C-M--") 'doom/decrease-font-size)
+  (define-key evil-insert-state-map (kbd "C-=") 'text-scale-increase)
+  (define-key evil-insert-state-map (kbd "C--") 'text-scale-decrease)
+#+end_src
+
+** Swap g[k/j] and k/j
+#+begin_src emacs-lisp
+  (define-key evil-motion-state-map (kbd "gj") 'evil-next-line)
+  (define-key evil-motion-state-map (kbd "gk") 'evil-previous-line)
+  (define-key evil-motion-state-map (kbd "j")  'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "k")  'evil-previous-visual-line)
+#+end_src
+
+* Fonts
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
+  (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
+  (set-fontset-font "fontset-default" 'han "Source Han Sans")
 #+end_src
 
 * Elisp Evaluation
