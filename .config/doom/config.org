@@ -7,208 +7,346 @@
 # Show toc up to two headers
 #+OPTIONS: toc:2
 
-* TABLE OF CONTENTS :toc:
-- [[#quick-find-files][Quick Find Files]]
-- [[#org][Org]]
-  - [[#org-whiteroom][Org Whiteroom]]
-  - [[#special-symbolscharacters][Special symbols/characters]]
-  - [[#agenda][Agenda]]
-  - [[#svg-tags][SVG Tags]]
-- [[#vterm][Vterm]]
-- [[#languages][Languages]]
-  - [[#lspcompletion-config][LSP/Completion Config]]
-  - [[#python][Python]]
-  - [[#typst][Typst]]
-  - [[#shell][Shell]]
-  - [[#nix][Nix]]
-- [[#tweaksfixes][Tweaks/Fixes]]
-  - [[#scale-line-number-size-with-buffer-text][Scale line number size with buffer text]]
-  - [[#block-cursor-not-showing-up-in-terminal-mode][Block cursor not showing up in terminal mode]]
+* TABLE OF CONTENTS :toc_3:
+- [[#general-keybinds][General Keybinds]]
+  - [[#quick-find-files][Quick Find Files]]
+  - [[#elisp-evaluation][Elisp Evaluation]]
+  - [[#unsetting-bindings-that-step-on-mine][Unsetting Bindings That Step on Mine]]
+- [[#better-defaults][Better Defaults]]
   - [[#disable-really-quit-emacs-prompt][Disable "Really Quit Emacs" Prompt]]
   - [[#relative-line-numbers][Relative Line Numbers]]
-  - [[#doom-dashboard][Doom Dashboard]]
-  - [[#vertico][Vertico]]
   - [[#scrolloff][Scrolloff]]
   - [[#scratch-buffer-mode][Scratch Buffer Mode]]
-  - [[#unsetting-bindings-that-step-on-mine][Unsetting bindings that step on mine]]
 - [[#evil][Evil]]
-  - [[#leave-insertvisual-modes-with-c-c][Leave insert/visual modes with C-C]]
-  - [[#clearing-highlight-with-c-l][Clearing highlight with C-L]]
-  - [[#resize-font-in-insert-mode][Resize font in insert mode]]
-  - [[#swap-gkj-and-kj][Swap g[k/j] and k/j]]
+  - [[#changing-keybinds][Changing Keybinds]]
+    - [[#leave-insertvisual-modes-with-c-c][Leave insert/visual modes with C-C]]
+    - [[#clearing-highlight-with-c-l][Clearing highlight with C-L]]
+    - [[#swap-gkj-and-kj][Swap g[k/j] and k/j]]
+  - [[#resize-font-in-insert-mode][Resize Font in Insert Mode]]
+- [[#visual-tweaks][Visual Tweaks]]
+  - [[#scale-line-number-size-with-buffer-text][Scale Line Number Size with Buffer Text]]
+  - [[#block-cursor-not-showing-in-terminal-mode][Block Cursor Not Showing in Terminal Mode]]
+  - [[#doom-dashboard-spacing][Doom Dashboard Spacing]]
+  - [[#posframe][Posframe]]
+    - [[#vertico-posframe][Vertico Posframe]]
+    - [[#company-posframe][Company Posframe]]
 - [[#fonts][Fonts]]
-- [[#elisp-evaluation][Elisp Evaluation]]
+  - [[#default][Default]]
+  - [[#mixed-pitch-mode][Mixed Pitch Mode]]
 - [[#coloring][Coloring]]
+  - [[#themes][Themes]]
+- [[#languages][Languages]]
+  - [[#lspcompletion-config][LSP/Completion Config]]
+    - [[#company-mode][Company-mode]]
+    - [[#make-lsp-ui-sideline-suggestions-the-same-size-as-buffer-text][Make lsp-ui sideline suggestions the same size as buffer text]]
+    - [[#lsp-mode-in-org-src-blocks][LSP mode in org src blocks]]
+  - [[#org][Org]]
+    - [[#org-modern][Org Modern]]
+    - [[#special-symbolscharacters][Special symbols/characters]]
+    - [[#agenda][Agenda]]
+    - [[#svg-tags][SVG Tags]]
+  - [[#shell][Shell]]
+  - [[#nix][Nix]]
+- [[#miscellaneous][Miscellaneous]]
+  - [[#anki][Anki]]
+  - [[#face-explorer][Face Explorer]]
 
-* Quick Find Files
+* General Keybinds
+** Quick Find Files
 #+begin_src emacs-lisp
   (map! :leader
       (:prefix ("=" . "open file")
       :desc "Edit doom config.org"  "c" #'(lambda () (interactive) (find-file "~/.config/doom/config.org"))
-      :desc "Edit doom init.el"     "i" #'(lambda () (interactive) (find-file "~/.config/doom/init.el"))
-      :desc "Edit doom packages.el" "p" #'(lambda () (interactive) (find-file "~/.config/doom/packages.el"))))
+      :desc "Edit doom init.el"     "i" #'(lambda () (interactive) (find-file "~/.config/doom/init.el"))))
   (map! "C-/" #'comment-line)
 #+end_src
 
-* Org
-** Org Whiteroom
+** Elisp Evaluation
 #+begin_src emacs-lisp
-  (add-hook 'org-mode-hook 'mixed-pitch-mode)
+  (map! :leader
+        (:prefix ("e". "evaluate")
+         :desc "Evaluate elisp in buffer"  "b" #'eval-buffer
+         :desc "Evaluate defun"            "d" #'eval-defun
+         :desc "Evaluate elisp expression" "e" #'eval-expression
+         :desc "Evaluate last sexpression" "l" #'eval-last-sexp
+         :desc "Evaluate elisp in region"  "r" #'eval-region))
+#+end_src
+
+** Unsetting Bindings That Step on Mine
+#+begin_src emacs-lisp
+  (after! ccls! (unbind-key "M-a" c-mode-base-map))
+
+  ;; The C package adds a keybind to (ccls-navigate "D"), which not
+  ;; only steps on my binding, but is not even a provided function.
+  (map! :after ccls
+        :map (c-mode-map c++-mode-map)
+        :n "C-h" nil
+        :n "C-j" nil
+        :n "C-k" nil
+        :n "C-l" nil)
+#+end_src
+
+* Better Defaults
+** Disable "Really Quit Emacs" Prompt
+#+begin_src emacs-lisp
+  (setq confirm-kill-emacs nil)
+#+end_src
+
+** Relative Line Numbers
+#+begin_src emacs-lisp
+  (setq display-line-numbers-type 'relative)
+#+end_src
+
+** Scrolloff
+#+begin_src emacs-lisp
+  (setq ag/scroll-margin 8) ;; Custom var
+  (setq scroll-margin ag/scroll-margin)
+
+  ;; Exceptions for modes that need 0 scroll margin
+  (add-hook 'eat-mode-hook (lambda () (setq-local scroll-margin 0)))
+  (add-hook 'eat-exit-hook (lambda () (setq-local scroll-margin ag/scroll-margin)))
+  (add-hook '+doom-dashboard-mode-hook (lambda () (setq-local scroll-margin 0)))
+#+end_src
+
+** Scratch Buffer Mode
+Scratch buffer is, by default, in interactive lisp mode.  Default to just plaintext.
+#+begin_src emacs-lisp
+  (setq initial-major-mode 'text-mode)
+#+end_src
+
+* Evil
+** Changing Keybinds
+*** Leave insert/visual modes with C-C
+#+begin_src emacs-lisp
+  (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
+  (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
+#+end_src
+
+*** Clearing highlight with C-L
+Mimics the "redraw" signal sent to terminals for vim.
+#+begin_src emacs-lisp
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-ex-nohighlight)
+#+end_src
+
+*** Swap g[k/j] and k/j
+#+begin_src emacs-lisp
+  (define-key evil-motion-state-map (kbd "gj") 'evil-next-line)
+  (define-key evil-motion-state-map (kbd "gk") 'evil-previous-line)
+  (define-key evil-motion-state-map (kbd "j")  'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "k")  'evil-previous-visual-line)
+#+end_src
+
+** Resize Font in Insert Mode
+These are the same keybinds that are able to work outside of insert mode.
+#+begin_src emacs-lisp
+  (define-key evil-insert-state-map (kbd "C-M-=") 'doom/increase-font-size)
+  (define-key evil-insert-state-map (kbd "C-M--") 'doom/decrease-font-size)
+  (define-key evil-insert-state-map (kbd "C-=") 'text-scale-increase)
+  (define-key evil-insert-state-map (kbd "C--") 'text-scale-decrease)
+#+end_src
+
+* Visual Tweaks
+** Scale Line Number Size with Buffer Text
+#+begin_src emacs-lisp
+  (add-hook 'text-scale-mode-hook (lambda() (face-remap--remap-face 'line-number)))
+  (add-hook 'text-scale-mode-hook (lambda() (face-remap--remap-face 'line-number-current-line)))
+#+end_src
+** Block Cursor Not Showing in Terminal Mode
+#+begin_src emacs-lisp :tangle packages.el
+  (package! evil-terminal-cursor-changer)
 #+end_src
 
 #+begin_src emacs-lisp
-  (setq org-src-fontify-natively t)
+  (use-package! evil-terminal-cursor-changer
+    :hook (tty-setup . evil-terminal-cursor-changer-activate))
 #+end_src
 
-** Special symbols/characters
+** Doom Dashboard Spacing
+I felt that the spacing between the line items in the graphical doom dashboard was too large.  There did not seem to be any variable to set this, so I overrode the entire function and manually decreased the spacing
 #+begin_src emacs-lisp
-  (after! org
-    (setq
-          org-superstar-headline-bullets-list '("⁖" "◉" "●" "○" "◉" "●" "○" "◉" "●" "○")
-          org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)))) ; changes +/- symbols in item lists
+(defun doom-dashboard-widget-shortmenu ()
+  (insert "\n")
+  (dolist (section +doom-dashboard-menu-sections)
+    (cl-destructuring-bind (label &key icon action when face key) section
+      (when (and (fboundp action)
+                 (or (null when)
+                     (eval when t)))
+        (insert
+         (+doom-dashboard--center
+          (- +doom-dashboard--width 1)
+          (let ((icon (if (stringp icon) icon (eval icon t))))
+            (format (format "%s%%s%%-10s" (if icon "%3s\t" "%3s"))
+                    (or icon "")
+                    (with-temp-buffer
+                      (insert-text-button
+                       label
+                       'action
+                       `(lambda (_)
+                          (call-interactively (or (command-remapping #',action)
+                                                  #',action)))
+                       'face (or face 'doom-dashboard-menu-title)
+                       'follow-link t
+                       'help-echo
+                       (format "%s (%s)" label
+                               (propertize (symbol-name action) 'face 'doom-dashboard-menu-desc)))
+                      (format "%-37s" (buffer-string)))
+                    ;; Lookup command keys dynamically
+                    (propertize
+                     (or key
+                         (when-let*
+                             ((keymaps
+                               (delq
+                                nil (list (when (bound-and-true-p evil-local-mode)
+                                            (evil-get-auxiliary-keymap +doom-dashboard-mode-map 'normal))
+                                          +doom-dashboard-mode-map)))
+                              (key
+                               (or (when keymaps
+                                     (where-is-internal action keymaps t))
+                                   (where-is-internal action nil t))))
+                           (with-temp-buffer
+                             (save-excursion (insert (key-description key)))
+                             (while (re-search-forward "<\\([^>]+\\)>" nil t)
+                               (let ((str (match-string 1)))
+                                 (replace-match
+                                  (upcase (if (< (length str) 3)
+                                              str
+                                            (substring str 0 3))))))
+                             (buffer-string)))
+                         "")
+                     'face 'doom-dashboard-menu-desc))))
+         ;; (if (display-graphic-p)
+         ;;     "\n\n"
+         ;;   "\n"))))))
+         "\n"))))) ;; Overwrote above lines so remove the extra newline in graphical mode from the doom dashboard
 
-  (defun ag/prettify-me ()
-    (setq prettify-symbols-alist
-      '(("TODO"         . "")
-        ("WAIT"         . "")
-        ("NOPE"         . "")
-        ("DONE"         . "")
-        ("[ ]"          . "")
-        ("[X]"          . "")
-        ("[-]"          . "")
-        ("#+begin_src"  . "")
-        ("#+BEGIN_SRC"  . "")
-        ("#+end_src"    . "")
-        ("#+END_SRC"    . "")
-        (":properties:" . "")
-        (":PROPERTIES:" . "")
-        ("#+property:"  . "")
-        ("#+PROPERTY:"  . "")
-        (":end:"        . "―")
-        (":END:"        . "―")
-        ("#+options:"   . "")
-        ("#+OPTIONS:"   . "")
-        ("#+startup:"   . "")
-        ("#+STARTUP:"   . "")
-        ("#+title: "    . "")
-        ("#+TITLE: "    . "")
-        ("#+TOC:"       . "󰠶")
-        ("#+toc:"       . "󰠶")
-        ("#+results:"   . "")
-        ("#+RESULTS:"   . "")
-        ("#+name:"      . "")
-        ("#+NAME:"      . "")
-        ("#+roam_tags:" . "")
-        ("#+ROAM_TAGS:" . "")
-        ("#+filetags:"  . "")
-        ("#+FILETAGS:"  . "")
-        ("#+html_head:" . "")
-        ("#+HTML_HEAD:" . "")
-        ("#+subtitle:"  . "")
-        ("#+SUBTITLE:"  . "")
-        ("#+author:"    . "󰙏")
-        ("#+AUTHOR:"    . "󰙏")
-        (":effort:"     . "")
-        (":EFFORT:"     . "")
-        ("scheduled:"   . "")
-        ("SCHEDULED:"   . "")
-        ("deadline:"    . "")
-        ("DEADLINE:"    . ""))))
-  (add-hook 'org-mode-hook 'ag/prettify-me)
-  ;; Can probably remove duplicates with
-  ;; (mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
+  (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer) ;; No github at bottom
 #+end_src
 
-** Agenda
-#+begin_src emacs-lisp
-  (setq org-agenda-files
-    '("~/.local/share/org-agenda"))
-
-  (map! :leader :desc "Open org calendar" "o c" #'cfw:open-org-calendar)
-  (add-hook 'calendar-after-frame-setup-hook 'cfw:refresh-calendar-buffer)
+** Posframe
+*** Vertico Posframe
+#+begin_src emacs-lisp :tangle packages.el
+  (package! vertico-posframe)
 #+end_src
 
-** SVG Tags
 #+begin_src emacs-lisp
-  (use-package! svg-tag-mode)
-  (setq svg-tag-tags
-    '((":TODO:" . ((lambda (tag) (svg-tag-make "TODO"))))
-      ("[X]" . ((lambda (tag) (svg-tag-make "X"))))))
+  (vertico-posframe-mode 1)
+  (setq vertico-multiform-commands
+        '((consult-line
+           posframe
+           (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+           (vertico-posframe-border-width . 10)
+           ;; NOTE: This is useful when emacs is used in both in X and
+           ;; terminal, for posframe do not work well in terminal, so
+           ;; vertico-buffer-mode will be used as fallback at the
+           ;; moment.
+           (vertico-posframe-fallback-mode . vertico-buffer-mode))
+          (t posframe)))
+  (vertico-multiform-mode 1)
 #+end_src
 
-* Vterm
-#+begin_src emacs-lisp
-  (use-package! vterm
-    :config
-    (setq vterm-timer-delay 0.01))
-
-  (map! :after vterm
-      :map vterm-mode-map
-
-      ;; Send special keys to vterm
-      :ni "C-c" #'vterm--self-insert
-      :ni "C-x" #'vterm--self-insert
-      :ni [escape] #'vterm--self-insert
-
-      :ni "M-:" #'eval-expression
-
-      ;; Text size controls
-      :ni "C-=" #'text-scale-increase
-      :ni "C--" #'text-scale-decrease
-      :ni "C-M-=" #'doom/increase-font-size
-      :ni "C-M--" #'doom/decrease-font-size)
-  (setq vterm-min-window-width 1)
-  (setq ansi-color-bold-is-bright t)
-  (setq vterm-set-bold-hightbright t)
-  (setq confirm-kill-processes nil)
-  ;; (setq kill-buffer-query-functions nil)
+*** Company Posframe
+Company mode, by default, has its suggestions snap to the grid.  When using anything other than monospaced font, this creately very glitchy looking behavior.  Popping it out in a posframe makes the suggestions exist in their own graphical window.
+#+begin_src emacs-lisp :tangle packages.el
+  (package! company-posframe)
 #+end_src
 
-Making a function to open vterm in a new frame.  Vterm needs to be attached to some buffer,
-so this function generates a new one, and then a hook is needed to clear the buffer upon exit
-from the terminal.
 #+begin_src emacs-lisp
-  ;; (defun vterm-frame (&optional new-t)
-  ;;   "Open a new terminal frame.
-  ;;   If `new-t` is t, a new frame is created.
-  ;;   If `new-t` is nil, use the selected frame."
-  ;;   (interactive)
-  ;;   (let ((frame (if new-t (make-frame) (selected-frame))))
-  ;;     (with-selected-frame frame
-  ;;       (let ((default-directory "~"))
-  ;;         (let ((buffer (generate-new-buffer "*vterm*")))
-  ;;           (switch-to-buffer buffer)
-  ;;           (vterm-mode))))))
-  (defun vterm-frame (&optional new-t)
-    "Open a new terminal frame.
-    If `new-t` is t, a new frame is created.
-    If `new-t` is nil, use the selected frame.
-    If a buffer with vterm-mode is not visible, switch to it."
-    (interactive)
-    (let* ((buffers-with-vterm (cl-remove-if-not (lambda (buf)
-                                                   (with-current-buffer buf
-                                                     (and (derived-mode-p 'vterm-mode)
-                                                          (not (get-buffer-window buf t)))))
-                                                 (buffer-list)))
-           (buffer (car buffers-with-vterm)))
-      (if buffer
-          (switch-to-buffer buffer)
-        (let ((frame (if new-t (make-frame) (selected-frame))))
-          (with-selected-frame frame
-            (let ((default-directory "~"))
-              (let ((buffer (generate-new-buffer "*vterm*")))
-                (switch-to-buffer buffer)
-                (vterm-mode))))))))
+  (company-posframe-mode 1)
+#+end_src
 
-  (add-hook 'vterm-exit-functions #'(lambda (buffer str)
-    (kill-buffer buffer)
-    (if (one-window-p)
-      (delete-frame (selected-frame) t)
-      (delete-window (selected-window)))))
+* Fonts
+** Default
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
+  (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
+    (set-face-font 'variable-pitch "Inter Display 15")
+  (set-fontset-font "fontset-default" 'han "Source Han Sans")
+#+end_src
 
-  (defun vterm-send-escape ()
-    (vterm-send-key "<escape>")
-  )
+** Mixed Pitch Mode
+#+begin_src emacs-lisp :tangle packages.el
+  (package! mixed-pitch)
+#+end_src
+
+* Coloring
+There are four ways to start emacs with the combinations of GUI/TUI and standalone/daemon.
+Unfortunately, each of these four methods requires a slightly different way to set window transparency.
+** Themes
+#+begin_src emacs-lisp :tangle packages.el
+  (package! gruber-darker-theme)
+  (package! no-clown-fiesta-theme)
+#+end_src
+
+#+begin_src emacs-lisp
+  (add-to-list 'custom-theme-load-path "~/.config/doom/themes/")
+  (load-theme 'some-clown-fiesta t)
+
+  ;; GUI transparency
+  (set-frame-parameter nil 'alpha-background 80)
+  (add-to-list 'default-frame-alist '(alpha-background . 80))
+
+  ;; Variable sized org headers
+  (custom-set-faces!
+    '(org-document-title :height 1.5)
+    '(org-document-info  :height 1.3)
+    '(org-level-1 :height 1.5)
+    '(org-level-2 :height 1.4)
+    '(org-level-3 :height 1.3)
+    '(org-level-4 :height 1.2)
+    '(org-level-5 :height 1.1)
+    '(org-level-6 :height 1.0)
+    '(org-level-7 :height 1.0)
+    '(org-level-8 :height 1.0)
+    '(default :background "black"))
+
+  (defun ag/terminal-faces (frame)
+    (set-face-attribute 'hl-line   frame :background "unspecified-bg")
+    (set-face-attribute 'org-block frame :background "unspecified-bg")
+    (set-face-attribute 'default   frame :background "unspecified-bg"))
+    ;; (set-face-background 'hl-line "unspecified-bg" frame))
+    ;; (custom-set-faces!
+    ;;   ))
+      ;; '(default               :background "unspecified-bg" frame)
+      ;; '(org-block             :background "unspecified-bg" frame)
+      ;; '(hl-line               :background "unspecified-bg" frame)))
+
+
+  (defun window-transparency ()
+    (if (display-graphic-p (selected-frame))
+      (progn ;; $ emacs
+             ;; Transparency for graphical session
+             )
+      (progn ;; $ emacs -nw
+             ;; Transparency for terminal session
+             (ag/terminal-faces (selected-frame)))))
+  (unless (daemonp)
+    (add-hook 'window-setup-hook 'window-transparency))
+
+  (defun ag/make-client-frame (frame)
+    ;; Called at the creation of each emacsclient frame
+    (if (display-graphic-p frame)
+      (progn ;; $ emacsclient -c
+             ;; Transparency for specific graphical frame
+             )
+      (progn ;; $ emacsclient -nw
+             ;; Transparency for specific terminal frame
+             (ag/terminal-faces frame))))
+  (add-hook 'after-make-frame-functions 'ag/make-client-frame)
+#+end_src
+
+Keybinds in order to increase/decrease the transparency of emacs windows in GUI mode.  I try to keep these
+bindings in sync with the terminal that I use, as to make the experiences of GUI and TUI emacs relatively similar.
+#+begin_src emacs-lisp
+  (defun ag/adjust-alpha-background (delta)
+    "Increase or decrease the alpha-background by DELTA, not exceeding 1 or going below 0."
+    (interactive "p")
+    ;; let* macro instead of let, since new-alpha relies on alpha
+    (let* ((current-alpha (or (frame-parameter (selected-frame) 'alpha-background) 0))
+           (new-alpha (+ current-alpha delta)))
+      (when (and (<= new-alpha 100) (>= new-alpha 0))
+        (set-frame-parameter (selected-frame) 'alpha-background new-alpha))))
+  (global-set-key (kbd "M-a") (lambda () (interactive) (ag/adjust-alpha-background 5)))
+  (global-set-key (kbd "M-s") (lambda () (interactive) (ag/adjust-alpha-background -5)))
 #+end_src
 
 * Languages
@@ -303,24 +441,108 @@ From: https://tecosaur.github.io/emacs-config/config.html
     (eval `(lsp-org-babel-enable ,lang)))
 #+end_src
 
-** Python
+# ** Typst
+# Automatically compile typst documents upon save
+# #+begin_src emacs-lisp
+#   (use-package! typst-mode)
+#   (add-hook 'after-save-hook (lambda ()
+#     (when (and (buffer-file-name)
+#           (string= (file-name-extension (buffer-file-name)) "typ"))
+#       (let ((filename (shell-quote-argument (buffer-file-name))))
+#         (shell-command (format "typst compile %s" filename))))))
+# #+end_src
+
+** Org
 #+begin_src emacs-lisp
-  (use-package lsp-pyright
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (tree-sitter-hl-mode)
-                          (lsp))))  ; or lsp-deferred
+  (add-hook 'org-mode-hook 'mixed-pitch-mode)
 #+end_src
 
-** Typst
-Automatically compile typst documents upon save
 #+begin_src emacs-lisp
-  (use-package! typst-mode)
-  (add-hook 'after-save-hook (lambda ()
-    (when (and (buffer-file-name)
-          (string= (file-name-extension (buffer-file-name)) "typ"))
-      (let ((filename (shell-quote-argument (buffer-file-name))))
-        (shell-command (format "typst compile %s" filename))))))
+  (setq org-src-fontify-natively t)
+#+end_src
+*** Org Modern
+#+begin_src emacs-lisp :tangle packages.el
+  (package! org-modern)
+#+end_src
+
+*** Special symbols/characters
+#+begin_src emacs-lisp
+  (after! org
+    (setq
+          org-superstar-headline-bullets-list '("⁖" "◉" "•" "◦" "•" "◦" "•" "◦" "•" "◦")
+          org-superstar-itembullet-alist '((?+ . ?➤) (?- . ?✦)))) ; changes +/- symbols in item lists
+
+  (defun ag/prettify-me ()
+    (setq prettify-symbols-alist
+      '(("TODO"         . "")
+        ("WAIT"         . "")
+        ("NOPE"         . "")
+        ("DONE"         . "")
+        ("[ ]"          . "")
+        ("[X]"          . "")
+        ("[-]"          . "")
+        ("#+begin_src"  . "")
+        ("#+BEGIN_SRC"  . "")
+        ("#+end_src"    . "")
+        ("#+END_SRC"    . "")
+        (":properties:" . "")
+        (":PROPERTIES:" . "")
+        ("#+property:"  . "")
+        ("#+PROPERTY:"  . "")
+        (":end:"        . "―")
+        (":END:"        . "―")
+        ("#+options:"   . "")
+        ("#+OPTIONS:"   . "")
+        ("#+startup:"   . "")
+        ("#+STARTUP:"   . "")
+        ("#+title: "    . "")
+        ("#+TITLE: "    . "")
+        ("#+TOC:"       . "󰠶")
+        ("#+toc:"       . "󰠶")
+        ("#+results:"   . "")
+        ("#+RESULTS:"   . "")
+        ("#+name:"      . "")
+        ("#+NAME:"      . "")
+        ("#+roam_tags:" . "")
+        ("#+ROAM_TAGS:" . "")
+        ("#+filetags:"  . "")
+        ("#+FILETAGS:"  . "")
+        ("#+html_head:" . "")
+        ("#+HTML_HEAD:" . "")
+        ("#+subtitle:"  . "")
+        ("#+SUBTITLE:"  . "")
+        ("#+author:"    . "󰙏")
+        ("#+AUTHOR:"    . "󰙏")
+        (":effort:"     . "")
+        (":EFFORT:"     . "")
+        ("scheduled:"   . "")
+        ("SCHEDULED:"   . "")
+        ("deadline:"    . "")
+        ("DEADLINE:"    . ""))))
+  (add-hook 'org-mode-hook 'ag/prettify-me)
+  ;; Can probably remove duplicates with
+  ;; (mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
+#+end_src
+
+*** Agenda
+#+begin_src emacs-lisp
+  (setq org-agenda-files
+    '("~/.local/share/org-agenda"))
+
+  (map! :leader :desc "Open org calendar" "o c" #'cfw:open-org-calendar)
+  (add-hook 'calendar-after-frame-setup-hook 'cfw:refresh-calendar-buffer)
+#+end_src
+
+*** SVG Tags
+#+begin_src emacs-lisp :tangle packages.el
+  (package! svg-tag-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package! svg-tag-mode)
+  (setq svg-tag-tags
+    '((":TODO:" . ((lambda (tag) (svg-tag-make "TODO"))))
+      ("[X]" . ((lambda (tag) (svg-tag-make "X"))))))
 #+end_src
 
 ** Shell
@@ -352,257 +574,14 @@ Automatically compile typst documents upon save
                                      company-ispell))))
 #+end_src
 
-* Tweaks/Fixes
-** Scale line number size with buffer text
-#+begin_src emacs-lisp
-  (add-hook 'text-scale-mode-hook (lambda() (face-remap--remap-face 'line-number)))
-  (add-hook 'text-scale-mode-hook (lambda() (face-remap--remap-face 'line-number-current-line)))
-#+end_src
-** Block cursor not showing up in terminal mode
-Corresponding package in package.el
-#+begin_src emacs-lisp
-  (use-package! evil-terminal-cursor-changer
-    :hook (tty-setup . evil-terminal-cursor-changer-activate))
-#+end_src
-*** TODO : Figure out how to tangle package.el inside config.org
-
-** Disable "Really Quit Emacs" Prompt
-#+begin_src emacs-lisp
-  (setq confirm-kill-emacs nil)
+* Miscellaneous
+** Anki
+#+begin_src emacs-lisp :tangle packages.el
+  (package! anki-connect)
+  (package! anki-editor)
 #+end_src
 
-** Relative Line Numbers
-#+begin_src emacs-lisp
-  (setq display-line-numbers-type 'relative)
-#+end_src
-
-** Doom Dashboard
-#+begin_src emacs-lisp
-(defun doom-dashboard-widget-shortmenu ()
-  (insert "\n")
-  (dolist (section +doom-dashboard-menu-sections)
-    (cl-destructuring-bind (label &key icon action when face key) section
-      (when (and (fboundp action)
-                 (or (null when)
-                     (eval when t)))
-        (insert
-         (+doom-dashboard--center
-          (- +doom-dashboard--width 1)
-          (let ((icon (if (stringp icon) icon (eval icon t))))
-            (format (format "%s%%s%%-10s" (if icon "%3s\t" "%3s"))
-                    (or icon "")
-                    (with-temp-buffer
-                      (insert-text-button
-                       label
-                       'action
-                       `(lambda (_)
-                          (call-interactively (or (command-remapping #',action)
-                                                  #',action)))
-                       'face (or face 'doom-dashboard-menu-title)
-                       'follow-link t
-                       'help-echo
-                       (format "%s (%s)" label
-                               (propertize (symbol-name action) 'face 'doom-dashboard-menu-desc)))
-                      (format "%-37s" (buffer-string)))
-                    ;; Lookup command keys dynamically
-                    (propertize
-                     (or key
-                         (when-let*
-                             ((keymaps
-                               (delq
-                                nil (list (when (bound-and-true-p evil-local-mode)
-                                            (evil-get-auxiliary-keymap +doom-dashboard-mode-map 'normal))
-                                          +doom-dashboard-mode-map)))
-                              (key
-                               (or (when keymaps
-                                     (where-is-internal action keymaps t))
-                                   (where-is-internal action nil t))))
-                           (with-temp-buffer
-                             (save-excursion (insert (key-description key)))
-                             (while (re-search-forward "<\\([^>]+\\)>" nil t)
-                               (let ((str (match-string 1)))
-                                 (replace-match
-                                  (upcase (if (< (length str) 3)
-                                              str
-                                            (substring str 0 3))))))
-                             (buffer-string)))
-                         "")
-                     'face 'doom-dashboard-menu-desc))))
-         ;; (if (display-graphic-p)
-         ;;     "\n\n"
-         ;;   "\n"))))))
-         "\n"))))) ;; Overwrote above lines so remove the extra newline in graphical mode from the doom dashboard
-
-  (remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer) ;; No github at bottom
-#+end_src
-
-** Vertico
-#+begin_src emacs-lisp
-  (vertico-posframe-mode 1)
-  (setq vertico-multiform-commands
-        '((consult-line
-           posframe
-           (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
-           (vertico-posframe-border-width . 10)
-           ;; NOTE: This is useful when emacs is used in both in X and
-           ;; terminal, for posframe do not work well in terminal, so
-           ;; vertico-buffer-mode will be used as fallback at the
-           ;; moment.
-           (vertico-posframe-fallback-mode . vertico-buffer-mode))
-          (t posframe)))
-  (vertico-multiform-mode 1)
-#+end_src
-
-** Scrolloff
-#+begin_src emacs-lisp
-  (setq ag/scroll-margin 8) ;; Custom var
-  (setq scroll-margin ag/scroll-margin)
-
-  ;; Exceptions for modes that need 0 scroll margin
-  (add-hook 'eat-mode-hook (lambda () (setq-local scroll-margin 0)))
-  (add-hook 'eat-exit-hook (lambda () (setq-local scroll-margin ag/scroll-margin)))
-  (add-hook '+doom-dashboard-mode-hook (lambda () (setq-local scroll-margin 0)))
-#+end_src
-
-** Scratch Buffer Mode
-Scratch buffer is, by default, in interactive lisp mode.  Default to just plaintext.
-#+begin_src emacs-lisp
-  (setq initial-major-mode 'text-mode)
-#+end_src
-
-** Unsetting bindings that step on mine
-#+begin_src emacs-lisp
-  (unbind-key "M-a" c-mode-base-map)
-
-  ;; The C package adds a keybind to (ccls-navigate "D"), which not
-  ;; only steps on my binding, but is not even a provided function.
-  (map! :after ccls
-        :map (c-mode-map c++-mode-map)
-        :n "C-h" nil
-        :n "C-j" nil
-        :n "C-k" nil
-        :n "C-l" nil)
-#+end_src
-
-* Evil
-** Leave insert/visual modes with C-C
-#+begin_src emacs-lisp
-  (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
-  (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
-#+end_src
-
-** Clearing highlight with C-L
-Mimics the "redraw" signal sent to terminals for vim.
-#+begin_src emacs-lisp
-  (define-key evil-normal-state-map (kbd "C-l") 'evil-ex-nohighlight)
-#+end_src
-
-** Resize font in insert mode
-These are the same keybinds that are able to work outside of insert mode.
-#+begin_src emacs-lisp
-  (define-key evil-insert-state-map (kbd "C-M-=") 'doom/increase-font-size)
-  (define-key evil-insert-state-map (kbd "C-M--") 'doom/decrease-font-size)
-  (define-key evil-insert-state-map (kbd "C-=") 'text-scale-increase)
-  (define-key evil-insert-state-map (kbd "C--") 'text-scale-decrease)
-#+end_src
-
-** Swap g[k/j] and k/j
-#+begin_src emacs-lisp
-  (define-key evil-motion-state-map (kbd "gj") 'evil-next-line)
-  (define-key evil-motion-state-map (kbd "gk") 'evil-previous-line)
-  (define-key evil-motion-state-map (kbd "j")  'evil-next-visual-line)
-  (define-key evil-motion-state-map (kbd "k")  'evil-previous-visual-line)
-#+end_src
-
-* Fonts
-#+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
-  (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
-  (set-fontset-font "fontset-default" 'han "Source Han Sans")
-#+end_src
-
-* Elisp Evaluation
-#+begin_src emacs-lisp
-  (map! :leader
-        (:prefix ("e". "evaluate")
-         :desc "Evaluate elisp in buffer"  "b" #'eval-buffer
-         :desc "Evaluate defun"            "d" #'eval-defun
-         :desc "Evaluate elisp expression" "e" #'eval-expression
-         :desc "Evaluate last sexpression" "l" #'eval-last-sexp
-         :desc "Evaluate elisp in region"  "r" #'eval-region))
-#+end_src
-
-* Coloring
-There are four ways to start emacs with the combinations of GUI/TUI and standalone/daemon.
-Unfortunately, each of these four methods requires a slightly different way to set window transparency.
-#+begin_src emacs-lisp
-  (add-to-list 'custom-theme-load-path "~/.config/doom/themes/")
-  (load-theme 'some-clown-fiesta t)
-
-  ;; GUI transparency
-  (set-frame-parameter nil 'alpha-background 80)
-  (add-to-list 'default-frame-alist '(alpha-background . 80))
-
-  ;; Variable sized org headers
-  (custom-set-faces!
-    '(org-document-title :height 1.5)
-    '(org-document-info  :height 1.3)
-    '(org-level-1 :height 1.5)
-    '(org-level-2 :height 1.4)
-    '(org-level-3 :height 1.3)
-    '(org-level-4 :height 1.2)
-    '(org-level-5 :height 1.1)
-    '(org-level-6 :height 1.0)
-    '(org-level-7 :height 1.0)
-    '(org-level-8 :height 1.0)
-    '(default :background "black"))
-
-  (defun ag/terminal-faces (frame)
-    (set-face-attribute 'hl-line   frame :background "unspecified-bg")
-    (set-face-attribute 'org-block frame :background "unspecified-bg")
-    (set-face-attribute 'default   frame :background "unspecified-bg"))
-    ;; (set-face-background 'hl-line "unspecified-bg" frame))
-    ;; (custom-set-faces!
-    ;;   ))
-      ;; '(default               :background "unspecified-bg" frame)
-      ;; '(org-block             :background "unspecified-bg" frame)
-      ;; '(hl-line               :background "unspecified-bg" frame)))
-
-
-  (defun window-transparency ()
-    (if (display-graphic-p (selected-frame))
-      (progn ;; $ emacs
-             ;; Transparency for graphical session
-             )
-      (progn ;; $ emacs -nw
-             ;; Transparency for terminal session
-             (ag/terminal-faces (selected-frame)))))
-  (unless (daemonp)
-    (add-hook 'window-setup-hook 'window-transparency))
-
-  (defun ag/make-client-frame (frame)
-    ;; Called at the creation of each emacsclient frame
-    (if (display-graphic-p frame)
-      (progn ;; $ emacsclient -c
-             ;; Transparency for specific graphical frame
-             )
-      (progn ;; $ emacsclient -nw
-             ;; Transparency for specific terminal frame
-             (ag/terminal-faces frame))))
-  (add-hook 'after-make-frame-functions 'ag/make-client-frame)
-#+end_src
-
-Keybinds in order to increase/decrease the transparency of emacs windows in GUI mode.  I try to keep these
-bindings in sync with the terminal that I use, as to make the experiences of GUI and TUI emacs relatively similar.
-#+begin_src emacs-lisp
-  (defun ag/adjust-alpha-background (delta)
-    "Increase or decrease the alpha-background by DELTA, not exceeding 1 or going below 0."
-    (interactive "p")
-    ;; let* macro instead of let, since new-alpha relies on alpha
-    (let* ((current-alpha (or (frame-parameter (selected-frame) 'alpha-background) 0))
-           (new-alpha (+ current-alpha delta)))
-      (when (and (<= new-alpha 100) (>= new-alpha 0))
-        (set-frame-parameter (selected-frame) 'alpha-background new-alpha))))
-  (global-set-key (kbd "M-a") (lambda () (interactive) (ag/adjust-alpha-background 5)))
-  (global-set-key (kbd "M-s") (lambda () (interactive) (ag/adjust-alpha-background -5)))
+** Face Explorer
+#+begin_src emacs-lisp :tangle packages.el
+  (package! face-explorer)
 #+end_src
