@@ -4,9 +4,7 @@
 # Unfold all org headings
 #+STARTUP: showeverything
 
-# Show toc up to two headers
-#+OPTIONS: toc:2
-
+# Roughly in order of least to most likely to break / necessary to fix a broken config.
 * TABLE OF CONTENTS :toc_3:
 - [[#general-keybinds][General Keybinds]]
   - [[#quick-find-files][Quick Find Files]]
@@ -19,6 +17,7 @@
   - [[#scratch-buffer-mode][Scratch Buffer Mode]]
 - [[#evil][Evil]]
   - [[#changing-keybinds][Changing Keybinds]]
+    - [[#changing-backspace-behavior][Changing backspace behavior]]
     - [[#leave-insertvisual-modes-with-c-c][Leave insert/visual modes with C-C]]
     - [[#clearing-highlight-with-c-l][Clearing highlight with C-L]]
     - [[#swap-gkj-and-kj][Swap g[k/j] and k/j]]
@@ -35,16 +34,23 @@
   - [[#mixed-pitch-mode][Mixed Pitch Mode]]
 - [[#coloring][Coloring]]
   - [[#themes][Themes]]
+  - [[#transparency][Transparency]]
 - [[#languages][Languages]]
   - [[#lspcompletion-config][LSP/Completion Config]]
     - [[#company-mode][Company-mode]]
     - [[#make-lsp-ui-sideline-suggestions-the-same-size-as-buffer-text][Make lsp-ui sideline suggestions the same size as buffer text]]
     - [[#lsp-mode-in-org-src-blocks][LSP mode in org src blocks]]
   - [[#org][Org]]
+    - [[#variable-height-headers][Variable Height Headers]]
     - [[#org-modern][Org Modern]]
     - [[#special-symbolscharacters][Special symbols/characters]]
     - [[#agenda][Agenda]]
     - [[#svg-tags][SVG Tags]]
+  - [[#markdown][Markdown]]
+    - [[#conceal-markup][Conceal Markup]]
+    - [[#variable-sized-headers][Variable Sized Headers]]
+    - [[#list-bullets][List Bullets]]
+    - [[#mixed-pitch][Mixed Pitch]]
   - [[#shell][Shell]]
   - [[#nix][Nix]]
 - [[#miscellaneous][Miscellaneous]]
@@ -116,6 +122,10 @@ Scratch buffer is, by default, in interactive lisp mode.  Default to just plaint
 
 * Evil
 ** Changing Keybinds
+*** Changing backspace behavior
+#+begin_src emacs-lisp
+  (define-key evil-insert-state-map (kbd "<backspace>") 'backward-delete-char-untabify)
+#+end_src
 *** Leave insert/visual modes with C-C
 #+begin_src emacs-lisp
   (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
@@ -280,36 +290,22 @@ Unfortunately, each of these four methods requires a slightly different way to s
 #+begin_src emacs-lisp
   (add-to-list 'custom-theme-load-path "~/.config/doom/themes/")
   (load-theme 'some-clown-fiesta t)
+#+end_src
 
+** Transparency
+#+begin_src emacs-lisp
   ;; GUI transparency
   (set-frame-parameter nil 'alpha-background 80)
   (add-to-list 'default-frame-alist '(alpha-background . 80))
 
   ;; Variable sized org headers
   (custom-set-faces!
-    '(org-document-title :height 1.5)
-    '(org-document-info  :height 1.3)
-    '(org-level-1 :height 1.5)
-    '(org-level-2 :height 1.4)
-    '(org-level-3 :height 1.3)
-    '(org-level-4 :height 1.2)
-    '(org-level-5 :height 1.1)
-    '(org-level-6 :height 1.0)
-    '(org-level-7 :height 1.0)
-    '(org-level-8 :height 1.0)
     '(default :background "black"))
 
   (defun ag/terminal-faces (frame)
     (set-face-attribute 'hl-line   frame :background "unspecified-bg")
     (set-face-attribute 'org-block frame :background "unspecified-bg")
     (set-face-attribute 'default   frame :background "unspecified-bg"))
-    ;; (set-face-background 'hl-line "unspecified-bg" frame))
-    ;; (custom-set-faces!
-    ;;   ))
-      ;; '(default               :background "unspecified-bg" frame)
-      ;; '(org-block             :background "unspecified-bg" frame)
-      ;; '(hl-line               :background "unspecified-bg" frame)))
-
 
   (defun window-transparency ()
     (if (display-graphic-p (selected-frame))
@@ -460,6 +456,21 @@ From: https://tecosaur.github.io/emacs-config/config.html
 #+begin_src emacs-lisp
   (setq org-src-fontify-natively t)
 #+end_src
+
+*** Variable Height Headers
+#+begin_src emacs-lisp
+  (custom-set-faces!
+    '(org-document-title :height 1.5)
+    '(org-document-info  :height 1.3)
+    '(org-level-1 :height 1.5)
+    '(org-level-2 :height 1.4)
+    '(org-level-3 :height 1.3)
+    '(org-level-4 :height 1.2)
+    '(org-level-5 :height 1.1)
+    '(org-level-6 :height 1.0)
+    '(org-level-7 :height 1.0)
+    '(org-level-8 :height 1.0))
+#+end_src
 *** Org Modern
 #+begin_src emacs-lisp :tangle packages.el
   (package! org-modern)
@@ -543,6 +554,35 @@ From: https://tecosaur.github.io/emacs-config/config.html
   (setq svg-tag-tags
     '((":TODO:" . ((lambda (tag) (svg-tag-make "TODO"))))
       ("[X]" . ((lambda (tag) (svg-tag-make "X"))))))
+#+end_src
+
+** Markdown
+*** Conceal Markup
+#+begin_src emacs-lisp
+  (add-hook 'markdown-mode-hook '(lambda () (markdown-toggle-markup-hiding)))
+#+end_src
+
+*** Variable Sized Headers
+#+begin_src emacs-lisp
+  (custom-set-faces!
+    '(markdown-header-face-1 :height 1.5)
+    '(markdown-header-face-2 :height 1.4)
+    '(markdown-header-face-3 :height 1.3)
+    '(markdown-header-face-4 :height 1.2)
+    '(markdown-header-face-5 :height 1.1)
+    '(markdown-header-face-6 :height 1.0)
+    '(markdown-header-face-7 :height 1.0)
+    '(markdown-header-face-8 :height 1.0))
+#+end_src
+
+*** List Bullets
+#+begin_src emacs-lisp
+  (setq markdown-list-item-bullets '("•" "◦"))
+#+end_src
+
+*** Mixed Pitch
+#+begin_src emacs-lisp
+  (add-hook 'markdown-mode-hook '(lambda () (mixed-pitch-mode)))
 #+end_src
 
 ** Shell

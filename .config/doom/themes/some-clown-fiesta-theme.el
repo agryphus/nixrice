@@ -368,6 +368,35 @@
   (org-document-title        (:foreground white :weight 'bold))
   (org-document-info         (:foreground white :weight 'bold))
 
+  ;; Markdown
+  (markdown-header-face-1 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground medium-gray-blue :weight 'bold))
+  (markdown-header-face-2 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground gray-blue :weight 'bold))
+  (markdown-header-face-3 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground cyan :weight 'bold))
+  (markdown-header-face-4 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground green :weight 'bold))
+  (markdown-header-face-5 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground medium-gray-blue :weight 'bold))
+  (markdown-header-face-6 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground gray-blue :weight 'bold))
+  (markdown-header-face-7 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground cyan :weight 'bold))
+  (markdown-header-face-8 (:weight 'bold
+                           :underline (:style 'line)
+                           :foreground green :weight 'bold))
+  (markdown-list-face     (:foreground medium-gray-blue))
+  (markdown-hr-face       (:foreground medium-gray :weight 'bold))
+  (markdown-code-face     (:background "#111111" :extend t))
+
   ;; Dired
   (dired-directory (:foreground blue :weight 'bold))
   (dired-ignored   (:foreground gray-blue))
