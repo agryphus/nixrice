@@ -24,7 +24,6 @@ export PAGER=
 export GTK_THEME=Adwaita:dark
 
 # Configuring input method
-export GTK_IM_MODULE='fcitx'
 export QT_IM_MODULE='fcitx'
 export SDL_IM_MODULE='fcitx'
 export XMODIFIERS='@im=fcitx'
@@ -54,6 +53,7 @@ export TEXMFVAR="$XDG_CACHE_HOME/texlive/texmf-var"
 export TLDR_CACHE_DIR="$XDG_CACHE_HOME/tldr"
 export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 export VIMINIT='let $MYVIMRC = !has("nvim") ? "$XDG_CONFIG_HOME/vim/vimrc" : "$XDG_CONFIG_HOME/nvim/init.lua" | so $MYVIMRC'
+export WINEPREFIX="$XDG_DATA_HOME/wine"
 export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"
 export XSERVERRC="$XDG_CONFIG_HOME/X11/xserverrc"
 

@@ -3,6 +3,9 @@
 [ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
   source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
+# Get it out of here
+[ -d ~/Downloads ] && [ -z "$(ls ~/Downloads)" ] && rmdir ~/Downloads/
+
 # ZSH Configurations
 unsetopt autocd               # Change directory just by typing its name (hurts performance)
 setopt interactivecomments    # Allow comments in interactive mode
@@ -94,6 +97,27 @@ function colors {
     done
 }
 
+function increase_opacity {
+    printf "\033]11;rgba:00/00/00/ff\007"
+}
+function decrease_opacity {
+    printf "\033]11;rgba:00/00/00/00\007"
+}
+
+function pwdterm {
+    # New terminal in the current working directory
+    setsid -f $TERMINAL -e $SHELL >/dev/null 2>&1 &
+}
+
+function ya() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
 function lfcd {
     tmp="$(mktemp)"
     command lf -last-dir-path="$tmp" "$@"
@@ -160,9 +184,16 @@ function nixstore () {
 
 ## KEYBINDS ##
 
-bindkey -s '^e' 'lfcd\n'
+zle -N increase_opacity
+zle -N decrease_opacity
+bindkey '^[s' decrease_opacity
+bindkey '^[a' increase_opacity
+
+bindkey -s '^e' 'ya\n'
 bindkey -s '^n' 'nix_shell_menu'
-bindkey -s '^[^M' 'nohup $TERMINAL -e $SHELL -c "cd $PWD && exec $SHELL" >/dev/null 2>&1 & \n'
+
+zle -N pwdterm
+bindkey '^[^M' pwdterm
 
 # Enable completion features
 autoload -Uz compinit
