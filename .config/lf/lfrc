@@ -27,6 +27,10 @@ map <c-r> reload
 map <c-s> set hidden!
 map <enter> shell
 
+# Spawn new terminal/lf windows
+map <a-enter> $setsid -f $TERMINAL -e $SHELL >/dev/null 2>&1 &
+map <a-e> $setsid -f $TERMINAL -e $SHELL -c -i "lfcd && exec $SHELL" >/dev/null 2>&1 &
+
 # Opening commands
 map l open
 map L open new_window
@@ -122,7 +126,7 @@ cmd open ${{
     [ ! -z $@ ] && [ "$@" = "new_window" ] && new_window=1
 
     function launch {
-        [ -v WAYLAND_DISPLAY ] && swallower="gobble" || swallower="devour"
+        [ -v WAYLAND_DISPLAY ] && swallower="swallow" || swallower="devour"
 
         if [ ! -v new_window ]; then
             $swallower "$@" >/dev/null 2>&1
@@ -137,10 +141,13 @@ cmd open ${{
 	application/pgp-encrypted|\
     inode/x-empty|\
     text/*)
-        if [ "${f##*.}" = "org" ]; then
-            launch emacsclient -c "$fx"
-            exit
-        fi
+        case "${f##*.}" in
+            org|typ)
+                # Any "document" like file ought to be in emacs
+                launch emacsclient -c "$fx"
+                exit
+                ;;
+        esac
         [ -v new_window ] \
             && ($TERMINAL -e $SHELL -c "$EDITOR \"$fx\"" >/dev/null 2>&1 &) \
             || ($EDITOR "$fx")

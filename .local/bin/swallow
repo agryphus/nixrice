@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Window swallower for Hyprland
+
+pid=$(hyprctl activewindow -j | jq '.pid')
+workspace=$(hyprctl activeworkspace -j | jq '.id')
+
+hyprctl dispatch movetoworkspacesilent special
+cmd=$1; shift 1; $cmd "$@"
+hyprctl dispatch movetoworkspacesilent "$workspace",pid:"$pid"
+
