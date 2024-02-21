@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
-sel="$(man -k . | rofi -dmenu -i -p "Man page:")"
-[ "$sel" = "" ] && exite # Exit on no selection
+sel="$(man -k . | fuzzel --dmenu -i -p "Man page:")"
+[ "$sel" = "" ] && exit # Exit on no selection
 
 # Selection comes in the form of:
 # $program ($num) - $desc

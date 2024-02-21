@@ -1,12 +1,46 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 increase=0
-if [ "$1" != "-i" ] && [ "$1" != "-d" ] || [ -z "$2" ]; then
-    echo "Wrong number of arguments"
-    exit 1
-else
-    [ "$1" = "-i" ] && increase=1
-fi
+
+# Reading from config
+config="$HOME/.config/hypr/hyprland.conf"
+def_gaps_out="$(grep "^\s*gaps_out" $config | awk '{print $3}')"
+[ -z "$def_gaps_out" ] && def_gaps_out=12
+def_gaps_in="$(grep  "^\s*gaps_in"  $config | awk '{print $3}')"
+[ -z "$def_gaps_in" ]  && def_gaps_in=12
+def_rounding="$(grep "^\s*rounding" $config | awk '{print $3}')"
+[ -z "$def_rounding" ] && def_rounding=10
+
+case $1 in
+    -i)
+        increase=1
+        ;;
+    -d)
+        increase=0
+        ;;
+    -r)
+        hyprctl keyword general:gaps_out $def_gaps_out
+        hyprctl keyword general:gaps_in $def_gaps_in
+        hyprctl keyword decoration:rounding $def_rounding
+        exit 0
+        ;;
+    -t)
+        gaps_out="$(hyprctl getoption general:gaps_out | grep "int" | awk '{print $2}')"
+        if [ $gaps_out = 0 ]; then
+            hyprctl keyword general:gaps_out $def_gaps_out
+            hyprctl keyword general:gaps_in $def_gaps_in
+            hyprctl keyword decoration:rounding $def_rounding
+        else
+            hyprctl keyword general:gaps_out 0
+            hyprctl keyword general:gaps_in 0
+            hyprctl keyword decoration:rounding 0
+        fi
+        exit 0
+        ;;
+    *)
+        exit 1
+        ;;
+esac
 
 amount="$2"
 curr_out="$(hyprctl -j getoption general:gaps_out | jq '.int')"
@@ -19,10 +53,19 @@ fi
 
 new_in="$(($new_out / 2))"
 
-if [ $new_out -lt 0 ] || [ $new_in -lt 0 ]; then
+if [ $new_out -le 0 ] || [ $new_in -le 0 ]; then
     new_out=0
     new_in=0
 fi
+
+# Handing smooth rounding transition
+notify-send "$max_rounding"
+if [ $new_in -gt $def_rounding ]; then
+    new_rounding=$def_rounding
+else
+    new_rounding=$new_in
+fi
+hyprctl keyword decoration:rounding "$new_rounding"
 
 hyprctl keyword general:gaps_out "$new_out"
 hyprctl keyword general:gaps_in  "$new_in"

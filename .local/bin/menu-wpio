@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 # Simple rofi script for changing default audio sink
 
 audio_info="$(wpctl status \
@@ -27,7 +27,8 @@ devices="$(echo "$devices_and_numbers" \
     | awk -F'[' '{print $1}' \
     | cut -c 2-)"
 
-chosen="$(echo "$devices" | rofi -no-fixed-num-lines -dmenu -p "Select audio $1:" -i)"
+lines="$(echo "$devices" | wc -l)"
+chosen="$(echo "$devices" | fuzzel -l $lines --dmenu -p "Select audio $1:" -i)"
 if [ -z "$chosen" ]; then
     # Exited without selecting
     exit

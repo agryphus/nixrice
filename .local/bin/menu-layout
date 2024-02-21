@@ -1,5 +1,5 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
-layout=`autorandr | rofi -dmenu -i -p "Select layout:" | awk '{print $1}'`
+layout=`autorandr | fuzzel --dmenu -i -p "Select layout:" | awk '{print $1}'`
 autorandr $layout
 
