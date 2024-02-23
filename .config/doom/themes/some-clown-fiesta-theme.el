@@ -421,6 +421,9 @@
   ;; Compilation
   (compilation-info (:foreground hint-blue))
 
+  ;; yasnippet
+  (yas-field-highlight-face (:background nil))
+
   ;; diredfl
   (diredfl-compressed-file-name   (:foreground gray-blue))
   (diredfl-compressed-file-suffix (:foreground gray-blue))

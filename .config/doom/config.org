@@ -19,6 +19,7 @@
   - [[#changing-keybinds][Changing Keybinds]]
     - [[#changing-backspace-behavior][Changing backspace behavior]]
     - [[#leave-insertvisual-modes-with-c-c][Leave insert/visual modes with C-C]]
+    - [[#remove-jk-escape-sequence][Remove "jk" escape sequence]]
     - [[#clearing-highlight-with-c-l][Clearing highlight with C-L]]
     - [[#swap-gkj-and-kj][Swap g[k/j] and k/j]]
   - [[#resize-font-in-insert-mode][Resize Font in Insert Mode]]
@@ -51,6 +52,7 @@
     - [[#variable-sized-headers][Variable Sized Headers]]
     - [[#list-bullets][List Bullets]]
     - [[#mixed-pitch][Mixed Pitch]]
+  - [[#typst][Typst]]
   - [[#shell][Shell]]
   - [[#nix][Nix]]
 - [[#miscellaneous][Miscellaneous]]
@@ -130,6 +132,12 @@ Scratch buffer is, by default, in interactive lisp mode.  Default to just plaint
 #+begin_src emacs-lisp
   (define-key evil-insert-state-map (kbd "C-c") 'evil-normal-state)
   (define-key evil-visual-state-map (kbd "C-c") 'evil-normal-state)
+#+end_src
+
+*** Remove "jk" escape sequence
+By default, evil exits insert mode when "jk" is pressed in sequence.  I find this to be confusing behavior.
+#+begin_src emacs-lisp
+  (setq evil-escape-key-sequence nil)
 #+end_src
 
 *** Clearing highlight with C-L
@@ -437,17 +445,6 @@ From: https://tecosaur.github.io/emacs-config/config.html
     (eval `(lsp-org-babel-enable ,lang)))
 #+end_src
 
-# ** Typst
-# Automatically compile typst documents upon save
-# #+begin_src emacs-lisp
-#   (use-package! typst-mode)
-#   (add-hook 'after-save-hook (lambda ()
-#     (when (and (buffer-file-name)
-#           (string= (file-name-extension (buffer-file-name)) "typ"))
-#       (let ((filename (shell-quote-argument (buffer-file-name))))
-#         (shell-command (format "typst compile %s" filename))))))
-# #+end_src
-
 ** Org
 #+begin_src emacs-lisp
   (add-hook 'org-mode-hook 'mixed-pitch-mode)
@@ -583,6 +580,31 @@ From: https://tecosaur.github.io/emacs-config/config.html
 *** Mixed Pitch
 #+begin_src emacs-lisp
   (add-hook 'markdown-mode-hook '(lambda () (mixed-pitch-mode)))
+#+end_src
+
+** Typst
+Download the `typst-ts-mode` package, which isn't yet in Melpa.
+#+begin_src emacs-lisp :tangle packages.el
+(package! typst-mode)
+;; (package! typst-ts-mode :recipe (:type git
+;;                                  :host sourcehut
+;;                                  :repo "meow_king/typst-ts-mode"))
+#+end_src
+
+Configure typst-ts-mode.
+#+begin_src emacs-lisp
+  (use-package! typst-mode)
+  ;; (use-package! typst-ts-mode)
+    ;; :custom
+    ;; (typst-ts-mode-watch-options "--open")
+    ;; (typst-ts-mode-enable-raw-blocks-highlight t)
+    ;; (typst-ts-mode-highlight-raw-blocks-at-startup t))
+
+  ;; (setq treesit-load-name-override-list
+  ;;       '((typst "libtree-sitter-typst" "tree_sitter_typst")))
+
+  ;; (setq treesit-language-source-alist
+  ;;       '((typst "https://github.com/uben0/tree-sitter-typst")))
 #+end_src
 
 ** Shell
