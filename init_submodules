@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Go to script dir
+cd "$(dirname "$(readlink -f "$0")")"
+
+git submodule init
+git submodule update --force --recursive --init --remote
+git submodule foreach "git checkout master"
+

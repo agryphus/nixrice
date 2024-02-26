@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Go to script directory
+dir="$(dirname "$(readlink -f "$0")")"
+cd "$dir"
+
+for package in $(ls $dir); do
+    if [ ! -d "$dir/$package" ]; then
+        continue
+    fi
+
+    if [ "$package" = "misc" ]; then
+        stow --target=$HOME --dotfiles --simulate --no-folding -R $package
+    else
+        stow --target=$HOME --dotfiles --simulate -v -R $package
+    fi
+done
+
