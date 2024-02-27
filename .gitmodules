@@ -1,17 +1,16 @@
-[submodule "dwm"]
-    path = dwm/dot-config/dwmblocks
-    url = ../dwm.git
-    ignore = all
-[submodule "st"]
-    path = st/dot-config/st
-    url = ../st.git
-    ignore = all
 [submodule "dwmblocks"]
-    path = dwmblocks/dot-config/dwmblocks
-    url = ../dwmblocks.git
-    ignore = all
+	path = dwmblocks/.config/dwmblocks
+	url = ../dwmblocks.git
+	branch = master
+[submodule "dwm"]
+	path = dwm/.config/dwm
+	url = ../dwm.git
+	branch = master
 [submodule "nvim"]
-    path = nvim/dot-config/nvim
-    url = ../nvim.git
-    ignore = all
-
+	path = nvim/.config/nvim
+	url = ../nvim.git
+	branch = master
+[submodule "st"]
+	path = st/.config/st
+	url = ../st.git
+	branch = master

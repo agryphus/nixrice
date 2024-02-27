@@ -10,9 +10,9 @@ for package in $(ls $dir); do
     fi
 
     if [ "$package" = "misc" ]; then
-        stow --target=$HOME --dotfiles --simulate --no-folding -R $package
+        stow --target=$HOME --dotfiles --no-folding -R $package
     else
-        stow --target=$HOME --dotfiles --simulate -v -R $package
+        stow --target=$HOME --dotfiles -v -R $package
     fi
 done
 
