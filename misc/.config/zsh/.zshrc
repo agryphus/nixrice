@@ -49,9 +49,6 @@ preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
 ## ALIASES ##
 
-# The rice repo
-alias config='git --git-dir $HOME/repos/dotfiles/ --work-tree=$HOME'
-
 # WSL
 alias wclip='/mnt/c/Windows/System32/clip.exe'
 alias wclipget='/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -c Get-Clipboard'
