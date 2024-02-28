@@ -16,15 +16,17 @@
   };
 
   # Files to add to /etc
-  environment.etc = {
-    "zshenv.local".text = ''
-        export ZDOTDIR="$HOME/.config/zsh"
-    '';
+  environment = {
+    binsh = "${pkgs.dash}/bin/dash";
+    etc = {
+      "zshenv.local".text = ''
+          export ZDOTDIR="$HOME/.config/zsh"
+      '';
+    };
+    pathsToLink = [
+      "/share"
+    ];
   };
-
-  environment.pathsToLink = [
-    "/share"
-  ];
 
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -36,6 +38,7 @@
 
     hack-font
     fira-code
+    inter
   ];
 
   networking.networkmanager.enable = true;
@@ -106,6 +109,7 @@
     bluetuith # TUI bluetooth manager
     bear # Generate Clang compilation database
     devour # Opens new program on top of terminal
+    dash # Fast, posix compliant shell
     distrobox # Easily spin up VMs of other distos
     docker # Containerization
     entr # Hooks for file changes

@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
-{
+let
+  nixos-unstable = import <nixos-unstable> {};
+in {
   i18n = {
     inputMethod = {
       # Have to install fcitx5 through here so that the binary is patched to be able to see the addons.
@@ -17,6 +19,12 @@
   fonts.packages = with pkgs; [
     source-han-sans
     source-han-serif
+  ];
+
+  nixpkgs.overlays = [
+    (self: super: {
+      fcitx5-with-addons = nixos-unstable.fcitx5-with-addons;
+    })
   ];
 }
 

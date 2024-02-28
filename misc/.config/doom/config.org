@@ -605,6 +605,8 @@ Configure typst-ts-mode.
 
   ;; (setq treesit-language-source-alist
   ;;       '((typst "https://github.com/uben0/tree-sitter-typst")))
+
+  (setq typst-pdf-preview-command "zathura %s")
 #+end_src
 
 ** Shell
