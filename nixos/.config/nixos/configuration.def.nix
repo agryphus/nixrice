@@ -2,13 +2,13 @@
 
 {
   imports = [
-    # Do not remove
+    # Common packages I'd always want
     ./core.nix
 
-    # Want this for bare metal
+    # Machine-specific configuration
     # ./hardware-configuration.nix
 
-    # Specific profiles for this machine
+    # Profiles for this machine
     # ./profiles/lf.nix
     # ./profiles/nvim.nix
     # ./profiles/desktop_x.nix
