@@ -68,11 +68,13 @@ in {
   };
 
   environment.systemPackages = with pkgs; [
+    ags # GTK shell for status bar and widgets
     blueman # Bluetooth manager
     # dunst # Notification daemon
     eww-wayland
     firefox # My browser of choice
     foot # Wayland native terminal
+    fuzzel # Fuzzy finding menuing program
     gobble # Wayland alternative to devour
     grimblast # Allows freezing screen
     grim # Screenshot tool
@@ -95,11 +97,12 @@ in {
     texlive.combined.scheme-full # LaTeX to create documents
     typst # Cool, minimal LaTeX alternative
     ungoogled-chromium # If I need a special chrome feature
-    waybar
+    waybar # Status bar
     wayland-utils
     wdisplays # Arnadr substitute
     wl-clipboard # Copy/paste utility
     wlr-randr # Xrandr substitute
+    xwaylandvideobridge # Allows screensharing from XWayland programs
 
     # GTK Themes
     lxappearance-gtk2 # Theme switcher
@@ -112,6 +115,10 @@ in {
       grimblast = super.grimblast.override (o: {
         hyprpicker = hyprpicker_0_1_1;
       });
+      ags = pkgs.callPackage "${builtins.fetchGit {
+        url = "https://github.com/Aylur/ags.git";
+        ref = "main";
+      }}/nix" {};
     })
   ];
 }
