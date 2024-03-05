@@ -1,0 +1,4 @@
+# Personal machine configuration
+nixos/.config/nixos/configuration.nix
+nixos/.config/nixos/hardware-configuration.nix
+
