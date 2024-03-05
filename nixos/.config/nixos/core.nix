@@ -1,6 +1,8 @@
 { config, pkgs, ... }:
 
-{
+let
+  nixos-unstable = (import <nixos-unstable> {});
+in {
   # Nix settings
   nix = {
     package = pkgs.nixFlakes;
@@ -78,7 +80,13 @@
       enable = true;
       enableSSHSupport = true;
     };
-    nix-ld.enable = true; # Run unpatched binaries
+    nix-ld = {
+      # Run unpatched binaries.
+      enable = true;
+      libraries = with pkgs; [
+        # Add missing dynamic libraries for unpackages programs here
+      ];
+    };
     zsh.enable = true;
   };
 
@@ -128,9 +136,11 @@
     pinentry-curses # Terminal-based pinentry program
     python311 # Python
     socat # Interact with sockets
+    stow # Simlink farm (used for dotfile management)
     tldr # Brief info about a command
     tmux # Terminal multiplexor
     udisks # Good way of dealing with USBs and similar media
+    yazi # Terminal file manager
 
     # Shell
     starship # Universal shell prompt
@@ -206,6 +216,7 @@
           hash = "sha256-0Y0bcsa6GfP/A+gZe6o94WNWfQNHVEtMZfMuvWVBu0c=";
         };
       });
+      yazi = nixos-unstable.yazi;
     })
   ];
 
