@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+CONFIG="$HOME/.config/hypr/monitors.conf"
+
+function make_matching_list {
+    mons="$(make_name_map)"
+    count="$(echo "$mons" | wc -l)"
+    while IFS= read -r line; do
+        if ! echo "$line" | grep -Eq '^[a-zA-Z0-9_]* *= *{'; then
+            continue
+        fi
+        profile=$(echo "$line" | awk -F' *= *{' '{print $1}')
+    
+        # Get a sorted list of the monitors for the profile
+        match=1
+        num_listed=0
+        while IFS= read -r rule && [ "$rule" != "};" ]; do
+            [ -z "$rule" ] && continue # Empty line
+
+            # Either monitor name in "s or port name
+            mon=$(echo "$rule" | awk -F'"' '{print $2}')
+            [ -z "$mon" ] && mon=$(echo "$rule" \
+                | awk -F ',' '{print $1}' `# First comma separated value`\
+                | sed 's/ //g') # Remove whitespace
+
+            [ -z "$(echo "$mons" | grep "$mon")" ] && match=0 && break
+            num_listed=$(($num_listed + 1))
+        done
+        [ $num_listed -ne $count ] && match=0
+        echo "$profile $match"
+    done < $CONFIG
+    profile_list=$(echo "$profile_list" | awk 'NR>1')
+}
+
+function make_name_map {
+    echo "$(wlr-randr)" | while IFS= read -r line; do
+        desc="$(echo "$line" | awk -F'"' '{print $2}')"
+        [ ! -z "$desc" ] && echo "$desc"
+    done
+}
+
+function name_to_port {
+    name_map="$1"
+    name="$2"
+    echo "$name_map" | grep "$name" | awk -F'[()]' '{print $2}'
+}
+
+function make_commands {
+    declaration="$(cat $CONFIG \
+        | awk "/\\s*$1\\s*=\\s*{/,/};/" \
+        | sed '1d;$d')"
+    [ -z "$declaration" ] && exit 1
+    echo "$declaration" | while IFS= read -r rule; do
+        [ -z "$rule" ] && continue # Empty line
+        echo "hyprctl keyword monitor ${rule#"${rule%%[![:space:]]*}"}"
+    done
+}
+
+function handle() {
+  monitor=$(echo "$1" | sed 's/.*>>\(.*\)$/\1/')
+  case $1 in
+    monitoradded*)
+        notify-send "Added monitor $monitor"
+        ;;
+    monitorremoved*)
+        notify-send "Removed monitor $monitor"
+        ;;
+  esac
+  # auto_apply
+}
+
+function auto_apply() {
+    echo "$(make_matching_list)" | while read -r profile match; do
+        if [ $match == 1 ]; then
+            apply_profile "$profile"
+            exit 0
+        fi
+    # None found.  Falling back to default.
+    apply_profile "$default"
+    done
+}
+
+function apply_profile() {
+    eval "$(make_commands "$1")"
+}
+
+function list_profiles() {
+    count_matched=0
+    echo "$(make_matching_list)" | while read -r profile match; do
+        echo -n "$profile"
+        if [ $match != 0 ]; then
+            count_matched=$(($count_matched + 1))
+            echo -n " (match $count_matched)"
+        fi
+        echo
+    done
+}
+
+case $1 in
+    auto)
+        auto_apply
+        exit 0
+        ;;
+    list)
+        list_profiles
+        exit 0
+        ;;
+    savemap)
+        make_name_map > /tmp/monitormap
+        exit 0
+        ;;
+    listen)
+        auto_apply
+        socat -U - UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | while read -r line; do handle "$line"; done
+        exit 0
+        ;;
+    print)
+        echo "$(make_commands "$2")"
+        exit 0
+        ;;
+    apply)
+        apply_profile "$2"
+        exit 0
+        ;;
+    menu)
+        choice="$(echo "$(list_profiles)" | fuzzel --dmenu -p "Select layout:" | awk '{print $1}')"
+        [ -z "$choice" ] && exit 0
+        notify-send "Applied monitor layout $choice"
+        apply_profile "$choice"
+        exit 0
+        ;;
+    *)
+        exit 1
+        ;;
+esac
+

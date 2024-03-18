@@ -1,0 +1,29 @@
+#!/usr/bin/env sh
+# Start script for hyprland
+
+# Restart wallpaper daemon synchronously
+swww kill
+
+# Start daemons that can turn on asynchronously
+(
+    foot --server &
+    systemctl --user restart network-manager-applet
+    pkill fcitx5; fcitx5 &
+    emacs --daemon
+) &
+ags &
+
+# Rearrange monitors
+hyprmonitors auto
+
+systemctl --user restart hyprland-autoname-workspaces
+
+# Set default workspace per monitor
+# hyprctl dispatch focusmonitor 1; hyprctl dispatch exec 'hyprdwm goto 1'
+# hyprctl dispatch focusmonitor +1; hyprctl dispatch exec 'hyprdwm goto 1'
+# hyprctl dispatch focusmonitor +1; hyprctl dispatch exec 'hyprdwm goto 1'
+# hyprctl dispatch focusmonitor 0
+
+sleep 3
+swww init
+
