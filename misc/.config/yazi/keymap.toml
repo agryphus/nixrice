@@ -5,10 +5,12 @@
 [manager]
 
 prepend_keymap = [
-	{ on = [ "l" ], exec = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
-	{ on = [ "L" ], exec = "plugin smart-enter --sync --args='detatch'", desc = "Open in new window." },
-    { on = [ "n" ], exec = "create", desc = "Create a file or directory (ends with / for directories)" },
-    { on = [ "=" ], exec = """
+	{ on = [ "j" ], run = [ "plugin --sync arrow --args=1"],  desc = "Move selection downwards, or wrap." },
+	{ on = [ "k" ], run = [ "plugin --sync arrow --args=-1"], desc = "Move selection upwards, or wrap." },
+	{ on = [ "l" ], run = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
+	{ on = [ "L" ], run = "plugin smart-enter --sync --args='detatch'", desc = "Open in new window." },
+    { on = [ "n" ], run = "create", desc = "Create a file or directory (ends with / for directories)" },
+    { on = [ "=" ], run = """
         shell 'printf "Mode Bits: "; read ans; chmod $ans "$@"' --block --confirm
     """, desc = "chmod" },
 ]
