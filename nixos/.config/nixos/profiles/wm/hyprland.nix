@@ -29,15 +29,9 @@ in {
     hyprland = { # Dynamic tiling window manager
       enable = true;
       xwayland.enable = true;
-      package = (hyprland.packages.${pkgs.system}.default).override (o: {
-        wlroots = o.wlroots.overrideAttrs (oa: {
-          patches = oa.patches ++ [
-            /home/vince/misc/DisplayLink_v2.patch
-          ];
-        });
-      });
+      # package = ((hyprland.packages.${pkgs.system}.default).override (o: {
+      # });
     };
-    # waybar.enable = true; # Status bar
   };
 
   systemd.user.services = {
@@ -57,21 +51,12 @@ in {
       serviceConfig.RestartSec = 1;
       serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
     };
-    # waybar = {
-    #   description = "Waybar as systemd service";
-    #   wantedBy = [ "graphical-session.target" ];
-    #   partOf = [ "graphical-session.target" ];
-    #   script = "${pkgs.waybar}/bin/waybar";
-    #   serviceConfig.Restart = "always";
-    #   serviceConfig.RestartSec = 1;
-    # };
   };
 
   environment.systemPackages = with pkgs; [
     ags # GTK shell for status bar and widgets
     blueman # Bluetooth manager
     # dunst # Notification daemon
-    eww-wayland
     firefox # My browser of choice
     foot # Wayland native terminal
     fuzzel # Fuzzy finding menuing program
@@ -86,6 +71,7 @@ in {
     libnotify # Send messages to notification daemon
     libreoffice # MSOffice btfo
     networkmanagerapplet # Wifi dropdown menu
+    nsxiv # Image viewer
     nwg-displays
     pinentry-rofi # Rofi frontend for pinentry program
     pyprland # Plugin manager for Hyprland
@@ -103,6 +89,7 @@ in {
     wl-clipboard # Copy/paste utility
     wlr-randr # Xrandr substitute
     xwaylandvideobridge # Allows screensharing from XWayland programs
+    zathura # Minimalist PDF reader
 
     # GTK Themes
     lxappearance-gtk2 # Theme switcher
