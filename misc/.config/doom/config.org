@@ -37,6 +37,8 @@
   - [[#themes][Themes]]
   - [[#transparency][Transparency]]
 - [[#languages][Languages]]
+  - [[#treesitter-config][Treesitter Config]]
+    - [[#treesit-auto][Treesit-auto]]
   - [[#lspcompletion-config][LSP/Completion Config]]
     - [[#company-mode][Company-mode]]
     - [[#make-lsp-ui-sideline-suggestions-the-same-size-as-buffer-text][Make lsp-ui sideline suggestions the same size as buffer text]]
@@ -48,11 +50,14 @@
     - [[#agenda][Agenda]]
     - [[#svg-tags][SVG Tags]]
   - [[#markdown][Markdown]]
+    - [[#table-of-contents][Table of Contents]]
     - [[#conceal-markup][Conceal Markup]]
     - [[#variable-sized-headers][Variable Sized Headers]]
     - [[#list-bullets][List Bullets]]
     - [[#mixed-pitch][Mixed Pitch]]
   - [[#typst][Typst]]
+    - [[#preview][Preview]]
+    - [[#concealing][Concealing]]
   - [[#shell][Shell]]
   - [[#nix][Nix]]
 - [[#miscellaneous][Miscellaneous]]
@@ -354,6 +359,19 @@ bindings in sync with the terminal that I use, as to make the experiences of GUI
 #+end_src
 
 * Languages
+** Treesitter Config
+*** Treesit-auto
+Automatically downloads the relevant treesitter grammar.  Includes languages that are not in the main emacs treesitter repository, such as typst (as of the time of writing)
+#+begin_src emacs-lisp :tangle packages.el
+  (package! treesit-auto)
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package treesit-auto
+    :config
+    (global-treesit-auto-mode))
+#+end_src
+
 ** LSP/Completion Config
 *** Company-mode
 #+begin_src emacs-lisp
@@ -554,6 +572,21 @@ From: https://tecosaur.github.io/emacs-config/config.html
 #+end_src
 
 ** Markdown
+*** Table of Contents
+Automatically generate a table of contents for markdown documents
+#+begin_src emacs-lisp :tangle packages.el
+  (package! markdown-toc)
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; (add-hook! markdown-toc-mode-hook
+  ;;   (setq markdown-toc-header-toc-start "<!-- TOC -->"
+  ;;         markdown-toc-header-toc-end "<!-- \\TOC -->"))
+  (after! markdown-toc
+    (setq markdown-toc-header-toc-start "<!-- TOC -->"
+          markdown-toc-header-toc-end "<!-- \\TOC -->"))
+#+end_src
+
 *** Conceal Markup
 #+begin_src emacs-lisp
   (add-hook 'markdown-mode-hook '(lambda () (markdown-toggle-markup-hiding)))
@@ -585,28 +618,48 @@ From: https://tecosaur.github.io/emacs-config/config.html
 ** Typst
 Download the `typst-ts-mode` package, which isn't yet in Melpa.
 #+begin_src emacs-lisp :tangle packages.el
-(package! typst-mode)
-;; (package! typst-ts-mode :recipe (:type git
-;;                                  :host sourcehut
-;;                                  :repo "meow_king/typst-ts-mode"))
+  (package! typst-mode)
+  (package! typst-ts-mode :recipe (:type git
+                                   :host sourcehut
+                                   :repo "meow_king/typst-ts-mode"))
 #+end_src
 
-Configure typst-ts-mode.
+Uncomment and run this block of code if the treesitter grammar is not installed.
 #+begin_src emacs-lisp
-  (use-package! typst-mode)
-  ;; (use-package! typst-ts-mode)
-    ;; :custom
-    ;; (typst-ts-mode-watch-options "--open")
-    ;; (typst-ts-mode-enable-raw-blocks-highlight t)
-    ;; (typst-ts-mode-highlight-raw-blocks-at-startup t))
-
-  ;; (setq treesit-load-name-override-list
-  ;;       '((typst "libtree-sitter-typst" "tree_sitter_typst")))
-
   ;; (setq treesit-language-source-alist
-  ;;       '((typst "https://github.com/uben0/tree-sitter-typst")))
+  ;;       '(typst "https://github.com/uben0/tree-sitter-typst"))
+  ;; (treesit-install-language-grammar 'typst)
+#+end_src
 
-  (setq typst-pdf-preview-command "zathura %s")
+General configuration
+#+begin_src emacs-lisp
+  (use-package! typst-ts-mode
+    :config
+    (setq typst-ts-mode-fontification-precision-level 'max
+          typst-ts-markup-header-same-height nil
+          typst-ts-markup-header-scale '(2.0 2.0 2.0 2.0 2.0 2.0)))
+#+end_src
+
+*** Preview
+There is no variable to substitute the default preview command, so I overrode it.
+#+begin_src emacs-lisp
+  (after! typst-ts-mode
+    (defun typst-ts-mode-preview (file)
+      (interactive (list (concat (file-name-base buffer-file-name) ".pdf")))
+      (shell-command (format "setsid -f zathura %s >/dev/null 2>&1" (shell-quote-argument file)))))
+#+end_src
+
+*** Concealing
+Making the editor more WYSIWYG-like
+#+begin_src emacs-lisp
+  (add-hook! typst-ts-mode
+    (progn
+      (setq prettify-symbols-alist
+        '(("= "    . "")
+          ("== "   . "")
+          ("=== "  . "")
+          ("==== " . "")))
+      (prettify-symbols-mode)))
 #+end_src
 
 ** Shell
