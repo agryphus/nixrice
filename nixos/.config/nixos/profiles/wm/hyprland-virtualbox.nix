@@ -15,5 +15,12 @@ in {
     ({ original    = pkgs.mesa.drivers; 
        replacement = nixos-unstable.mesa.drivers; })
   ];
+
+  # Opening wayvnc port
+  networking.firewall.allowedTCPPorts = [ 5900 ];
+
+  environment.systemPackages = with pkgs; [
+    wayvnc # VNC client for remote desktop
+  ];
 }
 

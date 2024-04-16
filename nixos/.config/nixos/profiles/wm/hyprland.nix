@@ -77,6 +77,7 @@ in {
     pyprland # Plugin manager for Hyprland
     rofi # Menu prompt program
     rofi-pass # Rofi frontend for password store
+    sassc # SCSS interpreter
     slurp # Screen selection utility
     swaylock # Wayland session locker
     swww # Sets background images
