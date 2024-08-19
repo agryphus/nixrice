@@ -4,7 +4,7 @@
 }
 
 window#waybar { 
-    background-color: rgba(0, 0, 0, 0.8); 
+    background-color: rgb(0, 0, 0);
     color: #ffffff;    
 }
 
@@ -57,10 +57,6 @@ button:hover {
 
 #network, #temperature, #backlight, #pulseudio, #battery {
     padding: 0px 15px 0px 15px;
-}
-
-#clock {
-	margin: 0px 15px 0px 15px;
 }
 
 #tray{

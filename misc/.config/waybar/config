@@ -5,12 +5,12 @@
 
     "modules-left": ["hyprland/workspaces", "custom/scratch", "hyprland/mode", "hyprland/window"],
     "modules-center": [],
-    "modules-right": ["memory", "pulseaudio", "battery", "tray", "clock"],
+    "modules-right": ["tray", "memory", "pulseaudio", "battery", "clock"],
 
 	"hyprland/workspaces": {
         "disable-scroll": true,
         "disable-markup": true,
-        "format": "{name}" 
+        "format": "{name}",
     },
 
 	"hyprland/window": {
@@ -24,7 +24,7 @@
     },
 
     "clock": {
-        "format": "{: %a %b%e   %R}",
+        "format": " {:%a %b %e   %R}",
         "interval": 30
     },
 
