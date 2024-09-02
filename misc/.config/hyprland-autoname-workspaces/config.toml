@@ -1,62 +1,46 @@
-version = "1.1.11"
-
-[format]
-# Deduplicate icons if enable.
-# A superscripted counter will be added.
-# dedup = false
-# dedup_inactive_fullscreen = false # dedup more
-# window delimiter
-delim = ""
-
-# available formatter:
-# {counter_sup} - superscripted count of clients on the workspace, and simple {counter}, {delim}
-# {icon}, {client}
-# workspace formatter
-workspace = "{id}:{delim}{clients}" # {id}, {delim} and {clients} are supported
-# workspace_empty = "{id}" # {id}, {delim} and {clients} are supported
-# client formatter
-# client = "{icon}"
-# client_active = "*{icon}*"
-
-# deduplicate client formatter
-# client_fullscreen = "[{icon}]"
-# client_dup = "{client}{counter_sup}"
-# client_dup_fullscreen = "[{icon}]{delim}{icon}{counter_unfocused}"
-# client_dup_active = "*{icon}*{delim}{icon}{counter_unfocused}"
+version = "1.1.14"
 
 [class]
-# Add your icons mapping
-# use double quote the key and the value
-# take class name from 'hyprctl clients'
-"DEFAULT" = "{class}"
-"(?i)Kitty"      = " "
-"(?i)foot"       = " "
-"(?i)st"         = " "
-"(?i)mpv"        = " "
-"[Ff]irefox"     = " "
-"(?i)slack"      = "󰒱 "
-"(?i)discord"    = "󰊴 "
-"(?i)spotify"    = " "
-"(?i)chromium"   = " "
-"(?i)emacs"      = " "
-"(?i)steam"      = " "
-"(?i)zathura"    = " "
+DEFAULT = "{class}"
+"(?i)firefox"    = " "
 "(?i)Anki"       = " "
-"(?i)virtualbox" = " "
-"(?i)Gimp"       = " "
-"(?i)libreoffice-writer"      = "󰷈 "
 "(?i)blueman-manager-wrapped" = " "
+"(?i)chromium"   = " "
+"(?i)discord"    = "󰊴 "
+"(?i)Element"    = "󰘨 "
+"(?i)emacs"      = " "
+"(?i)foot"       = " "
+"(?i)Gimp"       = " "
+"(?i)Kitty"      = " "
+"(?i)libreoffice-writer" = "󰷈 "
+"(?i)mpv"        = " "
+"(?i)Nsxiv"      = " "
+"(?i)slack"      = "󰒱 "
+"(?i)spotify"    = " "
+"(?i)st"         = " "
+"(?i)steam"      = " "
+"(?i)virtualbox" = " "
+"(?i)zathura"    = " "
+"(?i)mullvad vpn"= " "
 
-# [class_active]
-# DEFAULT = "*{icon}*"
-# "(?i)ExampleOneTerm" = "<span foreground='red'>{icon}</span>"
+[class_active]
 
-# [initial_class]
-# "DEFAULT" = "test"
-# "(?i)Kitty" = "term"
+[initial_class]
 
-# [initial_class_active]
-# "(?i)Kitty" = "*TERM*"
+[initial_class_active]
+
+[workspaces_name]
+6 = "six"
+2 = "two"
+4 = "four"
+3 = "three"
+7 = "seven"
+10 = "ten"
+8 = "eight"
+5 = "five"
+1 = "one"
+0 = "zero"
+9 = "nine"
 
 [title_in_class."(?i)kitty"]
 "(?i)neomutt" = "neomutt"
@@ -65,47 +49,37 @@ workspace = "{id}:{delim}{clients}" # {id}, {delim} and {clients} are supported
 "(?i)nvim" = "nvim"
 "(?i)neovim" = "neovim"
 
-# regex captures support is supported
-# "emerge: (.+?/.+?)-.*" = "{match1}"
-
 [title_in_class_active."(?i)firefox"]
 "(?i)twitch" = "<span color='purple'>{icon}</span>"
 
-# [title_in_initial_class."(?i)kitty"]
-# "(?i)neomutt" = "neomutt"
+[title_in_initial_class]
 
-# [initial_title_in_class."(?i)kitty"]
-# "(?i)neomutt" = "neomutt"
+[title_in_initial_class_active]
 
-# [initial_title_in_initial_class."(?i)kitty"]
-# "(?i)neomutt" = "neomutt"
+[initial_title_in_class]
 
-# [initial_title."(?i)kitty"]
-# "zsh" = "Zsh"
+[initial_title_in_class_active]
 
-# [initial_title_active."(?i)kitty"]
-# "zsh" = "*Zsh*"
+[initial_title_in_initial_class]
 
-# Add your applications that need to be exclude
-# The key is the class, the value is the title.
-# You can put an empty title to exclude based on
-# class name only, "" make the job.
+[initial_title_in_initial_class_active]
+
 [exclude]
-"" = "^$" # prevent displaying icon for empty class
-"(?i)fcitx" = ".*" # will match all title for fcitx
-"(?i)TestApp" = "" # will match all title for TestApp
-aProgram = "^$" # will match null title for aProgram
-"[Ss]team" = "^(Friends List.*)?$" # will match Steam friends list plus all popups (empty titles)
+"(?i)fcitx" = ".*"
+"" = "^$"
+"[Ss]team" = "^(Friends List.*)?$"
+aProgram = "^$"
+"(?i)TestApp" = ""
 
-[workspaces_name]
-0 = "zero"
-1 = "one"
-2 = "two"
-3 = "three"
-4 = "four"
-5 = "five"
-6 = "six"
-7 = "seven"
-8 = "eight"
-9 = "nine"
-10 = "ten"
+[format]
+dedup = false
+dedup_inactive_fullscreen = false
+delim = ""
+workspace = "{id}:{delim}{clients}"
+workspace_empty = "{id}"
+client = "<span color='#999999'>{icon}</span>"
+client_fullscreen = "[{icon}]"
+client_active = "<span color='#FFFFFF'>{icon}</span>"
+client_dup = "{icon}{counter_sup}"
+client_dup_active = "*{icon}*{delim}{icon}{counter_unfocused_sup}"
+client_dup_fullscreen = "[{icon}]{delim}{icon}{counter_unfocused_sup}"
