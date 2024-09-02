@@ -1,0 +1,4 @@
+name = McMojave
+description = Hyprcursor port of the McMojave theme by @vinceluice (https://github.com/vinceliuice/McMojave-cursors)
+version = 0.1
+cursors_directory = hyprcursors
