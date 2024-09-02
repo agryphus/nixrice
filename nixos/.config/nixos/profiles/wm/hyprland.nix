@@ -8,14 +8,15 @@ let
   nixos-unstable = (import <nixos-unstable> {});
 
   flake-compat = builtins.fetchTarball "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
-  hyprland = (import flake-compat {
-    src = builtins.fetchTarball "https://github.com/hyprwm/Hyprland/archive/master.tar.gz";
+
+  hyprland_nightly = (import flake-compat {
+    # we're not using pkgs.fetchgit as that requires a hash to be provided
+    src = builtins.fetchGit {
+      url = "https://github.com/hyprwm/Hyprland.git";
+      submodules = true;
+    };
   }).defaultNix;
 in {
-  imports = [
-    hyprland.nixosModules.default
-  ];
-
   # Trusted Hyprland cache, as to not have to rebuild nightly
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
@@ -29,23 +30,26 @@ in {
     hyprland = { # Dynamic tiling window manager
       enable = true;
       xwayland.enable = true;
-      # package = ((hyprland.packages.${pkgs.system}.default).override (o: {
-      # });
+      # package = nixos-unstable.hyprland;
+      package = hyprland_nightly.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     };
   };
 
   systemd.user.services = {
     hyprland-autoname-workspaces = {
       description = "Hyprland-autoname-workspaces as systemd service";
+      after = [ "graphical-session.target" ];
+      requires = [ "graphical-session.target" ];
       wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
       script = "${pkgs.hyprland-autoname-workspaces}/bin/hyprland-autoname-workspaces";
       serviceConfig.Restart = "always";
       serviceConfig.RestartSec = 1;
     };
     network-manager-applet = {
       description = "Start the network manager applet";
-      wantedBy = [ "default.target" ];
+      after = [ "graphical-session.target" ];
+      requires = [ "graphical-session.target" ];
+      wantedBy = [ "graphical-session.target" ];
       serviceConfig.Type = "forking";
       serviceConfig.Restart = "always";
       serviceConfig.RestartSec = 1;
@@ -56,7 +60,7 @@ in {
   environment.systemPackages = with pkgs; [
     ags # GTK shell for status bar and widgets
     blueman # Bluetooth manager
-    # dunst # Notification daemon
+    dunst # Notification daemon
     firefox # My browser of choice
     foot # Wayland native terminal
     fuzzel # Fuzzy finding menuing program
@@ -79,9 +83,11 @@ in {
     rofi-pass # Rofi frontend for password store
     sassc # SCSS interpreter
     slurp # Screen selection utility
+    sassc # Styling language for AGS
     swaylock # Wayland session locker
     swww # Sets background images
     texlive.combined.scheme-full # LaTeX to create documents
+    tor-browser # Onion network browser
     typst # Cool, minimal LaTeX alternative
     ungoogled-chromium # If I need a special chrome feature
     waybar # Status bar
@@ -90,6 +96,7 @@ in {
     wl-clipboard # Copy/paste utility
     wlr-randr # Xrandr substitute
     xwaylandvideobridge # Allows screensharing from XWayland programs
+    xorg.xcursorthemes
     zathura # Minimalist PDF reader
 
     # GTK Themes
@@ -99,6 +106,9 @@ in {
 
   nixpkgs.overlays = [
     (self: super: {
+      hyprland-autoname-workspaces = nixos-unstable.hyprland-autoname-workspaces;
+      waybar                       = nixos-unstable.waybar;
+      typst                        = nixos-unstable.typst;
       hyprpicker = hyprpicker_0_1_1;
       grimblast = super.grimblast.override (o: {
         hyprpicker = hyprpicker_0_1_1;
