@@ -1,8 +1,10 @@
 { config, lib, pkgs, modulesPath, ... }:
 
-{
+let
+  nixos-unstable = (import <nixos-unstable> {});
+in {
   environment.systemPackages = with pkgs; [
-    emacs29-pgtk # Transparency on Wayland requires Pure GTK
+    nixos-unstable.emacs30-pgtk # Transparency on Wayland requires Pure GTK
 
     # Misc
     ispell # Spellchecker
@@ -13,7 +15,7 @@
     libtool
 
     ## LSPs
-    nodePackages.pyright
+    pyright
   ];
 }
 

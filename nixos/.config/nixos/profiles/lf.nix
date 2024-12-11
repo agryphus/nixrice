@@ -16,7 +16,7 @@
     mpv # Audio and video player
     nsxiv # Image viewer
     odt2txt # Convert open documents to text
-    perl536Packages.FileMimeInfo # Provides mimeopen, to ask what program to open files in
+    perl540Packages.FileMimeInfo # Provides mimeopen, to ask what program to open files in
     poppler_utils # Provides pdftoppm, to turn pdfs into images
     unrar-wrapper # Extract .rar files
     xclip # Copy file name to clip

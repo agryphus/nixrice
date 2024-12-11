@@ -1,6 +1,0 @@
-{ lib, stdenv }:
-
-stdenv.mkDerivation {
-
-}
-

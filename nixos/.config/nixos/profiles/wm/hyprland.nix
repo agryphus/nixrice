@@ -2,15 +2,9 @@
 
 let
   # Current verison causes segfault.
-  hyprpicker_0_1_1 = (import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/9957cd48326fe8dbd52fdc50dd2502307f188b0d.tar.gz";
-  }) {}).hyprpicker; # v0.1.1.
   nixos-unstable = (import <nixos-unstable> {});
-
   flake-compat = builtins.fetchTarball "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
-
   hyprland_nightly = (import flake-compat {
-    # we're not using pkgs.fetchgit as that requires a hash to be provided
     src = builtins.fetchGit {
       url = "https://github.com/hyprwm/Hyprland.git";
       submodules = true;
@@ -30,8 +24,10 @@ in {
     hyprland = { # Dynamic tiling window manager
       enable = true;
       xwayland.enable = true;
-      # package = nixos-unstable.hyprland;
-      package = hyprland_nightly.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+      package = nixos-unstable.hyprland.override(o: {
+        aquamarine = nixos-unstable.aquamarine;
+      });
+      # package = hyprland_nightly.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     };
   };
 
@@ -58,7 +54,6 @@ in {
   };
 
   environment.systemPackages = with pkgs; [
-    ags # GTK shell for status bar and widgets
     blueman # Bluetooth manager
     dunst # Notification daemon
     firefox # My browser of choice
@@ -69,12 +64,14 @@ in {
     grim # Screenshot tool
     hicolor-icon-theme # Icons
     hyprland-autoname-workspaces # Add icons to workspace titles
+    hyprlock # Screen locking utility
     hyprpaper
     hyprpicker # Colorpicker utility
     kanshi # Autorandr substitute
     libnotify # Send messages to notification daemon
     libreoffice # MSOffice btfo
     networkmanagerapplet # Wifi dropdown menu
+    networkmanager_dmenu # Manage wifi with dmenu
     nsxiv # Image viewer
     nwg-displays
     pinentry-rofi # Rofi frontend for pinentry program
@@ -83,7 +80,6 @@ in {
     rofi-pass # Rofi frontend for password store
     sassc # SCSS interpreter
     slurp # Screen selection utility
-    sassc # Styling language for AGS
     swaylock # Wayland session locker
     swww # Sets background images
     texlive.combined.scheme-full # LaTeX to create documents
@@ -109,14 +105,6 @@ in {
       hyprland-autoname-workspaces = nixos-unstable.hyprland-autoname-workspaces;
       waybar                       = nixos-unstable.waybar;
       typst                        = nixos-unstable.typst;
-      hyprpicker = hyprpicker_0_1_1;
-      grimblast = super.grimblast.override (o: {
-        hyprpicker = hyprpicker_0_1_1;
-      });
-      ags = pkgs.callPackage "${builtins.fetchGit {
-        url = "https://github.com/Aylur/ags.git";
-        ref = "main";
-      }}/nix" {};
     })
   ];
 }

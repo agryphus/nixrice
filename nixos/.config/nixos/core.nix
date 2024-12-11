@@ -1,26 +1,27 @@
 { config, pkgs, ... }:
 
 let
-  nixos-unstable = (import <nixos-unstable> {});
+  # # Only allowing unfree for a useUasm yazi fix.  Remove once patched.
+  # nixos-unstable = (import <nixos-unstable> {config.allowUnfree = true;});
+  flake-compat = builtins.fetchTarball "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
 in {
   # Nix settings
   nix = {
-    package = pkgs.nixFlakes;
     settings.auto-optimise-store = true;
     gc = {
       automatic = true;
       dates = "weekly";
       options = "--delete-older-than 7d";
     };
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
   };
 
   # Files to add to /etc
   environment = {
     binsh = "${pkgs.dash}/bin/dash";
     etc = {
+      "profile.local".text = ''
+          export FOO=bar
+      '';
       "zshenv.local".text = ''
           export ZDOTDIR="$HOME/.config/zsh"
       '';
@@ -52,6 +53,7 @@ in {
     hack-font
     fira-code
     inter
+    fira-code-nerdfont
   ];
 
   networking.networkmanager.enable = true;
@@ -62,6 +64,7 @@ in {
   hardware.bluetooth.powerOnBoot = true;
 
   # Audio daemon
+  hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -69,6 +72,7 @@ in {
     alsa.support32Bit = true;
     pulse.enable = true;
     jack.enable = true;
+    wireplumber.enable = true;
   };
 
   # Udev service
@@ -143,6 +147,7 @@ in {
     man-pages # Documentation
     man-pages-posix # Documentation
     neofetch # Aesthetic sysinfo
+    openconnect # Connect to VPNs
     pass-nodmenu # CLI password store (without dmenu dependency)
     pinentry-curses # Terminal-based pinentry program
     python311 # Python
@@ -162,7 +167,7 @@ in {
     zsh-syntax-highlighting # Shell syntax highlighting
 
     # Silly programs
-    asciiquarium
+    asciiquarium-transparent # ASCII fish tank animation
     bsdgames # Fun collection of command-line games
     neo-cowsay # The cow says moo
     sl # Choo choo
@@ -216,19 +221,6 @@ in {
         nix-shell -p ${make-shell} --run "make $*"
       '')
     )
-  ];
-
-  nixpkgs.overlays = [
-    (self: super: {
-      asciiquarium = super.asciiquarium.overrideAttrs (oa: {
-        src = pkgs.fetchgit {
-          url = "https://github.com/nothub/asciiquarium";
-          rev = "204090ff4c97b2e00cd67f26b1a37ca7accd4f95";
-          hash = "sha256-0Y0bcsa6GfP/A+gZe6o94WNWfQNHVEtMZfMuvWVBu0c=";
-        };
-      });
-      yazi = nixos-unstable.yazi;
-    })
   ];
 
   nixpkgs.config.packageOverrides = pkgs: {
