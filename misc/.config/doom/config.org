@@ -30,10 +30,10 @@
   - [[#posframe][Posframe]]
     - [[#vertico-posframe][Vertico Posframe]]
     - [[#company-posframe][Company Posframe]]
-- [[#fonts][Fonts]]
-  - [[#default][Default]]
-  - [[#mixed-pitch-mode][Mixed Pitch Mode]]
-- [[#coloring][Coloring]]
+- [[#style][Style]]
+  - [[#fonts][Fonts]]
+    - [[#default][Default]]
+    - [[#mixed-pitch-mode][Mixed Pitch Mode]]
   - [[#themes][Themes]]
   - [[#transparency][Transparency]]
 - [[#languages][Languages]]
@@ -58,6 +58,7 @@
   - [[#typst][Typst]]
     - [[#preview][Preview]]
     - [[#concealing][Concealing]]
+    - [[#install-tree-sitter-grammar][Install Tree-Sitter Grammar]]
   - [[#shell][Shell]]
   - [[#nix][Nix]]
 - [[#miscellaneous][Miscellaneous]]
@@ -277,23 +278,26 @@ Company mode, by default, has its suggestions snap to the grid.  When using anyt
   (company-posframe-mode 1)
 #+end_src
 
-* Fonts
-** Default
+* Style
+There are four ways to start emacs with the combinations of GUI/TUI and standalone/daemon.
+Unfortunately, each of these four methods requires a slightly different way to set window transparency.
+** Fonts
+*** Default
 #+begin_src emacs-lisp
-  (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
-  (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
-    (set-face-font 'variable-pitch "Inter Display 15")
-  (set-fontset-font "fontset-default" 'han "Source Han Sans")
+  (defun ag/load-fonts ()
+    (set-face-font 'variable-pitch "Liberation Serif 15") ;; Serif
+    (add-to-list 'default-frame-alist '(font . "Symbols Nerd Font Mono 15"))
+    (add-to-list 'default-frame-alist '(font . "FiraCode 15"))
+    ;; (set-face-font 'variable-pitch "Inter Display 15") ;; Sans serif
+    (set-fontset-font "fontset-default" 'han "Source Han Sans"))
+  (ag/load-fonts)
 #+end_src
 
-** Mixed Pitch Mode
+*** Mixed Pitch Mode
 #+begin_src emacs-lisp :tangle packages.el
   (package! mixed-pitch)
 #+end_src
 
-* Coloring
-There are four ways to start emacs with the combinations of GUI/TUI and standalone/daemon.
-Unfortunately, each of these four methods requires a slightly different way to set window transparency.
 ** Themes
 #+begin_src emacs-lisp :tangle packages.el
   (package! gruber-darker-theme)
@@ -335,6 +339,8 @@ Unfortunately, each of these four methods requires a slightly different way to s
     ;; Called at the creation of each emacsclient frame
     (if (display-graphic-p frame)
       (progn ;; $ emacsclient -c
+             (set-face-font 'variable-pitch "Liberation Serif 15") ;; Serif
+             ;; (ag/load-fonts)
              ;; Transparency for specific graphical frame
              )
       (progn ;; $ emacsclient -nw
@@ -505,7 +511,7 @@ From: https://tecosaur.github.io/emacs-config/config.html
         ("NOPE"         . "")
         ("DONE"         . "")
         ("[ ]"          . "")
-        ("[X]"          . "")
+        ("[X]"          . "󰄵")
         ("[-]"          . "")
         ("#+begin_src"  . "")
         ("#+BEGIN_SRC"  . "")
@@ -590,6 +596,17 @@ Automatically generate a table of contents for markdown documents
 *** Conceal Markup
 #+begin_src emacs-lisp
   (add-hook 'markdown-mode-hook '(lambda () (markdown-toggle-markup-hiding)))
+
+  (defun ag/prettify-me ()
+    (setq prettify-symbols-alist
+      '(("[ ]"          . "")
+        ("```"          . "")
+        ("```\n"        . "")
+        ("[x]"          . "󰄵"))))
+  (add-hook 'markdown-mode-hook '(lambda () (progn (ag/prettify-me)
+                                              (global-prettify-symbols-mode))))
+
+  (setq markdown-max-image-size '(700 . 700))
 #+end_src
 
 *** Variable Sized Headers
@@ -655,11 +672,24 @@ Making the editor more WYSIWYG-like
   (add-hook! typst-ts-mode
     (progn
       (setq prettify-symbols-alist
-        '(("= "    . "")
-          ("== "   . "")
-          ("=== "  . "")
-          ("==== " . "")))
+        '(("^= "    . "")
+          ("^== "   . "")
+          ("^=== "  . "")
+          ("^==== " . "")))
       (prettify-symbols-mode)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (add-hook 'typst-ts-mode-hook '(lambda () (mixed-pitch-mode)))
+  (add-hook 'typst-ts-mode-hook '(lambda () (electric-indent-mode -1)))
+#+end_src
+
+*** Install Tree-Sitter Grammar
+Uncomment and run the below code once to install the tree sitter grammar for typst-ts-mode
+#+begin_src emacs-lisp
+;; (add-to-list 'treesit-language-source-alist
+;;              '(typst "https://github.com/uben0/tree-sitter-typst"))
+;; (treesit-install-language-grammar 'typst)
 #+end_src
 
 ** Shell
