@@ -1,27 +1,29 @@
-version = "1.1.14"
+version = "1.1.15"
 
 [class]
 DEFAULT = "{class}"
-"(?i)firefox"    = " "
-"(?i)Anki"       = " "
+"(?i)Anki" = " "
 "(?i)blueman-manager-wrapped" = " "
-"(?i)chromium"   = " "
-"(?i)discord"    = "󰊴 "
-"(?i)Element"    = "󰘨 "
-"(?i)emacs"      = " "
-"(?i)foot"       = " "
-"(?i)Gimp"       = " "
-"(?i)Kitty"      = " "
+"(?i)chromium" = " "
+"(?i)discord" = "󰊴 "
+"(?i)Element" = "󰘨 "
+"(?i)emacs" = " "
+"(?i)firefox" = " "
+"(?i)foot" = " "
+"(?i)ghidra" = " "
+"(?i)Gimp" = " "
+"(?i)Kitty" = " "
+"(?i)libreoffice-draw" = "󰽉 "
 "(?i)libreoffice-writer" = "󰷈 "
-"(?i)mpv"        = " "
-"(?i)Nsxiv"      = " "
-"(?i)slack"      = "󰒱 "
-"(?i)spotify"    = " "
-"(?i)st"         = " "
-"(?i)steam"      = " "
+"(?i)mpv" = " "
+"(?i)mullvad vpn" = " "
+"(?i)Nsxiv" = " "
+"(?i)slack" = "󰒱 "
+"(?i)spotify" = " "
+"(?i)st" = " "
+"(?i)steam" = " "
 "(?i)virtualbox" = " "
-"(?i)zathura"    = " "
-"(?i)mullvad vpn"= " "
+"(?i)zathura" = " "
 
 [class_active]
 
@@ -30,24 +32,24 @@ DEFAULT = "{class}"
 [initial_class_active]
 
 [workspaces_name]
-6 = "six"
-2 = "two"
-4 = "four"
-3 = "three"
-7 = "seven"
-10 = "ten"
-8 = "eight"
-5 = "five"
-1 = "one"
 0 = "zero"
+1 = "one"
+2 = "two"
+3 = "three"
+4 = "four"
+5 = "five"
+6 = "six"
+7 = "seven"
+8 = "eight"
 9 = "nine"
+10 = "ten"
+
+[title_in_class."(?i)foot"]
+"(?i)neovim" = "neovim"
+"(?i)nvim" = "nvim"
 
 [title_in_class."(?i)kitty"]
 "(?i)neomutt" = "neomutt"
-
-[title_in_class."(?i)foot"]
-"(?i)nvim" = "nvim"
-"(?i)neovim" = "neovim"
 
 [title_in_class_active."(?i)firefox"]
 "(?i)twitch" = "<span color='purple'>{icon}</span>"
@@ -65,11 +67,11 @@ DEFAULT = "{class}"
 [initial_title_in_initial_class_active]
 
 [exclude]
-"(?i)fcitx" = ".*"
-"" = "^$"
-"[Ss]team" = "^(Friends List.*)?$"
 aProgram = "^$"
 "(?i)TestApp" = ""
+"" = "^$"
+"[Ss]team" = "^(Friends List.*)?$"
+"(?i)fcitx" = ".*"
 
 [format]
 dedup = false
