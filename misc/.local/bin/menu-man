@@ -7,5 +7,6 @@ sel="$(man -k . | fuzzel --dmenu -i -p "Man page:")"
 # $program ($num) - $desc
 # Need to run `man $num $program`
 page="$(echo "$sel" | awk -F'[()]' '{print $2" "$1}')"
-nohup $TERMINAL -e man $page >/dev/null 2>&1 &
+# nohup $TERMINAL -e man $page >/dev/null 2>&1 &
+hyprctl dispatch exec [floating] "foot -W 78x38 -e man $page"
 

@@ -7,11 +7,11 @@ audio_info="$(wpctl status \
 case $1 in
     sink)
         section="$(echo "$audio_info" \
-            | awk '/Sinks:/,/Sink endpoints:/ {print}')"
+            | awk '/Sinks:/,/Sources:/ {print}')"
         ;;
     source)
         section="$(echo "$audio_info" \
-            | awk '/Sources:/,/Source endpoints:/ {print}')"
+            | awk '/Sources:/,/Filters:/ {print}')"
         ;;
     *)
         echo "Aguments must be one of (sink|source)."

@@ -6,7 +6,12 @@ detatch=0
 [ "$1" = "detatch" ] && detatch=1 && shift 1
 
 # First arg must be a file
-[ ! -f "$1" ] && echo "Not a file: '$1'" && exit 1
+file="$1"
+[ ! -f "$file" ] && echo "Not a file: '$file'" && exit 1
+while [ -L "$file" ]; do
+    # Resolve symlinks
+    file=$(readlink "$file")
+done
 
 function launch_gui() {
     if [ "$detatch" -eq 0 ]; then
@@ -40,7 +45,7 @@ function launch_term() {
     fi
 }
 
-case $(file --mime-type "$1" -b) in
+case $(file --mime-type "$file" -b) in
     application/javascript|\
     application/json|\
 	application/pgp-encrypted|\
@@ -50,18 +55,18 @@ case $(file --mime-type "$1" -b) in
         case "${1##*.}" in
             org|typ)
                 # Any "document" like file ought to be in emacs
-                launch_gui emacsclient -c "$1"
+                launch_gui emacsclient -c "$file"
                 exit
                 ;;
         esac
 
-        launch_term nvim "$1"
+        launch_term nvim "$file"
         ;;
     image/*)
-        launch_gui nsxiv "$1"
+        launch_gui nsxiv "$file"
         ;;
 	video/*) 
-        launch_gui mpv -quiet "$1"
+        launch_gui mpv -quiet "$file"
         ;;
     application/epub*|\
     application/octet-stream|\
@@ -69,13 +74,13 @@ case $(file --mime-type "$1" -b) in
     application/postscript|\
     application/vnd.djvu|\
     image/vnd.djvu)
-        launch_gui zathura "$1"
+        launch_gui zathura "$file"
         ;;
     audio/*|\
     video/x-ms-asf) 
         [ -z "$(mediainfo "$1" | grep "Cover\s*: Yes")" ] \
-            && (launch_term mpv --audio-display=no "$1") \
-            || (launch_gui mpv "$1")
+            && (launch_term mpv --audio-display=no "$file") \
+            || (launch_gui mpv "$file")
         ;;
     application/msword|\
     application/octet-stream|\
@@ -92,7 +97,7 @@ case $(file --mime-type "$1" -b) in
     application/vnd.openxmlformats-officedocument.presentationml.presentation|\
     application/vnd.openxmlformats-officedocument.spreadsheetml.sheet|\
     application/vnd.openxmlformats-officedocument.wordprocessingml.document)
-        launch_gui libreoffice "$1"
+        launch_gui libreoffice "$file"
         ;;
     *)
         ;;

@@ -3,27 +3,26 @@
 
 # Restart wallpaper daemon synchronously
 swww kill
+pkill fcitx5
 
 # Start daemons that can turn on asynchronously
 (
     foot --server &
     systemctl --user restart network-manager-applet
-    pkill fcitx5; fcitx5 &
-    emacs --daemon
+    pkill emacs; emacs --daemon
 ) &
-ags &
 
 # Rearrange monitors
 hyprmonitors auto
 
 systemctl --user restart hyprland-autoname-workspaces
 
-# Set default workspace per monitor
-# hyprctl dispatch focusmonitor 1; hyprctl dispatch exec 'hyprdwm goto 1'
-# hyprctl dispatch focusmonitor +1; hyprctl dispatch exec 'hyprdwm goto 1'
-# hyprctl dispatch focusmonitor +1; hyprctl dispatch exec 'hyprdwm goto 1'
-# hyprctl dispatch focusmonitor 0
+swww-daemon &
+fcitx5 &
+waybar &
 
-sleep 3
-swww init
+# Sometimes the monitor config does not want to apply properly on the first
+# go.  I then have to reload the configuration to make sure that the monitors
+# are actually in their intended place.
+hyprctl reload
 
