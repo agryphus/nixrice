@@ -12,7 +12,6 @@ return {
       os.execute(string.format("opener detatch \"%s\"", h.url))
     else
       ya.manager_emit("open", {})
-      -- os.execute(string.format("opener \"%s\"", h.url))
     end
 	end,
 }

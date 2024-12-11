@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+
 return {
 	entry = function(_, args)
 		local current = cx.active.current

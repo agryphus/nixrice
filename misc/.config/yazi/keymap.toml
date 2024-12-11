@@ -9,8 +9,16 @@ prepend_keymap = [
 	{ on = [ "k" ], run = [ "plugin --sync arrow --args=-1"], desc = "Move selection upwards, or wrap." },
 	{ on = [ "l" ], run = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
 	{ on = [ "L" ], run = "plugin smart-enter --sync --args='detatch'", desc = "Open in new window." },
+    { on = [ "T" ], run = "plugin --sync max-preview", desc = "Maximize preview pane"},
+    { on = [ "n" ], run = "create", desc = "Create a file or directory (ends with / for directories)" },
+    { on = [ "<C-n>"], run = '''
+        shell 'dragon -x -i -T "$1"' --confirm
+    ''', desc = "Open file with dragon"},
     { on = [ "=" ], run = """
         shell 'printf "Mode Bits: "; read ans; chmod $ans "$@"' --block --confirm
     """, desc = "chmod" },
+    { on = [ "<A-Enter>" ], run = """
+        shell '$TERMINAL -e $SHELL -c -i \"cd $PWD && ya && exec $SHELL\"' --orphan --confirm
+    """, desc = "Spawn new yazi window in CWD" },
 ]
 
