@@ -6,6 +6,7 @@ let
   flake-compat = builtins.fetchTarball "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
   hyprland_nightly = (import flake-compat {
     src = builtins.fetchGit {
+      ref = "main";
       url = "https://github.com/hyprwm/Hyprland.git";
       submodules = true;
     };
@@ -24,11 +25,10 @@ in {
     hyprland = { # Dynamic tiling window manager
       enable = true;
       xwayland.enable = true;
-      package = nixos-unstable.hyprland.override(o: {
-        aquamarine = nixos-unstable.aquamarine;
-      });
+      # package = nixos-unstable.hyprland;
       # package = hyprland_nightly.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     };
+    nm-applet.enable = true;
   };
 
   systemd.user.services = {
@@ -41,16 +41,16 @@ in {
       serviceConfig.Restart = "always";
       serviceConfig.RestartSec = 1;
     };
-    network-manager-applet = {
-      description = "Start the network manager applet";
-      after = [ "graphical-session.target" ];
-      requires = [ "graphical-session.target" ];
-      wantedBy = [ "graphical-session.target" ];
-      serviceConfig.Type = "forking";
-      serviceConfig.Restart = "always";
-      serviceConfig.RestartSec = 1;
-      serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
-    };
+    # network-manager-applet = {
+    #   description = "Start the network manager applet";
+    #   after = [ "graphical-session.target" ];
+    #   requires = [ "graphical-session.target" ];
+    #   wantedBy = [ "graphical-session.target" ];
+    #   serviceConfig.Type = "forking";
+    #   serviceConfig.Restart = "always";
+    #   serviceConfig.RestartSec = 1;
+    #   serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
+    # };
   };
 
   environment.systemPackages = with pkgs; [
@@ -63,6 +63,7 @@ in {
     grimblast # Allows freezing screen
     grim # Screenshot tool
     hicolor-icon-theme # Icons
+    hypridle # Do commands upon user idle
     hyprland-autoname-workspaces # Add icons to workspace titles
     hyprlock # Screen locking utility
     hyprpaper
@@ -70,7 +71,7 @@ in {
     kanshi # Autorandr substitute
     libnotify # Send messages to notification daemon
     libreoffice # MSOffice btfo
-    networkmanagerapplet # Wifi dropdown menu
+    # networkmanagerapplet # Wifi dropdown menu
     networkmanager_dmenu # Manage wifi with dmenu
     nsxiv # Image viewer
     nwg-displays
@@ -80,6 +81,7 @@ in {
     rofi-pass # Rofi frontend for password store
     sassc # SCSS interpreter
     slurp # Screen selection utility
+    st
     swaylock # Wayland session locker
     swww # Sets background images
     texlive.combined.scheme-full # LaTeX to create documents
@@ -94,6 +96,7 @@ in {
     xwaylandvideobridge # Allows screensharing from XWayland programs
     xorg.xcursorthemes
     zathura # Minimalist PDF reader
+    zen-browser
 
     # GTK Themes
     lxappearance-gtk2 # Theme switcher
@@ -101,10 +104,28 @@ in {
   ];
 
   nixpkgs.overlays = [
-    (self: super: {
+    (final: prev: {
       hyprland-autoname-workspaces = nixos-unstable.hyprland-autoname-workspaces;
       waybar                       = nixos-unstable.waybar;
       typst                        = nixos-unstable.typst;
+      # typst = (import flake-compat {
+      #   src = builtins.fetchGit {
+      #     url = "https://github.com/typst/typst.git";
+      #   };
+      # }).outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      zen-browser = (import flake-compat {
+        src = builtins.fetchGit {
+          url = "https://github.com/0xc000022070/zen-browser-flake.git";
+        };
+      }).outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      st = prev.st.overrideAttrs (o: {
+        src = /home/vince/.config/st;
+        buildInputs = o.buildInputs ++ (with pkgs; [
+          # Extra libraries needed to build patches
+          harfbuzz
+          imlib2
+        ]);
+      });
     })
   ];
 }

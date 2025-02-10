@@ -5,24 +5,11 @@
 swww kill
 pkill fcitx5
 
-# Start daemons that can turn on asynchronously
-(
-    foot --server &
-    systemctl --user restart network-manager-applet
-    pkill emacs; emacs --daemon
-) &
-
-# Rearrange monitors
-hyprmonitors auto
-
 systemctl --user restart hyprland-autoname-workspaces
 
 swww-daemon &
 fcitx5 &
-waybar &
-
-# Sometimes the monitor config does not want to apply properly on the first
-# go.  I then have to reload the configuration to make sure that the monitors
-# are actually in their intended place.
-hyprctl reload
+quickshell &
+hypridle &
+pkill emacs; emacs --daemo
 

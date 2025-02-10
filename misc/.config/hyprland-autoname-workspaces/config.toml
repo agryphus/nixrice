@@ -1,29 +1,34 @@
 version = "1.1.15"
 
+[title."(?i)foot"]
+Yazi = "󰇥"
+
 [class]
 DEFAULT = "{class}"
-"(?i)Anki" = " "
+"(?i)anki" = " "
 "(?i)blueman-manager-wrapped" = " "
 "(?i)chromium" = " "
 "(?i)discord" = "󰊴 "
-"(?i)Element" = "󰘨 "
+"(?i)element" = " "
 "(?i)emacs" = " "
 "(?i)firefox" = " "
 "(?i)foot" = " "
 "(?i)ghidra" = " "
-"(?i)Gimp" = " "
-"(?i)Kitty" = " "
+"(?i)gimp" = " "
+"(?i)kitty" = " "
 "(?i)libreoffice-draw" = "󰽉 "
 "(?i)libreoffice-writer" = "󰷈 "
 "(?i)mpv" = " "
 "(?i)mullvad vpn" = " "
-"(?i)Nsxiv" = " "
+"(?i)nsxiv" = " "
+"(?i)signal" = "󰭹 "
 "(?i)slack" = "󰒱 "
 "(?i)spotify" = " "
 "(?i)st" = " "
 "(?i)steam" = " "
 "(?i)virtualbox" = " "
 "(?i)zathura" = " "
+"(?i)zen" = "󰇧 "
 
 [class_active]
 
@@ -52,7 +57,7 @@ DEFAULT = "{class}"
 "(?i)neomutt" = "neomutt"
 
 [title_in_class_active."(?i)firefox"]
-"(?i)twitch" = "<span color='purple'>{icon}</span>"
+"(?i)twitch" = "<span style='color:purple'>{icon}</span>"
 
 [title_in_initial_class]
 
@@ -79,9 +84,9 @@ dedup_inactive_fullscreen = false
 delim = ""
 workspace = "{id}:{delim}{clients}"
 workspace_empty = "{id}"
-client = "<span color='#999999'>{icon}</span>"
+client = "<span>{icon}</span>"
 client_fullscreen = "[{icon}]"
-client_active = "<span color='#FFFFFF'>{icon}</span>"
+client_active = "<span style='color:#FFFFFF'>{icon}</font>"
 client_dup = "{icon}{counter_sup}"
 client_dup_active = "*{icon}*{delim}{icon}{counter_unfocused_sup}"
 client_dup_fullscreen = "[{icon}]{delim}{icon}{counter_unfocused_sup}"

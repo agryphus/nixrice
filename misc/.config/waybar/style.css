@@ -29,9 +29,12 @@ button:hover {
 }
 
 
-#custom-scratch {
-	color: #b8b8b8;
+#custom-icon {
+	color: #ffffff;
 	padding: 0px 9px 0px 9px;
+    margin: 0px 0px 0px 0px;
+    border: none;
+    border-radius: 0;
 }
 
 #workspaces button {

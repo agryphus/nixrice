@@ -1,8 +1,6 @@
 { config, pkgs, ... }:
 
 let
-  # # Only allowing unfree for a useUasm yazi fix.  Remove once patched.
-  # nixos-unstable = (import <nixos-unstable> {config.allowUnfree = true;});
   flake-compat = builtins.fetchTarball "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
 in {
   # Nix settings
@@ -31,17 +29,17 @@ in {
     ];
   };
 
-  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.defaultLocale  = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
+    LC_ADDRESS        = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
+    LC_MEASUREMENT    = "en_US.UTF-8";
+    LC_MONETARY       = "en_US.UTF-8";
+    LC_NAME           = "en_US.UTF-8";
+    LC_NUMERIC        = "en_US.UTF-8";
+    LC_PAPER          = "en_US.UTF-8";
+    LC_TELEPHONE      = "en_US.UTF-8";
+    LC_TIME           = "en_US.UTF-8";
   };
 
   fonts.packages = with pkgs; [
@@ -150,7 +148,6 @@ in {
     openconnect # Connect to VPNs
     pass-nodmenu # CLI password store (without dmenu dependency)
     pinentry-curses # Terminal-based pinentry program
-    python311 # Python
     socat # Interact with sockets
     stow # Simlink farm (used for dotfile management)
     tldr # Brief info about a command
@@ -179,10 +176,16 @@ in {
     nix-prefetch-git # Like nix-prefetch-url, but for git
     nvd # See diffs between builds
 
-    # Pop into an environment abiding by the Filesystem Hierarchy Standard to run
-    # applications which do not play nicely with NixOS.
-    ( 
-    let 
+    # Custom overlays.  See below for explanations
+    fhs-run
+    python-common
+  ];
+
+  
+  nixpkgs.overlays = [
+    (self: super: {
+      # Pop into an environment abiding by the Filesystem Hierarchy Standard 
+      # to run applications which do not play nicely with NixOS.
       fhs-run = pkgs.buildFHSUserEnv {
         name = "fhs-run";
         targetPkgs = pkgs: [];
@@ -192,35 +195,14 @@ in {
           eval "$@" # Execute whatever arguments
         '';
       };
-    in
-      fhs-run
-    )
 
-    # Defining an environment to run "make" with the proper libraries installed
-    # "make", in the main environment, references the script, which envokes the
-    # environment, and passes the args to gnumake.
-    (
-    let
-      make-shell = pkgs.buildEnv {
-        name = "make-shell";
-        paths = with pkgs; [
-          # Tools
-          gnumake
-          pkg-config
-
-          # Libraries
-          harfbuzz
-          xorg.libX11.dev
-          xorg.libXft
-          xorg.libXinerama
-        ];
-      };
-    in
-      (pkgs.writeScriptBin "make" ''
-        #!/usr/bin/env sh
-        nix-shell -p ${make-shell} --run "make $*"
-      '')
-    )
+      # When evoking the command `python` from outside a shell, it runs the
+      # commands inside a nix shell containing common python packages that I
+      # always want to be available.
+      python-common = pkgs.python3.withPackages (ps: with ps; [
+        requests
+      ]);
+    })
   ];
 
   nixpkgs.config.packageOverrides = pkgs: {
