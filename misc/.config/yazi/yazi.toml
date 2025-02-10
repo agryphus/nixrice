@@ -31,12 +31,17 @@ ueberzug_offset = [ 0, 0, 0, 0 ]
 open = [
     { run = 'opener "$@"', block = true, desc = "Open" },
 ]
+alt = [
+    { run = 'opener "$@"', block = true, desc = "Alt" },
+]
+nothing = [
+    { run = 'echo -n', desc = "" },
+]
 
 [open]
 rules = [
-    { name = "*/", use = [ "edit", "open", "reveal" ] },
-
-    { mime = "*", use = [ "open" ] },
+    { name = "*/", use = [ "nothing" ] },
+    { mime = "*", use = [ "open", "alt" ] },
 ]
 
 [tasks]

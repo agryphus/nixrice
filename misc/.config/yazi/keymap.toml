@@ -5,10 +5,19 @@
 [manager]
 
 prepend_keymap = [
+    # Smart enter
+	{ on = [ "o" ], run = [ "plugin smart-enter --sync --args='list'", "escape --visual --select" ], desc = "List openers for file." },
+	{ on = [ "l" ], run = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
+	{ on = [ "L" ], run = [ "plugin smart-enter --sync --args='detatch'", "escape --visual --select" ], desc = "Open in new window." },
+	{ on = [ "1" ], run = [ "shell 'opener -n 1 $0' --block --confirm"], desc = "Open with program 1." },
+	{ on = [ "2" ], run = [ "shell 'opener -n 2 $0' --block --confirm"], desc = "Open with program 2." },
+	{ on = [ "3" ], run = [ "shell 'opener -n 3 $0' --block --confirm"], desc = "Open with program 3." },
+	{ on = [ "!" ], run = [ "shell 'opener -n 1 detatch $0' --block --confirm"], desc = "Open in new window with program 1." },
+	{ on = [ "@" ], run = [ "shell 'opener -n 2 detatch $0' --block --confirm"], desc = "Open in new window with program 2." },
+	{ on = [ "#" ], run = [ "shell 'opener -n 3 detatch $0' --block --confirm"], desc = "Open in new window with program 3." },
+
 	{ on = [ "j" ], run = [ "plugin --sync arrow --args=1"],  desc = "Move selection downwards, or wrap." },
 	{ on = [ "k" ], run = [ "plugin --sync arrow --args=-1"], desc = "Move selection upwards, or wrap." },
-	{ on = [ "l" ], run = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
-	{ on = [ "L" ], run = "plugin smart-enter --sync --args='detatch'", desc = "Open in new window." },
     { on = [ "T" ], run = "plugin --sync max-preview", desc = "Maximize preview pane"},
     { on = [ "n" ], run = "create", desc = "Create a file or directory (ends with / for directories)" },
     { on = [ "<C-n>"], run = '''
