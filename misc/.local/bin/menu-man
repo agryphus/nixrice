@@ -1,12 +1,13 @@
 #!/bin/sh
 
-sel="$(man -k . | fuzzel --dmenu -i -p "Man page:")"
+sel="$(man -k . | fzf --prompt "Man page: ")"
 [ "$sel" = "" ] && exit # Exit on no selection
 
 # Selection comes in the form of:
 # $program ($num) - $desc
 # Need to run `man $num $program`
 page="$(echo "$sel" | awk -F'[()]' '{print $2" "$1}')"
-# nohup $TERMINAL -e man $page >/dev/null 2>&1 &
-hyprctl dispatch exec [floating] "foot -W 78x38 -e man $page"
+# hyprctl dispatch exec [floating] "foot -W 78x38 -e man $page"
+
+man $page
 
