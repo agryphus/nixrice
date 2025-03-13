@@ -3,6 +3,8 @@ import "../"
 
 BarBlock {
   id: text
-  text: ` ${Datetime.date}`
+  content: BarText {
+    symbolText: ` ${Datetime.date}`
+  }
 }
 

@@ -1,49 +1,98 @@
 import Quickshell
 import Quickshell.Io
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "blocks" as Blocks
+import "root:/"
 
 Scope {
   Variants {
     model: Quickshell.screens
   
     PanelWindow {
+      id: bar
       property var modelData
       screen: modelData
 
-      color: "#cc000000"
-      height: 27
+      color: Theme.get.barBgColor
+
+      Rectangle {
+        id: highlight
+        anchors.fill: parent
+        gradient: Theme.get.barGradient
+      }
+
+      height: 30
+
+      visible: true
+
+      IpcHandler {
+        target: "bar"
+
+        function toggleVis(): void {
+          visible = !visible;
+        }
+      }
     
       anchors {
-        top: true
+        top: Theme.get.onTop
+        bottom: !Theme.get.onTop
         left: true
         right: true
       }
     
       RowLayout {
+        id: allBlocks
         spacing: 0
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
   
         // Left side
         RowLayout {
-          spacing: 0
+          id: leftBlocks
+          spacing: 10
           Layout.alignment: Qt.AlignLeft
+          Layout.fillWidth: true
 
           Blocks.Icon {}
           Blocks.Workspaces {}
-          Blocks.ActiveWorkspace {}
+        }
+
+        Blocks.ActiveWorkspace {
+          id: activeWorkspace
+          Layout.leftMargin: 10
+          anchors.centerIn: undefined
+
+          chopLength: {
+            var space = Math.floor(bar.width - (rightBlocks.implicitWidth + leftBlocks.implicitWidth))
+            return space * 0.08;
+          }
+
+          text: {
+            var str = activeWindowTitle
+            return str.length > chopLength ? str.slice(0, chopLength) + '...' : str;
+          }
+
+          color: {
+            return Hyprland.focusedMonitor == Hyprland.monitorFor(screen)
+              ? "#FFFFFF" : "#CCCCCC"
+          }
+        }
+
+        // Without this filler item, the active window block will be centered
+        // despite setting left alignment
+        Item {
+          Layout.fillWidth: true
         }
   
         // Right side
         RowLayout {
+          id: rightBlocks
           spacing: 0
           Layout.alignment: Qt.AlignRight
+          Layout.fillWidth: true
   
           Blocks.SystemTray {}
-          Blocks.Test {}
-          Blocks.Notifications {}
           Blocks.Memory {}
           Blocks.Sound {}
           Blocks.Battery {}

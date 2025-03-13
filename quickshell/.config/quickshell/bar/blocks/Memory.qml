@@ -6,7 +6,9 @@ import "../"
 
 BarBlock {
   id: text
-  text: ` ${Math.floor(percentFree)}%`
+  content: BarText {
+    symbolText: ` ${Math.floor(percentFree)}%`
+  }
 
   property real percentFree
 

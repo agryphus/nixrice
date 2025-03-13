@@ -1,8 +1,8 @@
 //@ pragma UseQApplication
 import Quickshell
-import "bar" as Bar
+import "bar"
 
 ShellRoot {
-  Bar.Bar {}
+  Bar {}
 }
 

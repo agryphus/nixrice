@@ -1,15 +1,16 @@
 import QtQuick
+import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Hyprland
 import "../"
 
 BarText {
-  text: {
-    var str = activeWindowTitle
-    return str.length > chopLength ? str.slice(0, chopLength) + '...' : str;
-  }
+  // text: {
+  //   var str = activeWindowTitle
+  //   return str.length > chopLength ? str.slice(0, chopLength) + '...' : str;
+  // }
 
-  property int chopLength: 70
+  property int chopLength
   property string activeWindowTitle
 
   Process {

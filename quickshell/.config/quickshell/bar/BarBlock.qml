@@ -4,8 +4,11 @@ import Quickshell
 
 Rectangle {
   id: root
-  Layout.preferredWidth: wsText.implicitWidth + 10
-  Layout.preferredHeight: 27
+  Layout.preferredWidth: contentContainer.implicitWidth + 10
+  Layout.preferredHeight: 30
+
+  property Item content
+  property Item mouseArea: mouseArea
 
   property string text
   property bool dim: false
@@ -14,9 +17,7 @@ Rectangle {
   property int leftPadding
   property int rightPadding
 
-  property string fgColor: "white"
-  property string dimFgColor: "#999999"
-  property string hoveredBgColor: "#444444"
+  property string hoveredBgColor: "#666666"
 
   // Background color
   color: {
@@ -40,28 +41,13 @@ Rectangle {
     }
   }
 
-  BarText {
-    id: wsText
-    text: root.text
-    anchors {
-        left: parent.left
-        right: parent.right
-        leftMargin: root.leftPadding
-        rightMargin: root.rightPadding
-        verticalCenter: parent.verticalCenter
-    }
-
-    color: {
-      if (mouseArea.containsMouse || !root.dim)
-        return fgColor
-      return dimFgColor
-    }
-
-    Behavior on color {
-      ColorAnimation {
-        duration: 100
-      }
-    }
+  Item {
+    // Contents of the bar block
+    id: contentContainer
+    implicitWidth:  content.implicitWidth
+    implicitHeight: content.implicitHeight
+    anchors.centerIn: parent
+    children: content
   }
 
   MouseArea {
@@ -76,11 +62,11 @@ Rectangle {
   Rectangle {
     id: wsLine
     width: parent.width
-    height: 3
+    height: 2
 
     color: {
       if (parent.underline)
-        return fgColor;
+        return "white";
       return "transparent";
     }
     anchors.bottom: parent.bottom

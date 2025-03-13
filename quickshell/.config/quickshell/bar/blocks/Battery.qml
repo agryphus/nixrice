@@ -4,7 +4,9 @@ import "../"
 
 BarBlock {
   property string battery
-  text: battery
+  content: BarText {
+    symbolText: battery
+  }
 
   Process {
     id: batteryProc

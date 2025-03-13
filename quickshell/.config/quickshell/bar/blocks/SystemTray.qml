@@ -4,13 +4,20 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
-import "../" as Bar
+import "root:/bar"
 
 RowLayout {
   spacing: 5
 
   Repeater {
-    model: SystemTray.items
+    model: ScriptModel {
+      values: {[...SystemTray.items.values]
+        .filter((item) => {
+          return (item.id != "spotify-client"
+               && item.id != "chrome_status_icon_1")
+        })
+      }
+    }
 
     MouseArea {
       id: delegate
@@ -43,7 +50,6 @@ RowLayout {
         id: icon
         anchors.centerIn: parent
         source: item.icon
-
         implicitSize: 16
       }
 
@@ -62,7 +68,7 @@ RowLayout {
         }
       }
 
-      Bar.Tooltip {
+      Tooltip {
         relativeItem: delegate.containsMouse ? delegate : null
 
         Label {
