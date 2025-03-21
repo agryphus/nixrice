@@ -93,16 +93,27 @@ case $(file --mime-type "$file" -b) in
             launch_term nvim "$file"
         fi
         ;;
+    image/x-xcf)
+        list_exit \
+            "Gimp"
+
+        launch_gui gimp "$file"
+        ;;
     image/*)
         list_exit \
-            "nsxiv"
-        launch_gui nsxiv "$file"
+            "nsxiv" \
+            "Gimp"
+
+        if [ "$num" -eq 2 ]; then
+            launch_gui gimp "$file"
+        else
+            launch_gui nsxiv "$file"
+        fi
         ;;
 	video/*) 
         list_exit \
-            "Neovim" \
-            "Emacs GUI" \
-            "Emacs TUI"
+            "MPV"
+
         launch_gui mpv -quiet "$file"
         ;;
     application/epub*|\
@@ -113,12 +124,14 @@ case $(file --mime-type "$file" -b) in
     image/vnd.djvu)
         list_exit \
             "Zathura"
+
         launch_gui zathura "$file"
         ;;
     audio/*|\
     video/x-ms-asf) 
         list_exit \
             "MPV"
+
         # If it has an album cover, launch graphical mpv
         [ -z "$(mediainfo "$1" | grep "Cover\s*: Yes")" ] \
             && (launch_term mpv --audio-display=no "$file") \
