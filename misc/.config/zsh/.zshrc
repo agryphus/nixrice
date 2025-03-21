@@ -239,8 +239,5 @@ if [ -f  ~/.config/zsh/.zshpersonalrc ]; then
     source ~/.config/zsh/.zshpersonalrc
 fi
 
-accent_color="$(cat $HOME/.config/colors/accent)"
-starship config format "'''[╭──\([\$username@\$hostname](bold $accent_color)\)-\[\$directory\](-\[\$git_branch\$git_metrics\$git_status\])(-\[\$nix_shell\])]($accent_color) \$cmd_duration
-[╰─]($accent_color)[\$shell](bold $accent_color) '''"
 eval "$(starship init zsh)"
 
