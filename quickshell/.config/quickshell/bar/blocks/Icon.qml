@@ -52,7 +52,7 @@ BarBlock {
   Process {
     id: neofetch
     running: false
-    command: [ "sh", "-c", "hyprctl dispatch exec [floating] \
+    command: [ "sh", "-c", "hyprctl dispatch exec [float] \
               \"foot -W 95x22 -e zsh -c 'neofetch; while true; do; done'\"" ]
     stdout: SplitParser {
       onRead: data => console.log(`line read: ${data}`)

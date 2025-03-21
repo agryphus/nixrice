@@ -7,12 +7,14 @@ import "../"
 
 BarBlock {
   id: text
+  visible: Pipewire.ready
+
   content: BarText {
-    symbolText: ` ${Math.floor(volume * 100)}%`
+    symbolText: ` ${volume}`
   }
 
   property PwNode sink: Pipewire.defaultAudioSink
-  property real volume: sink?.audio.volume
+  property string volume: Pipewire.ready ? `${Math.floor(sink.audio.volume * 100)}%` : ""
 
   PwObjectTracker { objects: [ sink ] }
 }

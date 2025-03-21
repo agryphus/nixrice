@@ -258,10 +258,11 @@ RowLayout {
     "": "extra-virtualbox",
     "": "extra-scale-emacs",
     "": "monero",
-    "󰻎": "extra-scale-system-explorer-outline",
+    "󰻎": "extra-system-explorer-outline",
     "󱍼": "extra-scale-vlc",
     "": "com.usebottles.bottles",
     "": "Zoom",
+    "󰊻": "teams-for-linux",
   }
 }
 

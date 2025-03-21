@@ -1,34 +1,40 @@
 version = "1.1.15"
 
-[title."(?i)foot"]
-Yazi = "󰇥"
-
 [class]
 DEFAULT = "{class}"
-"(?i)anki" = " "
-"(?i)blueman-manager-wrapped" = " "
-"(?i)chromium" = " "
-"(?i)discord" = "󰊴 "
-"(?i)element" = " "
-"(?i)emacs" = " "
-"(?i)firefox" = " "
-"(?i)foot" = " "
-"(?i)ghidra" = " "
-"(?i)gimp" = " "
-"(?i)kitty" = " "
-"(?i)libreoffice-draw" = "󰽉 "
-"(?i)libreoffice-writer" = "󰷈 "
-"(?i)mpv" = " "
-"(?i)mullvad vpn" = " "
-"(?i)nsxiv" = " "
-"(?i)signal" = "󰭹 "
-"(?i)slack" = "󰒱 "
-"(?i)spotify" = " "
-"(?i)st" = " "
-"(?i)steam" = " "
-"(?i)virtualbox" = " "
-"(?i)zathura" = " "
-"(?i)zen" = "󰇧 "
+"Anki" = " "
+"blueman-manager-wrapped" = " "
+"chromium" = " "
+"com.obsproject.Studio" = "󰄄 "
+"com.usebottles.bottles" = " "
+"discord" = "󰊴 "
+"Element" = " "
+"emacs" = " "
+"firefox" = " "
+"foot" = " "
+"ghidra" = " "
+"Gimp" = " "
+"kitty" = " "
+"libreoffice-calc" = " "
+"libreoffice-draw" = "󰽉 "
+"libreoffice-impress" = "󰈩 "
+"libreoffice-writer" = "󰷈 "
+"mpv" = " "
+"mullvad vpn" = " "
+"Nsxiv" = " "
+"org.getmonero." = " "
+"org.kde.kdenlive" = " "
+"signal" = "󰭹 "
+"Slack" = "󰒱 "
+"spotify" = " "
+"st-256color" = " "
+"steam" = " "
+"teams-for-linux" = "󰊻 "
+"VirtualBox" = " "
+"vlc" = "󱍼 "
+"zathura" = " "
+"zen" = "󰇧 "
+"zoom" = " "
 
 [class_active]
 
@@ -49,15 +55,21 @@ DEFAULT = "{class}"
 9 = "nine"
 10 = "ten"
 
-[title_in_class."(?i)foot"]
-"(?i)neovim" = "neovim"
-"(?i)nvim" = "nvim"
+[title_in_class."st-256color"]
+"Yazi" = "󰇥 "
+"NVIM" = " "
+"btop" = "󰻎 "
+"htop" = "󰻎 "
 
-[title_in_class."(?i)kitty"]
-"(?i)neomutt" = "neomutt"
+# Sometimes windows do not set a class
+[title_in_class.""]
+"Steam" = " "
 
-[title_in_class_active."(?i)firefox"]
-"(?i)twitch" = "<span style='color:purple'>{icon}</span>"
+[title_in_class."VirtualBox Machine"]
+"Tiny11" = " "
+
+[title_in_class."steam"]
+"Halo: The Master Chief Collection" = " "
 
 [title_in_initial_class]
 
@@ -82,11 +94,13 @@ aProgram = "^$"
 dedup = false
 dedup_inactive_fullscreen = false
 delim = ""
-workspace = "{id}:{delim}{clients}"
+workspace = "{id} {clients}"
 workspace_empty = "{id}"
-client = "<span>{icon}</span>"
-client_fullscreen = "[{icon}]"
-client_active = "<span style='color:#FFFFFF'>{icon}</font>"
+# client = "<span>{icon}</span>"
+client = "{icon}"
+client_fullscreen = "{icon}"
+# client_active = "<span style='color:#FFFFFF'>{icon}</font>"
+client_active = "󰀦{icon}"
 client_dup = "{icon}{counter_sup}"
 client_dup_active = "*{icon}*{delim}{icon}{counter_unfocused_sup}"
 client_dup_fullscreen = "[{icon}]{delim}{icon}{counter_unfocused_sup}"
