@@ -1,17 +1,53 @@
-# Use starship.def.toml to edit the starship configuration.  There should be an entr daemon
-# running which, upon changes to the file, will replace each instance of blue with
-# the appropriate environment variable.  This hack was cobbled together because starship currently
-# does not allow environment variables to be used as a style (which is dumb)
-
 # Inserts a blank line between shell prompts
 add_newline = false
 
-format = '''[╭──\([$username@$hostname](bold blue)\)-\[$directory\](-\[$git_branch$git_metrics$git_status\])(-\[$nix_shell\])](blue) $cmd_duration
-[╰─](blue)[$shell](bold blue) '''
-# format = '''
-# [\[$directory\](-\[$git_branch$git_metrics$git_status\])(-\[$nix_shell\])](blue)[λ ](blue bold)
-# '''
+format = '''${custom.color}╭──\(${custom.bold}$username@$hostname${custom.color}\)-\[$directory${custom.color}(\]-\[$git_branch$git_metrics$git_status)${custom.color}\]( $nix_shell) $cmd_duration
+${custom.color}╰─$shell '''
+
 right_format = '$status'
+
+[custom.color]
+command = '''
+accent="$(cat ~/.config/colors/accent)"
+case "$accent" in
+    black)
+        code=30
+        ;;
+    red)
+        code=31
+        ;;
+    green)
+        code=32
+        ;;
+    yellow)
+        code=33
+        ;;
+    blue)
+        code=34
+        ;;
+    purple)
+        code=35
+        ;;
+    cyan)
+        code=36
+        ;;
+    *)
+        code=0
+        ;;
+esac
+
+printf "\\033[0;${code}m"
+'''
+when = true
+format = "$output"
+
+[custom.bold]
+command = '''
+printf "\\033[1m"
+'''
+when = true
+unsafe_no_escape = true
+format = "$output"
 
 [line_break]
 disabled = false
@@ -23,7 +59,7 @@ show_always = true
 
 [nix_shell]
 symbol = '❄️'
-format = '[$symbol$name](bold purple)'
+format = '[$symbol $name](bold purple)'
 
 [hostname]
 ssh_only = false
@@ -32,9 +68,8 @@ trim_at = '.companyname.com'
 disabled = false
 
 [git_branch]
-style = 'bold green'
 symbol = ''
-format = '[$symbol$branch(hello$banch)](bold green)'
+format = '[$symbol$branch](bold green)'
 
 [git_status]
 modified = '[✘](bold red)'
@@ -48,25 +83,19 @@ truncate_to_repo = true
 style = 'bold white'
 format = '[$path]($style)[$read_only]($read_only_style)'
 
-[character]
-success_symbol = '[λ](bold blue)'
-error_symbol = '[λ](bold red)'
-# success_symbol = '[❯](bold blue)'
-# error_symbol = '[❯](bold red)'
-
 [cmd_duration]
 min_time = 1_000
 style = "bold dimmed yellow"
 format = '◷[$duration]($style) '
 
 [shell]
-fish_indicator = '󰈺'
+fish_indicator =       '󰈺'
 powershell_indicator = '_'
-bash_indicator = '\$'
-zsh_indicator = 'λ'
-unknown_indicator = '?'
+bash_indicator =      '\$'
+zsh_indicator =        'λ'
+unknown_indicator =    '?'
 disabled = false
-format = '$indicator'
+format = '[$indicator](bold)'
 
 [status]
 disabled = false
