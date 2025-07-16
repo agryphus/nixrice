@@ -12,7 +12,8 @@ RowLayout {
   Repeater {
     model: ScriptModel {
       values: {[...SystemTray.items.values]
-        .filter((item) => {
+               //you can remove the filter here. it takes out a lot of icons such as discord and whatnot. I don't know why
+          .filter((item) => {
           return (item.id != "spotify-client"
                && item.id != "chrome_status_icon_1")
         })

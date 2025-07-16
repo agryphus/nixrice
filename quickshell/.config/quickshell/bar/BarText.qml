@@ -49,7 +49,7 @@ Text {
      || (codePoint >= 0x100000 && codePoint <= 0x10FFFF); // Supplementary Private Use Area-B
 
     return text.replace(/./gu, (c) => isSymbol(c.codePointAt(0))
-      ? `<span style='font-family: ${symbolFont}; letter-spacing: -5px; font-size: ${symbolSize}px'>${c}</span>`
+      ? `<span style='font-family: ${symbolFont}; font-size: ${symbolSize}px'>${c}</span>`
       // ? c
       : c);
   }
