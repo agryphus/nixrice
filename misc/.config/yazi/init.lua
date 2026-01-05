@@ -17,18 +17,19 @@ end, 500, Header.LEFT)
 function Header:cwd()
 	local max = self._area.w - self._right_width
 	if max <= 0 then
-		return ui.Span("")
+		return ""
 	end
 
-	local cwd = ya.readable_path(tostring(self._tab.current.cwd)) .. self:flags()
-	local left = ui.Line {
+	local cwd = ya.readable_path(tostring(self._current.cwd)) .. self:flags()
+  local hovered = ""
+  if cx.active.current.hovered then
+      hovered = tostring(cx.active.current.hovered.name or "")
+  end
+	return ui.Line {
     ui.Span(cwd):fg("blue"):bold(true),
     ui.Span("/"):fg("blue"):bold(true),
-    ui.Span(tostring(cx.active.current.hovered.name)):fg("white"):   bold(true),
+    ui.Span(hovered):fg("white"):bold(true),
   }
-
-  return left
-
 end
 
 -- Remove file size from status bar
@@ -36,7 +37,7 @@ function Status:size()
 end
 
 -- Remove percentage from status bar
-function Status:percentage()
+function Status:percent()
 end
 
 -- Show symlink path in status bar

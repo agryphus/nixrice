@@ -1,39 +1,39 @@
-# A TOML linter such as https://taplo.tamasfe.dev/ can use this schema to validate your config.
-# If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
-"$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
-
-[manager]
-
+[mgr]
 prepend_keymap = [
-    # Smart enter
-	{ on = [ "o" ], run = [ "plugin smart-enter --sync --args='list'", "escape --visual --select" ], desc = "List openers for file." },
-	{ on = [ "l" ], run = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
-	{ on = [ "L" ], run = [ "plugin smart-enter --sync --args='detatch'", "escape --visual --select" ], desc = "Open in new window." },
+  # Jump
+  { on = [ "i" ], run = [ "plugin easyjump" ], desc = "easyjump" },
+  { on = [ "f" ], run = [ "plugin jump-to-char" ], desc = "Jump to char" },
+  
+  # Smart enter
+  { on = [ "o" ], run = [ "plugin smart-enter --sync -- list", "escape --visual --select" ], desc = "List openers for file." },
+  { on = [ "l" ], run = [ "plugin smart-enter --sync", "escape --visual --select" ], desc = "Enter the child directory, or open file." },
+  { on = [ "L" ], run = [ "plugin smart-enter --sync -- detatch", "escape --visual --select" ], desc = "Open in new window." },
 
-    # Openers
-	{ on = [ "1" ], run = [ "shell 'opener -n 1 \"$0\"' --block --confirm"], desc = "Open with program 1." },
-	{ on = [ "2" ], run = [ "shell 'opener -n 2 \"$0\"' --block --confirm"], desc = "Open with program 2." },
-	{ on = [ "3" ], run = [ "shell 'opener -n 3 \"$0\"' --block --confirm"], desc = "Open with program 3." },
-	{ on = [ "!" ], run = [ "shell 'opener -n 1 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 1." },
-	{ on = [ "@" ], run = [ "shell 'opener -n 2 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 2." },
-	{ on = [ "#" ], run = [ "shell 'opener -n 3 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 3." },
+  # Archives
+  { on = [ "u" ], run = [ "shell 'punpack \"$0\"' --confirm"], desc = "Open archive" },
 
-    # Better movement
-	{ on = [ "j" ], run = [ "plugin --sync arrow --args=1"],  desc = "Move selection downwards, or wrap." },
-	{ on = [ "k" ], run = [ "plugin --sync arrow --args=-1"], desc = "Move selection upwards, or wrap." },
+  # Openers
+  { on = [ "1" ], run = [ "shell 'opener -n 1 \"$0\"' --block --confirm"], desc = "Open with program 1." },
+  { on = [ "2" ], run = [ "shell 'opener -n 2 \"$0\"' --block --confirm"], desc = "Open with program 2." },
+  { on = [ "3" ], run = [ "shell 'opener -n 3 \"$0\"' --block --confirm"], desc = "Open with program 3." },
+  { on = [ "4" ], run = [ "shell 'opener -n 4 \"$0\"' --block --confirm"], desc = "Open with program 4." },
+  { on = [ "5" ], run = [ "shell 'opener -n 5 \"$0\"' --block --confirm"], desc = "Open with program 5." },
+  { on = [ "!" ], run = [ "shell 'opener -n 1 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 1." },
+  { on = [ "@" ], run = [ "shell 'opener -n 2 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 2." },
+  { on = [ "#" ], run = [ "shell 'opener -n 3 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 3." },
+  { on = [ "$" ], run = [ "shell 'opener -n 4 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 4." },
+  { on = [ "%" ], run = [ "shell 'opener -n 5 detatch \"$0\"' --block --confirm"], desc = "Open in new window with program 5." },
 
-    { on = [ "f" ], run = [ "plugin jump-to-char" ], desc = "Jump to first occurrence of character" },
-    { on = [ "F" ], run = [ "plugin jump-to-char --args='previous'" ], desc = "Jump to first occurrence of character" },
+  { on = [ "<C-n>" ], run = 'shell -- xdragon -x -T "$1"', desc = "Open file with dragon"},
 
-    { on = [ "T" ], run = "plugin --sync max-preview", desc = "Maximize preview pane"},
-    { on = [ "<C-n>"], run = '''
-        shell 'dragon -x -i -T "$1"' --confirm
-    ''', desc = "Open file with dragon"},
-    { on = [ "=" ], run = """
-        shell 'printf "Mode Bits: "; read ans; chmod $ans "$@"' --block --confirm
-    """, desc = "chmod" },
-    { on = [ "<A-Enter>" ], run = """
-        shell '$TERMINAL -e $SHELL -c -i \"cd $PWD && ya && exec $SHELL\"' --orphan --confirm
-    """, desc = "Spawn new yazi window in CWD" },
+  { on = [ "<C-t>" ], run = "shell 'swallow thunar' --block --confirm", desc = "Open thunar"},
+
+  { on = [ "=" ], run = """
+    shell 'printf "Mode Bits: "; read ans; chmod $ans "$@"' --block --confirm
+  """, desc = "chmod" },
+
+  { on = [ "<A-Enter>" ], run = """
+    shell '$TERMINAL -e $SHELL -c -i \"cd $PWD && ya && exec $SHELL\"' --orphan --confirm
+  """, desc = "Spawn new yazi window in CWD" },
 ]
 
