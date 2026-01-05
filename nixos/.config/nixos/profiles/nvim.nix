@@ -5,8 +5,10 @@
     neovim
 
     # LSPs
+    clang
     clang-tools
     lua-language-server
+    python3Packages.python-lsp-server
 
     # Misc
     ripgrep # Used by telescope

@@ -9,12 +9,11 @@
     type = "fcitx5";
     fcitx5 = {
       waylandFrontend = true;
-      plasma6Support = false;
       addons = with pkgs; [
-        fcitx5-with-addons
-        fcitx5-configtool
+        qt6Packages.fcitx5-with-addons
+        qt6Packages.fcitx5-configtool
+        qt6Packages.fcitx5-chinese-addons
         fcitx5-rime
-        fcitx5-chinese-addons
         fcitx5-m17n
       ];
     };

@@ -7,7 +7,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    javaPackages.openjfx19
+    javaPackages.openjfx17
     jdk17
   ];
 }

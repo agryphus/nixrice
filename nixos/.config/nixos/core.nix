@@ -11,6 +11,9 @@ in {
       dates = "weekly";
       options = "--delete-older-than 7d";
     };
+    # I do not use flakes personally, but being able to run other
+    # people's flakes is convenient.
+    settings.experimental-features = [ "nix-command" "flakes" ];
   };
 
   # Files to add to /etc
@@ -28,6 +31,8 @@ in {
       "/share"
     ];
   };
+
+  networking.networkmanager.enable = true;
 
   i18n.defaultLocale  = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
@@ -48,13 +53,15 @@ in {
     # version of this font centers the symbols which is nice.
     nur.repos.bandithedoge.symbols-nerd-font
 
-    hack-font
     fira-code
+    nerd-fonts.fira-code
+    font-awesome
+    hack-font
     inter
-    fira-code-nerdfont
+    libertine
+    roboto
+    source-sans-pro
   ];
-
-  networking.networkmanager.enable = true;
 
   # Bluetooth daemon
   services.blueman.enable = true;
@@ -62,7 +69,7 @@ in {
   hardware.bluetooth.powerOnBoot = true;
 
   # Audio daemon
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -101,6 +108,7 @@ in {
       ];
     };
     zsh.enable = true;
+    command-not-found.enable = true;
   };
 
   virtualisation.docker.enable = true;
@@ -146,6 +154,7 @@ in {
     man-pages-posix # Documentation
     neofetch # Aesthetic sysinfo
     openconnect # Connect to VPNs
+    p7zip # Open 7z files
     pass-nodmenu # CLI password store (without dmenu dependency)
     pinentry-curses # Terminal-based pinentry program
     socat # Interact with sockets
@@ -153,6 +162,8 @@ in {
     tldr # Brief info about a command
     tmux # Terminal multiplexor
     udisks # Good way of dealing with USBs and similar media
+    unrar-free # Open .rar files
+    wget # Similar to curl
     yazi # Terminal file manager
 
     # Shell
@@ -186,7 +197,7 @@ in {
     (self: super: {
       # Pop into an environment abiding by the Filesystem Hierarchy Standard 
       # to run applications which do not play nicely with NixOS.
-      fhs-run = pkgs.buildFHSUserEnv {
+      fhs-run = pkgs.buildFHSEnv {
         name = "fhs-run";
         targetPkgs = pkgs: [];
         multiPkgs = pkgs: [ pkgs.dpkg ];

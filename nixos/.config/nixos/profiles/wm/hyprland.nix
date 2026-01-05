@@ -5,11 +5,7 @@ let
   nixos-unstable = (import <nixos-unstable> {});
   flake-compat = builtins.fetchTarball "https://github.com/edolstra/flake-compat/archive/master.tar.gz";
   hyprland_nightly = (import flake-compat {
-    src = builtins.fetchGit {
-      ref = "main";
-      url = "https://github.com/hyprwm/Hyprland.git";
-      submodules = true;
-    };
+    src = builtins.fetchTarball "https://github.com/hyprwm/Hyprland/archive/main.tar.gz";
   }).defaultNix;
 in {
   # Trusted Hyprland cache, as to not have to rebuild nightly
@@ -21,14 +17,39 @@ in {
   # Or else swaylock will not accept correct password
   security.pam.services.swaylock = {};
 
+  services.keyd.enable = true;
+  services.keyd.keyboards = {
+    default = {
+      ids = [ "*" ];
+      settings = {
+        main = {
+          capslock = "overload(control, esc)";
+          esc = "capslock";
+        };
+      };
+    };
+  };
+
+  # Enable OpenGL
+  hardware.graphics = {
+    enable = true;
+  };
+
   programs = {
     hyprland = { # Dynamic tiling window manager
       enable = true;
       xwayland.enable = true;
-      # package = nixos-unstable.hyprland;
-      # package = hyprland_nightly.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     };
-    nm-applet.enable = true;
+
+    dconf = {
+      enable = true;
+      profiles.gdm.databases = [{
+        settings = {
+          # set dark theme for gtk 4
+          "org/gnome/desktop/interface" = { color-scheme = "prefer-dark"; };
+        };
+      }];
+    };
   };
 
   systemd.user.services = {
@@ -41,24 +62,27 @@ in {
       serviceConfig.Restart = "always";
       serviceConfig.RestartSec = 1;
     };
-    # network-manager-applet = {
-    #   description = "Start the network manager applet";
-    #   after = [ "graphical-session.target" ];
-    #   requires = [ "graphical-session.target" ];
-    #   wantedBy = [ "graphical-session.target" ];
-    #   serviceConfig.Type = "forking";
-    #   serviceConfig.Restart = "always";
-    #   serviceConfig.RestartSec = 1;
-    #   serviceConfig.ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet";
-    # };
   };
 
+  environment.variables.GSETTINGS_SCHEMA_DIR =
+    let
+      paths = [
+        "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}/glib-2.0/schemas/"
+        "${pkgs.bottles-unwrapped}/share/gsettings-schemas/${pkgs.bottles-unwrapped.name}/glib-2.0/schemas/"
+      ];
+    in
+      builtins.concatStringsSep ":" paths;
+
   environment.systemPackages = with pkgs; [
+    adwaita-icon-theme
+    adwaita-qt
     blueman # Bluetooth manager
     dunst # Notification daemon
     firefox # My browser of choice
     foot # Wayland native terminal
     fuzzel # Fuzzy finding menuing program
+    glib
+    gnome-themes-extra
     gobble # Wayland alternative to devour
     grimblast # Allows freezing screen
     grim # Screenshot tool
@@ -66,22 +90,21 @@ in {
     hypridle # Do commands upon user idle
     hyprland-autoname-workspaces # Add icons to workspace titles
     hyprlock # Screen locking utility
-    hyprpaper
     hyprpicker # Colorpicker utility
-    kanshi # Autorandr substitute
+    hyprsunset # Bluelight filter
     libnotify # Send messages to notification daemon
     libreoffice # MSOffice btfo
     # networkmanagerapplet # Wifi dropdown menu
     networkmanager_dmenu # Manage wifi with dmenu
     nsxiv # Image viewer
     nwg-displays
+    pcmanfm # Graphical file manager
     pinentry-rofi # Rofi frontend for pinentry program
-    pyprland # Plugin manager for Hyprland
+    quickshell # Use QT to create widgets
     rofi # Menu prompt program
     rofi-pass # Rofi frontend for password store
-    sassc # SCSS interpreter
     slurp # Screen selection utility
-    st
+    st # Suckless Simple Terminal
     swaylock # Wayland session locker
     swww # Sets background images
     texlive.combined.scheme-full # LaTeX to create documents
@@ -93,39 +116,47 @@ in {
     wdisplays # Arnadr substitute
     wl-clipboard # Copy/paste utility
     wlr-randr # Xrandr substitute
-    xwaylandvideobridge # Allows screensharing from XWayland programs
     xorg.xcursorthemes
     zathura # Minimalist PDF reader
-    zen-browser
+    zen-browser # Better firefox
+    intel-gpu-tools # Tools for intel GPU
+    mesa-demos # Tools for Mesa drivers
+
+    xfce.thunar # Graphical file manager
+    xfce.tumbler # Thumbnailer service
+
+    # libsForQt5.qt5.qtsvg # Allow for svg icons in QT applications
+    kdePackages.qt6ct
 
     # GTK Themes
     lxappearance-gtk2 # Theme switcher
     gruvbox-dark-gtk
+
+    # Custom packages
+    extra-icons
   ];
 
   nixpkgs.overlays = [
     (final: prev: {
       hyprland-autoname-workspaces = nixos-unstable.hyprland-autoname-workspaces;
-      waybar                       = nixos-unstable.waybar;
       typst                        = nixos-unstable.typst;
-      # typst = (import flake-compat {
-      #   src = builtins.fetchGit {
-      #     url = "https://github.com/typst/typst.git";
-      #   };
-      # }).outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      swww                         = nixos-unstable.swww;
       zen-browser = (import flake-compat {
         src = builtins.fetchGit {
           url = "https://github.com/0xc000022070/zen-browser-flake.git";
         };
       }).outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
-      st = prev.st.overrideAttrs (o: {
-        src = /home/vince/.config/st;
-        buildInputs = o.buildInputs ++ (with pkgs; [
-          # Extra libraries needed to build patches
-          harfbuzz
-          imlib2
-        ]);
-      });
+      st = prev.callPackage /home/vince/.config/st/default.nix {};
+      extra-icons = prev.callPackage ../../derivations/extra-icons {};
+      # quickshell = (nixos-unstable.callPackage "${builtins.fetchGit {
+      #   url = "https://git.outfoxxed.me/outfoxxed/quickshell.git";
+      #   ref = "master";
+      # }}/" {}).overrideAttrs (oa: {
+      #   buildInputs = (oa.buildInputs or []) ++ [ nixos-unstable.qt6.qt5compat ];
+      # });  
+      quickshell = nixos-unstable.quickshell.overrideAttrs(oa: {
+        buildInputs = (oa.buildInputs or []) ++ [ nixos-unstable.qt6.qt5compat ];
+      });  
     })
   ];
 }
