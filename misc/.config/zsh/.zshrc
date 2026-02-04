@@ -68,6 +68,8 @@ alias zoom='dlkiller zoom'
 alias tor='torbrowser-launcher'
 alias emax="devour emacsclient -c -a 'emacs' 1>/dev/null"
 alias em="emacsclient -nw -a 'emacs -nw'"
+alias wgup="sudo wg-quick up ~/wg-quick.conf"
+alias wgdown="sudo wg-quick down ~/wg-quick.conf"
 
 # Colorful output
 alias ls='LC_COLLATE=C ls --color=auto --group-directories-first -hN -A'
@@ -103,6 +105,41 @@ function decrease_opacity {
 function pwdterm {
     # New terminal in the current working directory
     setsid -f $TERMINAL -e $SHELL >/dev/null 2>&1 &
+}
+
+function ncd() {
+  local dir=$1
+  local file=$2
+
+  cd "$dir" || return
+
+  if [[ -n "$file" ]]; then
+    nvim "$file"
+  else
+    nvim
+  fi
+}
+
+_ncd_completion() {
+    local dir
+    local resolved_dir
+
+    dir="${words[2]}"
+
+    if command -v realpath &>/dev/null; then
+        resolved_dir="$(realpath -- "$dir" 2>/dev/null)"
+    elif command -v readlink &>/dev/null; then
+        resolved_dir="$(readlink -f -- "$dir" 2>/dev/null)"
+    else
+        # fallback: assume relative to $PWD manually
+        resolved_dir="$PWD/$dir"
+    fi
+
+    if [[ -d $resolved_dir ]]; then
+        _files -W "$resolved_dir"
+    else
+        _files
+    fi
 }
 
 function ya() {
@@ -197,6 +234,9 @@ autoload -Uz compinit
 compinit -d ~/.cache/zcompdump
 zstyle ':completion:*:*:*:*:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # case insensitive tab completion
+
+
+compdef _ncd_completion ncd
 
 # Remove green background of simlinks
 LS_COLORS+=':ow=01;33' 
