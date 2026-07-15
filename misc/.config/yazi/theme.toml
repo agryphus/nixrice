@@ -1,4 +1,5 @@
 [status]
+overall   = {}
 sep_left = { open = "", close = "" }
 sep_right = { open = "", close = "" }
 
@@ -31,27 +32,30 @@ rules = [
 	{ mime = "{audio,video}/*", fg = "magenta" },
 
     # Is link
-    { name = "*", is = "link", fg = "cyan" },
-    { name = "*/", is = "link", fg = "cyan", bold = true },
+    { url = "*", is = "link", fg = "cyan" },
+    { url = "*/", is = "link", fg = "cyan", bold = true },
 
 	# Can open
 	{ mime = "application/{,g}zip", fg = "blue" },
 	{ mime = "application/x-{tar,bzip*,7z-compressed,xz,rar}", fg = "blue" },
-	{ name = "*/", fg = "blue", bold = true },
+	{ url = "*/", fg = "blue", bold = true },
 
     # Can run
-	{ name = "*", is = "exec", fg = "green" },
+	{ url = "*", is = "exec", fg = "green" },
 
 	# Broken
-	{ name = "*", is = "orphan", bg = "red" },
-	{ name = "*", is = "dummy", bg = "red" },
-	{ name = "*/", is = "dummy", bg = "red" },
+	{ url = "*", is = "orphan", bg = "red" },
+	{ url = "*", is = "dummy", bg = "red" },
+	{ url = "*/", is = "dummy", bg = "red" },
 ]
 
 [icon]
 
-dirs  = [
+append_exts = [
+	{ name = "blend1", text = "󰂫", fg = "#ea7600" },
 ]
+
+dirs  = []
 
 conds = [
 	# Special files

@@ -10,7 +10,7 @@ Header:children_add(function()
 	if ya.target_family() ~= "unix" then
 		return ui.Line {}
 	end
-	return ui.Line { ui.Span(ya.user_name() .. "@" .. ya.host_name()):fg("lightgreen"):bold(true), ui.Span(":") }
+	return ui.Line { ui.Span(ya.user_name() .. "@" .. ya.host_name()):fg("lightgreen"):bold(), ui.Span(":") }
 end, 500, Header.LEFT)
 
 -- Show the path of the currently hovered file in the header
@@ -26,9 +26,9 @@ function Header:cwd()
       hovered = tostring(cx.active.current.hovered.name or "")
   end
 	return ui.Line {
-    ui.Span(cwd):fg("blue"):bold(true),
-    ui.Span("/"):fg("blue"):bold(true),
-    ui.Span(hovered):fg("white"):bold(true),
+    ui.Span(cwd):fg("blue"):bold(),
+    ui.Span("/"):fg("blue"):bold(),
+    ui.Span(hovered):fg("white"):bold(),
   }
 end
 
@@ -53,4 +53,8 @@ function Status:name()
  	end
  	return ui.Line(" " .. h.name .. linked)
 end
+
+-- Remove the indicator padding
+function Entity:padding() return " " end
+function Linemode:padding() return " " end
 

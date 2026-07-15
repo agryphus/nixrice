@@ -16,8 +16,8 @@ nothing = [
 
 [open]
 rules = [
-    { name = "*/", use = [ "nothing" ] },
     { mime = "*", use = [ "open", "alt" ] },
+    { url = "*/", use = [ "nothing" ] },
 ]
 
 [plugin]

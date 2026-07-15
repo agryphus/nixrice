@@ -1,7 +1,6 @@
 [mgr]
 prepend_keymap = [
   # Jump
-  { on = [ "i" ], run = [ "plugin easyjump" ], desc = "easyjump" },
   { on = [ "f" ], run = [ "plugin jump-to-char" ], desc = "Jump to char" },
   
   # Smart enter
