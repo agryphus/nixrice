@@ -16,11 +16,11 @@
     mpv # Audio and video player
     nsxiv # Image viewer
     odt2txt # Convert open documents to text
-    perl540Packages.FileMimeInfo # Provides mimeopen, to ask what program to open files in
-    poppler_utils # Provides pdftoppm, to turn pdfs into images
+    perl5Packages.FileMimeInfo # Provides mimeopen, to ask what program to open files in
+    poppler-utils # Provides pdftoppm, to turn pdfs into images
     unrar-wrapper # Extract .rar files
     xclip # Copy file name to clip
-    xdragon # Drag and drop utility
+    dragon-drop # Drag and drop utility
     zathura # PDF viewer
   ];
 }

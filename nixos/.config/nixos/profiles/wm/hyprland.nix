@@ -8,9 +8,9 @@ let
     src = builtins.fetchTarball "https://github.com/hyprwm/Hyprland/archive/main.tar.gz";
   }).defaultNix;
 in {
-  # Trusted Hyprland cache, as to not have to rebuild nightly
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
+    trusted-substituters = ["https://hyprland.cachix.org"];
     trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
   };
 
@@ -106,7 +106,7 @@ in {
     slurp # Screen selection utility
     st # Suckless Simple Terminal
     swaylock # Wayland session locker
-    swww # Sets background images
+    awww # Sets background images
     texlive.combined.scheme-full # LaTeX to create documents
     tor-browser # Onion network browser
     typst # Cool, minimal LaTeX alternative
@@ -116,14 +116,14 @@ in {
     wdisplays # Arnadr substitute
     wl-clipboard # Copy/paste utility
     wlr-randr # Xrandr substitute
-    xorg.xcursorthemes
+    xcursor-themes
     zathura # Minimalist PDF reader
     zen-browser # Better firefox
     intel-gpu-tools # Tools for intel GPU
     mesa-demos # Tools for Mesa drivers
 
-    xfce.thunar # Graphical file manager
-    xfce.tumbler # Thumbnailer service
+    thunar # Graphical file manager
+    tumbler # Thumbnailer service
 
     # libsForQt5.qt5.qtsvg # Allow for svg icons in QT applications
     kdePackages.qt6ct
@@ -138,9 +138,7 @@ in {
 
   nixpkgs.overlays = [
     (final: prev: {
-      hyprland-autoname-workspaces = nixos-unstable.hyprland-autoname-workspaces;
-      typst                        = nixos-unstable.typst;
-      swww                         = nixos-unstable.swww;
+      typst = nixos-unstable.typst;
       zen-browser = (import flake-compat {
         src = builtins.fetchGit {
           url = "https://github.com/0xc000022070/zen-browser-flake.git";
@@ -148,12 +146,6 @@ in {
       }).outputs.packages.${pkgs.stdenv.hostPlatform.system}.default;
       st = prev.callPackage /home/vince/.config/st/default.nix {};
       extra-icons = prev.callPackage ../../derivations/extra-icons {};
-      # quickshell = (nixos-unstable.callPackage "${builtins.fetchGit {
-      #   url = "https://git.outfoxxed.me/outfoxxed/quickshell.git";
-      #   ref = "master";
-      # }}/" {}).overrideAttrs (oa: {
-      #   buildInputs = (oa.buildInputs or []) ++ [ nixos-unstable.qt6.qt5compat ];
-      # });  
       quickshell = nixos-unstable.quickshell.overrideAttrs(oa: {
         buildInputs = (oa.buildInputs or []) ++ [ nixos-unstable.qt6.qt5compat ];
       });  
