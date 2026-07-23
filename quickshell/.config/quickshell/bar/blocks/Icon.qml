@@ -1,8 +1,13 @@
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
+import Qt5Compat.GraphicalEffects
+import QtQuick.Effects
+
+import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import "../"
 import "root:/"
@@ -11,6 +16,7 @@ BarBlock {
   id: root
   Layout.preferredWidth: 40
 
+    readonly property list<DesktopEntries> list: DesktopEntry
   content: BarText {
     text: ""
     pointSize: 17
@@ -38,7 +44,98 @@ BarBlock {
   //   implicitSize: 20
   // }
 
+  PopupWindow {
+    id: appmenu
+    anchor.window: bar
+    anchor.rect.x: parentWindow.width / 12 - width
+    anchor.rect.y: parentWindow.height
+    implicitWidth: 500
+    implicitHeight: 600
+    visible: true
+    color: "transparent"
+
+    Rectangle{
+        id: sourceItem
+        anchors.fill: parent
+			  bottomLeftRadius: 10
+        color: Theme.get.barBgColor
+
+			  bottomRightRadius: 10
+
+      Rectangle{
+        anchors.fill: sourceItem
+        gradient: Theme.get.barGradient
+
+			  bottomRightRadius: 10
+			  bottomLeftRadius: 10
+
+        ScrollView{
+          anchors.fill: parent
+
+            anchors.margins: 10
+          ColumnLayout{
+            anchors.fill: parent
+
+            Repeater {
+              model:  DesktopEntries.applications.values
+              RowLayout{
+
+                Rectangle{
+                  id: appSelection
+                  anchors.fill: parent
+                  color: {
+                    if (appArea.containsMouse)
+                      return hoveredBgColor;
+                    return "transparent";
+                  }
+
+                  radius: 5
+                }
+                Rectangle{
+                  anchors.fill:parent
+                  gradient: Theme.get.barGradient
+
+                  radius: 5
+                  border.color: Theme.get.buttonBorderColor
+                }
+                MouseArea{
+                  id: appArea
+                  hoverEnabled: true
+                  anchors.fill: parent
+
+                  property string fa: DesktopEntries.byId(model?.name).execString
+                  onClicked: event => {
+                    DesktopEntries.byId(model?.id).execute()
+
+                  }
+                }
+                IconImage{
+                  id:appImage
+                  implicitSize: 22
+                  source: Quickshell.iconPath(model?.icon)
+                }
+                Label{
+
+                  id: appText
+                  text: (model?.name)+ "   "
+
+                  color:"white"
+                  font.pointSize: 12
+
+                }
+
+              }
+            }
+          }
+        }
+      }
+
+    }
+
+  }
+
   Image {
+
     anchors.fill: parent
     source: mouseArea.containsMouse
         ? "../images/" + Theme.get.iconPressedColor + ".png"
@@ -49,18 +146,8 @@ BarBlock {
 
   color: "transparent"
 
-  Process {
-    id: neofetch
-    running: false
-    command: [ "sh", "-c", "hyprctl dispatch exec [float] \
-              \"foot -W 95x22 -e zsh -c 'neofetch; while true; do; done'\"" ]
-    stdout: SplitParser {
-      onRead: data => console.log(`line read: ${data}`)
-    }
-  }
 
   onClicked: function() {
-    neofetch.running = true
+    appmenu.visible = !appmenu.visible
   }
 }
-
